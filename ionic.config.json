@@ -1,0 +1,7 @@
+{
+  "name": "Spitfire",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
