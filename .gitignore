@@ -34,6 +34,11 @@ log.txt
 npm-debug.log
 yarn-error.log
 
+# Backend (spitfire-server)
+spitfire-server/node_modules/
+spitfire-server/database.sqlite
+spitfire-server/.env
+
 # IDEs and editors
 .idea/
 .project
