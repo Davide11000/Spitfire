@@ -23,6 +23,10 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Username already exists" });
     }
 
+    if(!email.match(EMAIL)){
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
     const existingEmail = await User.findByEmail(email);
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists" });
@@ -44,7 +48,8 @@ exports.login = async (req, res) => {
 
     console.log("ID:", id)
     console.log("Password:", password);
-
+    let user;
+    
     if (id.match(EMAIL)) {
       user = await User.findByEmail(id);
     } else {

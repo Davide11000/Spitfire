@@ -1,0 +1,63 @@
+.log{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    gap: 1rem;
+    padding-top: 8%;
+}
+.upper-text{
+    font-size: 230%;
+    font-family: 'Nunito', sans-serif;
+    font-weight: bold;
+    padding-bottom: 12%;
+}
+ion-input {
+  --highlight-color: rgb(180, 62, 62) !important;
+  --ion-color-primary: rgb(180, 62, 62) !important;
+}
+.input{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 450px;
+    width: 100%;
+}
+.continua {
+    font-family: 'Golos text', sans-serif;
+  --border-color: rgb(180, 62, 62); 
+  --color: #000000;
+
+  &:hover {
+    --background: rgb(180, 62, 62) !important;
+    
+    --color: white;
+    --transition: 0.3s;
+  }
+}
+.or{
+    display: flex;
+    justify-content: center;
+    font-size: 90%;
+    font-family: 'Golos text', sans-serif;
+}
+.reg{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.no-acc{
+    font-size: medium;
+    color: gray;
+}
+.sign-up{
+    font-family: 'Golos text', sans-serif;
+    font-size: 75%;
+    --background-hover: transparent;
+    --ripple-color: transparent;
+    color: black;
+    transition: 0.3s;
+    &:hover {
+        transform: scale(1.1);
+    }
+}
