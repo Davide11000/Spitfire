@@ -5,6 +5,22 @@ const User = require("../models/userModel");
 const SECRET = process.env.JWT_SECRET;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
+function validatePassword(password) {
+    if (password.length < 6) {
+      return "Password must contain at least 8 characters";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one undercase letter";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number";
+    }
+    return null;
+  }
+
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -23,8 +39,13 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Username already exists" });
     }
 
-    if(!email.match(EMAIL)){
+    if(!EMAIL.test(email)){
       return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    const passwordError = validatePassword(password);
+    if(passwordError){
+      return res.status(400).json({ message: passwordError });
     }
 
     const existingEmail = await User.findByEmail(email);
@@ -50,7 +71,7 @@ exports.login = async (req, res) => {
     console.log("Password:", password);
     let user;
     
-    if (id.match(EMAIL)) {
+    if (EMAIL.test(id)) {
       user = await User.findByEmail(id);
     } else {
       user = await User.findByUsername(id);

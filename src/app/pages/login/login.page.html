@@ -1,0 +1,28 @@
+<ion-content class="global">
+  <div class="log">
+    <ion-text class="ttl">
+      <h1 class="upper-text">Crea un account</h1>
+    </ion-text>
+    <div class="input">
+      <ion-input label="Username or Email" type="text" label-placement="stacked" fill="outline" [(ngModel)]="id"></ion-input>
+      <ion-input label="Password" type="password" label-placement="stacked" fill="outline" [(ngModel)]="password">
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+      @if (errorMessage) {
+        <ion-text color="danger">
+          <p>{{errorMessage}}</p>
+        </ion-text>
+      }
+      <ion-button class="continua" shape="round" fill="outline" (click)="onLogin()">Continua</ion-button>
+      <ion-text>
+        <p class="or">oppure</p>
+      </ion-text>
+    </div>
+    <div class="reg">
+      <ion-text>
+        <h1 class="no-acc">Non hai un account?</h1>
+      </ion-text>
+      <ion-button class="sign-up" fill="clear" routerLink="/register">Iscriviti</ion-button>
+    </div>
+  </div>
+</ion-content>

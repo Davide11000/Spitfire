@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
+import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
 import { Auth } from 'src/app/services/auth';
 
@@ -10,7 +11,7 @@ import { Auth } from 'src/app/services/auth';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
 })
 export class RegisterPage implements OnInit {
 
@@ -28,12 +29,12 @@ export class RegisterPage implements OnInit {
     this.errorMessage = "";
 
     if(!this.username ||!this.email || !this.password){
-      this.errorMessage = "Compila tutti i campi richiesti!"
+      this.errorMessage = "Please fill in all required fields!"
       return;
     }
 
     const loading = await this.loadingC.create({
-      message: 'Creazione account in corso...',
+      message: 'Loading...',
     });
     await loading.present();
 
@@ -43,7 +44,7 @@ export class RegisterPage implements OnInit {
       },
       error: (err) => {
         loading.dismiss();
-        this.errorMessage = err.error?.message || "Errore durante la registrazione";
+        this.errorMessage = err.error?.message || "Error during registration";
       }
     });
   }
