@@ -13,7 +13,8 @@ db.run(`
     username TEXT PRIMARY KEY,
     email TEXT UNIQUE,
     password TEXT,
-    ruolo TEXT DEFAULT 'utente'
+    ruolo TEXT DEFAULT 'utente',
+    foto_profilo TEXT
   )
 `);
 
