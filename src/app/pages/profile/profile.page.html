@@ -1,0 +1,26 @@
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        @if (user) {
+          <ion-card class="profile-card">
+            <div class="profile-header">
+              <ion-img [src]="'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
+              <div class="profile-info">
+                <div class="username">
+                  @{{user.username}}
+                </div>
+                <div class="stats">
+                <span><strong>0</strong> Follower</span>
+                <span><strong>0</strong> Following</span>
+              </div>
+              </div>
+            </div>
+          </ion-card>
+        } @else {
+          <ion-spinner name="crescent"></ion-spinner>
+        }
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
