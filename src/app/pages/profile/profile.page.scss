@@ -1,21 +1,21 @@
 .profile-header{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 24px;
-    padding: 4% 2%; 
-    align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 4% 2%; 
+  align-items: flex-start;
 }
 .profile-info{
-    flex: 1;
-    min-width: 220px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .username{
-    font-size: xx-large;
-    line-height: 1.2;
+  font-size: xx-large;
+  line-height: 1.2;
 }
 .stats {
   display: flex;
@@ -23,10 +23,19 @@
   font-size: medium;
   color: var(--ion-color-medium);
 }
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.action-btn {
+  --border-radius: 8px;
+  text-transform: none;
+}
 ion-img {
-    width: 220px;
-    height: 220px;
-    object-fit: cover;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    flex-shrink: 0;
-  }
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}

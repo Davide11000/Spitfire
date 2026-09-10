@@ -35,5 +35,14 @@ db.run(`
   )
 `);
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS follows (
+    follower TEXT NOT NULL,
+    following TEXT NOT NULL,
+    PRIMARY KEY (follower, following),
+    FOREIGN KEY (follower) REFERENCES users(username),
+    FOREIGN KEY (following) REFERENCES users(username)
+  )
+`);
 
 module.exports = db;
