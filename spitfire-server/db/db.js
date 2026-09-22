@@ -18,20 +18,20 @@ db.run(`
   )
 
   CREATE TABLE IF NOT EXISTS artists (
-    artname TEXT PRIMARY KEY,
-    id INT(4) UNIQUE
+    artname TEXT,
+    id INTEGER PRIMARY KEY UNIQUE
   )
   
   CREATE TABLE IF NOT EXISTS records (
-    recordname TEXT PRIMARY KEY,
-    artid INT(4),
-    id INT(4) UNIQUE
+    recordname TEXT,
+    artid INTEGER,
+    id INTEGER PRIMARY KEY UNIQUE
   )
 
   CREATE TABLE IF NOT EXISTS songs (
-    songname TEXT PRIMARY KEY,
-    recordid INT(4),
-    id INT(4) UNIQUE
+    songname TEXT,
+    recordid INTEGER,
+    id INTEGER PRIMARY KEY UNIQUE
   )
 `);
 
