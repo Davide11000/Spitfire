@@ -13,7 +13,12 @@ app.get('/', (req, res) => {
 });
 
 const authRoutes = require('./routes/authRoutes');
-
 app.use('/auth', authRoutes);
+
+const usersRoutes = require('./routes/userRoutes');
+app.use('/users', usersRoutes);
+
+const followRoutes = require('./routes/followRoutes');
+app.use('/follows', followRoutes);
 
 module.exports = app;

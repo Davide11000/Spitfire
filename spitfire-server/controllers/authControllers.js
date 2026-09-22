@@ -106,7 +106,7 @@ exports.getProfile = async (req, res) => {
     const user = await User.findByUsername(userUsername);
 
     if (!user) {
-      return res.status(404).json({ message: "Utente non trovato" });
+      return res.status(404).json({ message: "Utente not found" });
     }
 
     const { password, ...safeUser } = user;

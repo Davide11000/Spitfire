@@ -11,9 +11,17 @@
                   @{{user.username}}
                 </div>
                 <div class="stats">
-                <span><strong>0</strong> Follower</span>
-                <span><strong>0</strong> Following</span>
-              </div>
+                   <span><strong>{{followersCount}}</strong> Followers</span>
+                   <span><strong>{{followingCount}}</strong> Following</span>
+                </div>
+                <div class="actions">
+                  @if (isOwnProfile) {
+                    <ion-button fill="outline" class="action-btn">Edit profile</ion-button>
+                    <ion-button fill="outline" color="danger" class="action-btn" (click)="onLogout()">Logout</ion-button>
+                  } @else {
+                    <ion-button fill="outline" class="action-btn" (click)="onFollow()">{{ isFollowing ? 'Unfollow' : 'Follow' }}</ion-button>
+                  }
+                </div>
               </div>
             </div>
           </ion-card>
