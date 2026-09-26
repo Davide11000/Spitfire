@@ -21,4 +21,7 @@ app.use('/users', usersRoutes);
 const followRoutes = require('./routes/followRoutes');
 app.use('/follows', followRoutes);
 
+const playlistRoutes = require('./routes/playlistRoutes');
+app.use('/playlists', playlistRoutes);
+
 module.exports = app;
