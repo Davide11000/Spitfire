@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
-import { Auth } from 'src/app/services/auth';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-register',

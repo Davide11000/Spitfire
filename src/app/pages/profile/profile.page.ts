@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton } from '@ionic/angular/standalone';
-import { Auth } from 'src/app/services/auth';
-import { Follow } from 'src/app/services/follow';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton } from '@ionic/angular';
+import { Auth } from '../../services/auth';
+import { Follow } from '../../services/follow';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
