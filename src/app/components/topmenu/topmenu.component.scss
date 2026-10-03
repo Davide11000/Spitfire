@@ -1,0 +1,111 @@
+:host {
+  display: block;
+  position: relative;
+  overflow: visible !important;
+}
+.navbar {
+    --background: rgb(30,30,30);
+    --color: var(--colore-topmenu-dinamico, rgb(180, 62, 62));
+    box-shadow: none !important;
+    border-bottom: none !important;
+    transition: --background 0.5s ease-in-out, background 0.5s ease-in-out;
+    
+    &::after {
+      background-image: none !important;
+      display: none !important;
+    }
+}
+
+ion-searchbar {
+    --background-color: rgb(88, 0, 0); 
+    --box-shadow: none;
+}
+
+.mobile-search-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  background: rgb(30, 30, 30);
+
+  ion-searchbar {
+    --background: rgba(255, 255, 255, 0.08);
+    --color: white;
+    --placeholder-color: #aaa;
+    --cancel-button-color: white;
+    --box-shadow: none;
+    --border-radius: 8px;
+    width: 100%;
+  }
+}
+
+.btn-wrapper{
+  ion-button {
+      font-weight: bold;
+      text-transform: uppercase;
+      border-bottom: 2px solid transparent;
+      --ripple-color: rgb(36, 37, 36);
+      &:hover {
+          --background-hover: transparent;
+          border-bottom-color: var(--colore-topmenu-dinamico,rgb(180, 62, 62));
+      }
+  }
+}
+
+ion-avatar.mini-avatar {
+  width: 35px;  
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    border-radius: 50%;
+  }
+}
+
+.navbar-profile-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+.risultati-ricerca {
+  position: absolute;
+  top: 100%;                  
+  right: 60px;             
+  width: 300px;              
+  z-index: 999999 !important; 
+  margin: 0;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;        
+  background: rgb(38, 18, 19) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  border-radius: 0 0 8px 8px;
+}
+
+.item-risultato {
+  --background: rgb(38, 18, 19);
+  --color: #ffffff;
+  
+  &:hover {
+    --background: rgba(255, 255, 255, 0.1);
+  }
+}
+.categoria-header {
+  background: rgb(24, 11, 12);
+  color: #ffc409;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}

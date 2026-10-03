@@ -1,0 +1,161 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="ion-padding admin-background">
+  <div class="admin-container">
+    <div class="page-header">
+      <h1 class="admin-title">User Requests</h1>
+      <p class="admin-subtitle">Review, approve, or discard community contributions</p>
+    </div>
+
+    @if (richieste.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+        <p>There are no pending requests at the moment.</p>
+      </div>
+    }
+
+    <div class="requests-grid">
+      @for (req of richieste; track req.id) {
+        <ion-card class="request-card">
+          <ion-item lines="none" class="request-header-item">
+            <ion-label>
+              <span class="user-badge">From: {{ req.displayNameUtente }}</span>
+              <span class="type-badge" [className]="'type-badge ' + req.tipo">{{ req.tipo | uppercase }}</span>
+            </ion-label>
+          </ion-item>
+
+          <ion-card-content class="request-content">
+            
+            @if (req.tipo === 'artist') {
+              @if (req.dati.fotoBase64) {
+                <div class="cover-wrapper">
+                  <img [src]="req.dati.fotoBase64" alt="Artist Photo" class="request-cover" />
+                </div>
+              }
+              
+              <div class="info-block">
+                <div class="info-label">Artist Name</div>
+                <div class="info-value text-highlight">{{ req.dati.nome }}</div>
+              </div>
+              @if (req.dati.dataNascita) {
+                <div class="info-block">
+                  <div class="info-label">Date of Birth / Foundation</div>
+                  <div class="info-value">{{ req.dati.dataNascita | date:'dd/MM/yyyy' }}</div>
+                </div>
+              }
+              @if (req.dati.albumFatti && req.dati.albumFatti.length > 0) {
+                <div class="info-block">
+                  <div class="info-label">Known Albums</div>
+                  <ol class="custom-list">
+                    @for (alb of req.dati.albumFatti; track $index) {
+                      <li>{{ alb }}</li>
+                    }
+                  </ol>
+                </div>
+              }
+            }
+
+            @if (req.tipo === 'album') {
+              @if (req.dati.fotoBase64) {
+                <div class="cover-wrapper">
+                  <img [src]="req.dati.fotoBase64" alt="Cover" class="request-cover" />
+                </div>
+              }
+              <div class="info-block">
+                <div class="info-label">Album Title</div>
+                <div class="info-value text-highlight">{{ req.dati.titolo }}</div>
+              </div>
+              <div class="info-block">
+                <div class="info-label">Artist</div>
+                <div class="info-value">{{ req.dati.artista }}</div>
+              </div>
+              @if (req.dati.dataRilascio) {
+                <div class="info-block">
+                  <div class="info-label">Release Date</div>
+                  <div class="info-value">{{ req.dati.dataRilascio | date:'dd/MM/yyyy' }}</div>
+                </div>
+              }
+              @if (req.dati.tracklist && req.dati.tracklist.length > 0) {
+                <div class="info-block">
+                  <div class="info-label">Tracklist</div>
+                  <ol class="custom-list">
+                    @for (traccia of req.dati.tracklist; track $index) {
+                      <li>{{ traccia }}</li>
+                    }
+                  </ol>
+                </div>
+              }
+            }
+
+            @if (req.tipo === 'song') {
+              @if (req.dati.fotoBase64) {
+                <div class="cover-wrapper">
+                  <img [src]="req.dati.fotoBase64" alt="Cover" class="request-cover" />
+                </div>
+              }
+              <div class="info-block">
+                <div class="info-label">Song Title</div>
+                <div class="info-value text-highlight">{{ req.dati.titolo }}</div>
+              </div>
+              <div class="info-block">
+                <div class="info-label">Artist</div>
+                <div class="info-value">{{ req.dati.artista }}</div>
+              </div>
+              @if (req.dati.album) {
+                <div class="info-block">
+                  <div class="info-label">Album</div>
+                  <div class="info-value">{{ req.dati.album }}</div>
+                </div>
+              }
+              @if (req.dati.lingua) {
+                <div class="info-block">
+                  <div class="info-label">Language</div>
+                  <div class="info-value">{{ req.dati.lingua }}</div>
+                </div>
+              }
+              @if (req.dati.note) {
+                <div class="info-block">
+                  <div class="info-label">Notes / Lyrics Draft</div>
+                  <div class="info-value notes-box">{{ req.dati.note }}</div>
+                </div>
+              }
+            }
+
+            @if (req.tipo === 'translation') {
+              <div class="info-block">
+                <div class="info-label">Song</div>
+                <div class="info-value text-highlight">{{ req.dati.titoloCanzone }}</div>
+              </div>
+              <div class="info-block">
+                <div class="info-label">Artist</div>
+                <div class="info-value">{{ req.dati.artistaCanzone }}</div>
+              </div>
+              <div class="info-block">
+                <div class="info-label">Translation Language</div>
+                <div class="info-value">{{ req.dati.lingua }}</div>
+              </div>
+              @if (req.dati.testo) {
+                <div class="info-block">
+                  <div class="info-label">Translated Lyrics</div>
+                  <div class="info-value notes-box">{{ req.dati.testo }}</div>
+                </div>
+              }
+            }
+
+          </ion-card-content>
+
+          <div class="card-actions">
+            <ion-button fill="solid" color="success" class="action-btn" (click)="approvaRichiesta(req)">
+              <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+              Approve
+            </ion-button>
+            <ion-button fill="solid" color="danger" class="action-btn" (click)="rifiutaRichiesta(req.id)">
+              <ion-icon slot="start" name="close-outline"></ion-icon>
+              Discard
+            </ion-button>
+          </div>
+        </ion-card>
+      }
+    </div>
+  </div>
+</ion-content>

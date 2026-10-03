@@ -1,0 +1,16 @@
+<div class="rating-container">
+  <span class="average-score">
+    {{ votoMedio ? (votoMedio | number:'1.1-1') : '0.0' }}
+  </span>
+
+  <div class="stars-wrapper" (mouseleave)="resetHoverStella()">
+    <ng-container *ngFor="let n of [1, 2, 3, 4, 5]">
+      <ion-icon 
+        [name]="getIconaStella(n) === 'full' ? 'star' : (getIconaStella(n) === 'half' ? 'star-half' : 'star-outline')"
+        [class.active-star]="getIconaStella(n) !== 'empty'"
+        (mousemove)="gestisciHoverStella($event, n)"
+        (click)="inviaVotoStella($event, n)">
+      </ion-icon>
+    </ng-container>
+  </div>
+</div>

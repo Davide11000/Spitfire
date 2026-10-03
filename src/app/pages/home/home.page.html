@@ -1,0 +1,135 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="globalbg">
+  
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">SpitFire</h1>
+      <p class="hero-subtitle">The community-driven database for song lyrics, translations, and musical meanings.</p>
+    </div>
+  </div>
+
+  <div class="page-container">
+
+    <section class="section-wrapper">
+      <div class="custom-highlight-box">
+        <div class="bar-text-box">
+          <span class="custom-badge-tag">BAR OF THE DAY</span>
+          <p class="bar-quote">"Now I run the game got the whole world talkin', King Kunta"</p>
+          <div class="bar-meta">
+            <span class="bar-artist">Kendrick Lamar</span> 
+            <span class="bar-sep">—</span> 
+            <span class="bar-song">King Kunta (2015)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-wrapper">
+      <h2 class="section-title">
+        <ion-icon name="time-outline"></ion-icon> Recently Added Tracks
+      </h2>
+
+      @if (caricamentoRecenti) {
+        <div class="home-spinner">
+          <ion-spinner color="warning"></ion-spinner>
+        </div>
+      } @else {
+        @if (recentSongs.length === 0) {
+          <p class="empty-text">No tracks added recently.</p>
+        } @else {
+          <div class="custom-rows-list">
+            @for (song of recentSongs; track song.id; let idx = $index) {
+              <div class="rows-list-item" [routerLink]="['/songtemplate', song.id]">
+                <div class="item-index">{{ idx + 1 }}</div>
+                
+                <div class="item-mini-cover">
+                  <img [src]="song.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
+                </div>
+
+                <div class="item-info">
+                  <div class="item-title">{{ song.titolo }}</div>
+                  <div class="item-artist">{{ song.artista }}</div>
+                </div>
+                <div class="item-arrow">
+                  <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (altreRecentSongs) {
+            <div class="load-more-wrapper">
+              <ion-button
+                fill="outline"
+                class="load-more-btn"
+                [disabled]="caricamentoAltriRecenti"
+                (click)="caricaAltreRecenti()">
+                @if (caricamentoAltriRecenti) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                } @else {
+                  LOAD MORE
+                }
+              </ion-button>
+            </div>
+          }
+        }
+      }
+    </section>
+
+    <section class="section-wrapper" style="padding-bottom: 60px;">
+      <h2 class="section-title">
+        <ion-icon name="star" color="warning"></ion-icon> Top Rated
+      </h2>
+
+      @if (caricamentoTop) {
+        <div class="home-spinner">
+          <ion-spinner color="warning"></ion-spinner>
+        </div>
+      } @else {
+        @if (topRatedSongs.length === 0) {
+          <p class="empty-text">No rated tracks available.</p>
+        } @else {
+          <ion-grid class="ion-no-padding">
+            <ion-row style="margin: 0 -8px;">
+              @for (song of topRatedSongs; track song.id) {
+                <ion-col size="12" size-sm="6" size-md="3" style="padding: 8px;">
+                  <div class="custom-grid-box" [routerLink]="['/songtemplate', song.id]">
+                    
+                    <div class="box-cover-container">
+                      <img [src]="song.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
+                    </div>
+
+                    <div class="box-meta-content">
+                      <div class="box-song-title">{{ song.titolo }}</div>
+                      <div class="box-song-artist">{{ song.artista }}</div>
+                    </div>
+                  </div>
+                </ion-col>
+              }
+            </ion-row>
+          </ion-grid>
+
+          @if (altreTopSongs) {
+            <div class="load-more-wrapper">
+              <ion-button
+                fill="outline"
+                class="load-more-btn"
+                [disabled]="caricamentoAltriTop"
+                (click)="caricaAltreTop()">
+                @if (caricamentoAltriTop) {
+                  <ion-spinner name="crescent"></ion-spinner>
+                } @else {
+                  LOAD MORE
+                }
+              </ion-button>
+            </div>
+          }
+        }
+      }
+    </section>
+
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

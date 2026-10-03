@@ -1,0 +1,134 @@
+<ion-toolbar id="main-content" class="navbar">
+  <ion-buttons slot="start" class="ion-display-lg-none">
+    <ion-menu-button></ion-menu-button>
+  </ion-buttons>
+
+  <ion-title slot="start" style="margin-left: 2%; font-size: larger; text-align: start;">
+    <b>SPITFIRE</b>
+  </ion-title>
+
+  <ion-buttons slot="end" class="ion-display-none ion-display-lg-block btn-wrapper">
+    <ion-button routerLink="/home">Home</ion-button>
+    <ion-button routerLink="/lists">Playlist</ion-button>
+    <ion-button routerLink="/discover">Discover</ion-button>
+    
+    @if (authService.user$ | async) {
+      @if (isAdmin) {
+        <ion-button routerLink="/admin-request">Requests</ion-button>
+      } @else {
+        <ion-button routerLink="/add-content">Add Content</ion-button>
+      }
+      @if (isModerator) {
+        <ion-button routerLink="/reports">Reports</ion-button>
+      }
+    }
+  </ion-buttons>
+
+  <div slot="end" class="search-container ion-display-none ion-display-sm-block">
+    <ion-searchbar 
+      style="width: auto; text-align: left;" 
+      color="rgba(0,0,0,0)"
+      placeholder="Search"
+      (ionInput)="onCerca($event)"
+      [value]="stringaRicerca">
+    </ion-searchbar>
+  </div>
+
+  <ion-buttons slot="end" class="ion-display-sm-none">
+    <ion-button shape="round" (click)="apriSearchbarMobile()">
+      <ion-icon name="search" style="font-size: x-large"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+
+  @if (searchbarMobileAperta) {
+    <div slot="end" class="mobile-search-overlay">
+      <ion-searchbar
+        style="flex: 1; text-align: left;"
+        color="rgba(0,0,0,0)"
+        placeholder="Search"
+        [value]="stringaRicerca"
+        (ionInput)="onCerca($event)"
+        [showCancelButton]="'always'"
+        (ionCancel)="chiudiSearchbarMobile()"
+        [autofocus]="true">
+      </ion-searchbar>
+    </div>
+  }
+
+  <ion-buttons slot="end" *ngIf="authService.user$ | async as utenteLoggato">
+    <ion-button class="navbar-profile-btn" (click)="vaiAlProfilo(utenteLoggato.uid)">
+      <ion-avatar class="mini-avatar">
+        <img [src]="authService.fotoProfilo" alt="Profilo" />
+      </ion-avatar>
+    </ion-button>
+  </ion-buttons>
+
+  <ion-buttons slot="end" class="ion-display-none ion-display-md-block" *ngIf="!(authService.user$ | async)">
+    <ion-button class="continua" routerLink="/login">
+      Sign In
+    </ion-button>
+  </ion-buttons>
+</ion-toolbar>
+
+@if (haRisultati()) {
+  <ion-list class="risultati-ricerca">
+    
+    @if (canzoniTrovate.length > 0) {
+      <div class="categoria-header">Songs</div>
+      @for (canzone of canzoniTrovate; track canzone.id) {
+        <ion-item (click)="vaiAllaCanzone(canzone.id)" button class="item-risultato">
+          <ion-avatar slot="start">
+            <img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ canzone.titolo }}</h2>
+            <p style="color: #aaa; font-size: small;">{{ canzone.artista }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    }
+
+    @if (albumTrovati.length > 0) {
+      <div class="categoria-header">Albums</div>
+      @for (album of albumTrovati; track album.id) {
+        <ion-item (click)="vaiAllAlbum(album.id)" button class="item-risultato">
+          <ion-avatar slot="start">
+            <img [src]="album.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ album.titolo }}</h2>
+            <p style="color: #aaa; font-size: small;">{{ album.artista }}</p>
+          </ion-label>
+        </ion-item>
+      }
+    }
+
+    @if (artistiTrovati.length > 0) {
+      <div class="categoria-header">Artists</div>
+      @for (artista of artistiTrovati; track artista.id) {
+        <ion-item (click)="vaiAllArtista(artista.id)" button class="item-risultato">
+          <ion-avatar slot="start">
+            <img [src]="artista.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ artista.nome }}</h2>
+          </ion-label>
+        </ion-item>
+      }
+    }
+
+    @if (utentiTrovati.length > 0) {
+      <div class="categoria-header">Users</div>
+      @for (utente of utentiTrovati; track utente.uid) {
+        <ion-item (click)="vaiAlProfilo(utente.uid)" button class="item-risultato">
+          <ion-avatar slot="start">
+            <img [src]="utente.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ utente.displayName }}</h2>
+          </ion-label>
+        </ion-item>
+      }
+    }
+  </ion-list>
+}

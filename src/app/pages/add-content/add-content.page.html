@@ -1,0 +1,177 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="ion-padding content-background">
+  <div class="form-container">
+    <ion-card class="form-card">
+      <div class="card-header-section">
+        <ion-card-title class="main-title">Add New Content</ion-card-title>
+        <p class="subtitle-text">Contribute to the music database by submitting missing records</p>
+      </div>
+
+      <ion-segment [value]="tipoSelezionato" (ionChange)="cambiaTipo($event)" class="custom-segment">
+        <ion-segment-button value="artist">
+          <ion-icon name="person-outline"></ion-icon>
+          <ion-label>Artist</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="album">
+          <ion-icon name="disc-outline"></ion-icon>
+          <ion-label>Album</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="song">
+          <ion-icon name="musical-notes-outline"></ion-icon>
+          <ion-label>Song</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="form-body">
+        
+        @if (tipoSelezionato === 'artist') {
+          <div class="uploader-wrapper">
+            <div class="image-uploader" (click)="triggerFileInput()" [style.backgroundImage]="fotoAnteprima ? 'url(' + fotoAnteprima + ')' : 'none'">
+              @if (!fotoAnteprima) {
+                <div class="uploader-placeholder">
+                  <ion-icon name="cloud-upload-outline"></ion-icon>
+                  <span>Upload Artist Photo</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-input label="Artist Name" labelPlacement="stacked" placeholder="Enter a name" [(ngModel)]="formArtista.nome"></ion-input>
+          </ion-item>
+          
+          <ion-item lines="none" class="custom-item">
+            <ion-input type="date" label="Date of Birth / Foundation" labelPlacement="stacked" [(ngModel)]="formArtista.dataNascita"></ion-input>
+          </ion-item>
+          
+          <div class="tracklist-section">
+            <div class="tracklist-header">
+              <h3>Albums</h3>
+              <ion-button fill="clear" (click)="aggiungiAlbumArtista()">
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Add Album
+              </ion-button>
+            </div>
+
+            @for (album of formArtista.albumFatti; track $index) {
+              <div class="track-row">
+                <span class="track-number">{{ $index + 1 }}</span>
+                <ion-input placeholder="Album title" class="track-input" [(ngModel)]="formArtista.albumFatti[$index]"></ion-input>
+                <ion-button fill="clear" color="danger" (click)="rimuoviAlbumArtista($index)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          </div>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-textarea label="Notes" labelPlacement="stacked" [rows]="4" placeholder="More information about the artist" [(ngModel)]="formCanzone.note"></ion-textarea>
+          </ion-item>
+        }
+
+        @if (tipoSelezionato === 'album') {
+          <div class="uploader-wrapper">
+            <div class="image-uploader" (click)="triggerFileInput()" [style.backgroundImage]="fotoAnteprima ? 'url(' + fotoAnteprima + ')' : 'none'">
+              @if (!fotoAnteprima) {
+                <div class="uploader-placeholder">
+                  <ion-icon name="cloud-upload-outline"></ion-icon>
+                  <span>Upload Album Cover</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-input label="Album Title" labelPlacement="stacked" placeholder="Enter a title" [(ngModel)]="formAlbum.titolo"></ion-input>
+          </ion-item>
+          
+          <ion-item lines="none" class="custom-item">
+            <ion-input label="Artist" labelPlacement="stacked" placeholder="Enter an artist" [(ngModel)]="formAlbum.artista"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-input type="date" label="Release Date" labelPlacement="stacked" [(ngModel)]="formAlbum.dataRilascio"></ion-input>
+          </ion-item>
+
+            <ion-item lines="none" class="custom-item-album">
+              <ion-input label="Language" labelPlacement="stacked" placeholder="e.g. English, Italian..." [(ngModel)]="formAlbum.lingua"></ion-input>
+            </ion-item>
+
+          <div class="tracklist-section">
+            <div class="tracklist-header">
+              <h3>Tracklist</h3>
+              <ion-button fill="clear" size="small" (click)="aggiungiTraccia()">
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Add Track
+              </ion-button>
+            </div>
+
+            @for (traccia of formAlbum.tracklist; track $index) {
+              <div class="track-row">
+                <span class="track-number">{{ $index + 1 }}</span>
+                <ion-input placeholder="Track title" class="track-input" [(ngModel)]="formAlbum.tracklist[$index]"></ion-input>
+                <ion-button fill="clear" color="danger" (click)="rimuoviTraccia($index)">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          </div>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-textarea label="Notes" labelPlacement="stacked" [rows]="4" placeholder="More information about the album" [(ngModel)]="formCanzone.note"></ion-textarea>
+          </ion-item>
+        }
+
+        @if (tipoSelezionato === 'song') {
+          <div class="uploader-wrapper">
+            <div class="image-uploader" (click)="triggerFileInput()" [style.backgroundImage]="fotoAnteprima ? 'url(' + fotoAnteprima + ')' : 'none'">
+              @if (!fotoAnteprima) {
+                <div class="uploader-placeholder">
+                  <ion-icon name="cloud-upload-outline"></ion-icon>
+                  <span>Upload Song / Album Cover</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-input label="Song Title" labelPlacement="stacked" placeholder="Enter a title" [(ngModel)]="formCanzone.titolo"></ion-input>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-input label="Artist" labelPlacement="stacked" placeholder="Enter an artist" [(ngModel)]="formCanzone.artista"></ion-input>
+          </ion-item>
+
+          <div class="album-wrapper">
+            <ion-item lines="none" class="custom-item">
+              <ion-input label="Album" labelPlacement="stacked" placeholder="Enter an album"[(ngModel)]="formCanzone.album"></ion-input>
+            </ion-item>
+            <p class="sub-album">*Optional</p>
+          </div>
+
+            <ion-item lines="none" class="custom-item-album">
+              <ion-input label="Language" labelPlacement="stacked" placeholder="e.g. English, Italian..." [(ngModel)]="formCanzone.lingua"></ion-input>
+            </ion-item>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-textarea label="Official Lyrics" labelPlacement="stacked" [rows]="15" placeholder="Start transcribing lyrics..." [(ngModel)]="formCanzone.testo"></ion-textarea>
+          </ion-item>
+
+          <ion-item lines="none" class="custom-item">
+            <ion-textarea label="Notes" labelPlacement="stacked" [rows]="4" placeholder="More information about the song" [(ngModel)]="formCanzone.note"></ion-textarea>
+          </ion-item>
+        }
+
+        <input type="file" #fileInput accept="image/*" style="display: none" (change)="onFileSelezionato($event)">
+
+        <div class="action-section">
+          <ion-button expand="block" class="submit-btn" (click)="inviaRichiesta()">
+            Submit Request
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-card>
+  </div>
+</ion-content>

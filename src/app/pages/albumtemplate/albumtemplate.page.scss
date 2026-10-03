@@ -1,0 +1,104 @@
+.globalbg {
+  --background: rgb(30, 30, 30);
+}
+
+.album-header-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 4% 2%;
+  color: antiquewhite;
+  padding-bottom: 60px;
+  position: relative;
+}
+
+.album-header-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 60%, rgb(30, 30, 30) 100%);
+  z-index: 0;
+}
+
+.album-info-card {
+  flex: 1;
+  min-width: 220px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  overflow: visible;
+}
+
+.artist-info {
+  font-size: x-large;
+  cursor: pointer;
+  color: antiquewhite;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.album-cover {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.tracklist-wrapper {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.58);
+    border-radius: 15px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ion-list {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.tracklist {
+  padding: 10px;
+}
+
+.track-item {
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.album-actions-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 8px 16px 16px 16px;
+}
+
+.album-action-btn {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .album-header-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

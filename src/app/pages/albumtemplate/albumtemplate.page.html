@@ -1,0 +1,86 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="globalbg" *ngIf="album">
+  
+  <div [style.background]="stileSfondoCard" class="album-header-section">
+    <ion-img [src]="album.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover"></ion-img>
+
+    <div class="album-info-card">
+      <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 12px;">
+        
+        <div style="font-size: xx-large;">
+          <b class="album-name">{{ album.titolo }}</b>
+        </div>
+        
+        <div class="artist-info" (click)="vaiAllArtista(album.artista)">
+          {{ album.artista }}
+        </div>
+        
+        <div *ngIf="album.dataRilascio" style="font-size: 1rem;">
+          <b>Released:</b> {{ album.dataRilascio | date:'dd/MM/yyyy' }}
+        </div>
+        
+        <app-genres
+          *ngIf="albumId"
+          [entityId]="albumId"
+          tipo="album"
+          [generiAttuali]="album.generi || []"
+          [mioUid]="utenteLoggatoUid"
+          [mioNome]="mioNome"
+          [isAdmin]="isAdmin"
+          [isModerator]="isModerator">
+        </app-genres>
+
+        <div *ngIf="album.lingua" class="song-meta">
+          <b>Language:</b> {{ album.lingua }}
+        </div>
+        
+        <div *ngIf="albumId">
+          <app-rating-stars [id]="albumId" tipo="album"></app-rating-stars>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 2%; background-color: rgb(30, 30, 30);">
+    <div class="tracklist-wrapper" [style.background]="stileSfondoCard">
+    <ion-list style="border-radius: 15px; background: transparent;" class="tracklist">
+      
+      <ion-list-header style="font-size: larger; color: white;">
+        <b>Tracklist</b>
+      </ion-list-header>
+
+      @for (traccia of tracklist; track $index) {
+        <ion-item 
+          color="rgba(0, 0, 0, 0)" 
+          class="track-item"
+          style="--border-style: solid; --border-width: 0 0 1px 0;"
+          (click)="vaiAllaCanzone(traccia.id)">
+          
+          <ion-label style="color: antiquewhite;">
+            <span style="color: #ffc409; margin-right: 10px; font-weight: bold;">
+              {{ $index + 1 }}.
+            </span>
+            {{ traccia.titolo }}
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+    </div>
+
+    @if (utenteLoggatoUid) {
+      <div class="album-actions-wrapper">
+        <ion-button fill="outline" color="medium" size="small" class="album-action-btn" (click)="vaiACorrectEntry()">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Correct entry
+        </ion-button>
+      </div>
+    }
+  </div>
+
+  <app-comments *ngIf="albumId" [id]="albumId" [nomeEntita]="album?.titolo" tipo="album"></app-comments>
+
+  <app-footer></app-footer>
+
+</ion-content>

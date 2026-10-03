@@ -62,4 +62,4 @@ db.exec(`
   else console.log("Tables ready");
 });
 
-module.exports = db;
+export default db;

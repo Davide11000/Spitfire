@@ -1,0 +1,84 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="globalbg">
+  <div class="lists-container">
+    
+    <div class="filter-tabs-wrapper">
+      <div class="filter-tabs">
+        <span class="tab-btn" [class.active]="tabAttiva === 'recently'" (click)="cambiaTab('recently')">Recently uploaded</span>
+        <span class="tab-btn" [class.active]="tabAttiva === 'popular'" (click)="cambiaTab('popular')">Popular</span>
+        <span class="tab-btn" [class.active]="tabAttiva === 'favorites'" (click)="cambiaTab('favorites')">My Favorites</span>
+      </div>
+      
+      <div class="search-box">
+        <ion-searchbar [(ngModel)]="queryRicerca" (ionInput)="filtraPlaylist()" placeholder="Search playlists..."></ion-searchbar>
+      </div>
+    </div>
+
+
+    <div class="playlist-cards-grid">
+      @for (pl of playlistVisualizzate; track pl.id || $index) {
+        <div class="playlist-card">
+          
+          <div class="card-left">
+            <div class="cover-wrapper" (click)="apriPlaylist(pl.id)">
+              <img [src]="pl.fotoBase64 || 'assets/shapes.svg'" alt="Playlist Cover" />
+            </div>
+            
+            <div class="playlist-meta-info">
+              <h2 class="playlist-title-link" (click)="apriPlaylist(pl.id)">{{ pl.nome }}</h2>
+              <p class="playlist-author" (click)="vaiAlProfilo(pl.creatoreUid)">Created by: <b>{{ pl.creatoreNome || 'Utente' }}</b></p>
+              <p class="playlist-tracks-count">Songs saved: <b>{{ pl.canzoni?.length || 0 }} tracks</b></p>
+              <p *ngIf="pl.descrizione" class="playlist-desc">"{{ pl.descrizione }}"</p>
+            </div>
+          </div>
+
+          <div class="card-right">
+            
+            <div class="card-controls">
+              <span class="creation-date" *ngIf="pl.timestamp">
+                {{ trasformaData(pl.timestamp) }}
+              </span>
+              
+              <div class="action-buttons">
+                <button class="heart-btn" (click)="togglePreferiti(pl, $event)">
+                  <ion-icon [name]="isPreferita(pl.id) ? 'heart' : 'heart-outline'" [class.liked]="isPreferita(pl.id)"></ion-icon>
+                </button>
+
+                <button class="arrow-btn" (click)="pl.mostraAnteprima = !pl.mostraAnteprima">
+                  <ion-icon [name]="pl.mostraAnteprima ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="tracks-preview-box" *ngIf="pl.mostraAnteprima !== false">
+              <div class="preview-header">Tracks Preview</div>
+              <ul class="preview-list">
+                @for (traccia of pl.canzoni?.slice(0, 3); track $index) {
+                  <li class="preview-item">
+                    <span class="track-index">{{ $index + 1 }}</span>
+                    <span class="track-name-bold">{{ traccia.titolo }}</span>
+                    <span class="track-divider">-</span>
+                    <span class="track-artist-light">{{ traccia.artista }}</span>
+                  </li>
+                } @empty {
+                  <li class="preview-item empty-tracks">No tracks in this playlist</li>
+                }
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+      } @empty {
+        <div class="empty-results">
+          <ion-icon name="folder-open-outline"></ion-icon>
+          <p>No playlists found in this section.</p>
+        </div>
+      }
+    </div>
+
+  </div>
+  
+  <app-footer></app-footer>
+</ion-content>

@@ -1,0 +1,200 @@
+<div class="analysis-layout">
+  <div class="analysis-lyrics-col">
+    @if (caricamentoTesto) {
+      <div class="lyrics-loading">
+        <ion-spinner color="medium"></ion-spinner>
+        <p>Loading lyrics...</p>
+      </div>
+    } @else {
+      <div
+        class="lyrics lyrics-annotable"
+        #lyricsContainer
+        (mouseup)="onTestoSelezionato($event)"
+        (touchend)="onTestoSelezionato($event)"
+        (click)="onClickLyrics($event)"
+        [innerHTML]="testoConAnnotazioni">
+      </div>
+      @if (selectionPopup.visible) {
+        <div class="selection-popup" [style.top.px]="selectionPopup.top" [style.left.px]="selectionPopup.left">
+          <button class="selection-popup-btn" (click)="apriFormAnnotazione()">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            Add an annotation
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="analysis-panel-col">
+    @if (annotazioneAperta) {
+      <div class="annotation-panel">
+        <div class="annotation-panel-header">
+          <span class="annotation-quoted-text">"{{ annotazioneAperta.testoSelezionato }}"</span>
+          <button class="annotation-close-btn" (click)="chiudiAnnotazione()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+
+        <div class="annotation-stato" [class]="'stato-' + annotazioneAperta.stato">
+          {{ annotazioneAperta.stato === 'approved' ? '✓ Verified' : 'Unreviewed' }}
+        </div>
+
+        <div class="annotation-body">
+          <p>{{ annotazioneAperta.testoAnnotazione }}</p>
+        </div>
+
+        <div class="annotation-contributors">
+          <span class="contributors-label">Contributors:</span>
+          @for (c of annotazioneAperta.contributori; track c.uid) {
+            <span class="contributor-chip">{{ c.nome }}</span>
+          }
+        </div>
+
+        <div class="annotation-reactions">
+          <div class="reaction-block" (click)="toggleLikeAnnotazione(annotazioneAperta)">
+            <ion-icon [name]="haLikeAnnotazione(annotazioneAperta) ? 'thumbs-up-sharp' : 'thumbs-up-outline'" [class.active-like]="haLikeAnnotazione(annotazioneAperta)"></ion-icon>
+            <span>{{ annotazioneAperta.likes?.length || 0 }}</span>
+          </div>
+          <div class="reaction-block" (click)="toggleDislikeAnnotazione(annotazioneAperta)">
+            <ion-icon [name]="haDislikeAnnotazione(annotazioneAperta) ? 'thumbs-down-sharp' : 'thumbs-down-outline'" [class.active-dislike]="haDislikeAnnotazione(annotazioneAperta)"></ion-icon>
+            <span>{{ annotazioneAperta.dislikes?.length || 0 }}</span>
+          </div>
+        </div>
+
+        @if (annotazioneAperta.improvements && annotazioneAperta.improvements.length > 0) {
+          <div class="improvements-section">
+            <h4 class="improvements-title">Suggested improvements</h4>
+            @for (imp of annotazioneAperta.improvements; track imp.id) {
+              <div class="improvement-item" [class.accepted]="imp.stato === 'accepted'">
+                <p class="improvement-testo">{{ imp.testo }}</p>
+                <div class="improvement-meta">
+                  <span class="improvement-nome">by {{ imp.nome }}</span>
+                  @if (imp.stato === 'accepted') {
+                    <span class="improvement-accepted-badge">✓ Accepted</span>
+                  }
+                </div>
+                <div class="annotation-reactions">
+                  <div class="reaction-block" (click)="toggleLikeImprovement(annotazioneAperta, imp)">
+                    <ion-icon [name]="haLikeImprovement(imp) ? 'thumbs-up-sharp' : 'thumbs-up-outline'" [class.active-like]="haLikeImprovement(imp)"></ion-icon>
+                    <span>{{ imp.likes?.length || 0 }}</span>
+                  </div>
+                  <div class="reaction-block" (click)="toggleDislikeImprovement(annotazioneAperta, imp)">
+                    <ion-icon [name]="haDislikeImprovement(imp) ? 'thumbs-down-sharp' : 'thumbs-down-outline'" [class.active-dislike]="haDislikeImprovement(imp)"></ion-icon>
+                    <span>{{ imp.dislikes?.length || 0 }}</span>
+                  </div>
+                  @if ((isAdmin || isModerator) && imp.stato === 'pending') {
+                    <div class="reaction-block improvement-approve-btn" (click)="accettaImprovement(annotazioneAperta, imp)">
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                    </div>
+                    <div class="reaction-block improvement-discard-btn" (click)="rifiutaImprovement(annotazioneAperta, imp)">
+                      <ion-icon name="close-outline"></ion-icon>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (mioUid && !testoSelezioneCorrente) {
+          <div class="improvement-form">
+            <label class="traduzione-label">Suggest an improvement</label>
+            <textarea class="traduzione-textarea" [(ngModel)]="nuovoImprovementTesto" rows="4" placeholder="Enter a suggestion"></textarea>
+            <ion-button expand="block" color="warning" size="small" (click)="inviaImprovement(annotazioneAperta)" [disabled]="!nuovoImprovementTesto.trim()">
+              Submit
+            </ion-button>
+          </div>
+        }
+
+        @if ((isAdmin || isModerator)) {
+          <div class="admin-annotation-actions">
+            @if (annotazioneAperta.stato !== 'approved') {
+              <ion-button fill="outline" color="light" size="small" (click)="approvaAnnotazione(annotazioneAperta)">
+                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                Approve
+              </ion-button>
+            }
+            <ion-button fill="outline" color="light" size="small" (click)="rifiutaAnnotazione(annotazioneAperta)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Delete
+            </ion-button>
+          </div>
+        }
+      </div>
+    } @else if (formAnnotazioneAperto) {
+      <div class="annotation-panel">
+        <div class="annotation-panel-header">
+          <span class="annotation-quoted-text">"{{ testoSelezioneCorrente }}"</span>
+          <button class="annotation-close-btn" (click)="chiudiFormAnnotazione()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </div>
+        <div class="annotation-form">
+          <label class="traduzione-label">Your annotation</label>
+          <textarea class="traduzione-textarea" [(ngModel)]="nuovaAnnotazioneTesto" rows="6" placeholder="Write your annotation..."></textarea>
+          <ion-button expand="block" color="warning" (click)="inviaAnnotazione()" [disabled]="!nuovaAnnotazioneTesto.trim()">
+            Submit Annotation
+          </ion-button>
+        </div>
+      </div>
+    } @else {
+      <div class="analysis-panel-empty">
+        <p>Select a highlighted passage to read its annotation, or highlight any text to add one.</p>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="annotation-mobile-panel" *ngIf="(annotazioneAperta || formAnnotazioneAperto) && isMobile">
+  <div class="annotation-panel">
+    <div class="annotation-panel-header">
+      <span class="annotation-quoted-text">"{{ annotazioneAperta?.testoSelezionato || testoSelezioneCorrente }}"</span>
+      <button class="annotation-close-btn" (click)="chiudiAnnotazione(); chiudiFormAnnotazione()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    @if (annotazioneAperta && !formAnnotazioneAperto) {
+      <div class="annotation-stato" [class]="'stato-' + annotazioneAperta.stato">
+        {{ annotazioneAperta.stato === 'approved' ? '✓ Verified' : 'Unreviewed' }}
+      </div>
+      <div class="annotation-body">
+        <p>{{ annotazioneAperta.testoAnnotazione }}</p>
+      </div>
+      <div class="annotation-contributors">
+        <span class="contributors-label">Contributors:</span>
+        @for (c of annotazioneAperta.contributori; track c.uid) {
+          <span class="contributor-chip">{{ c.nome }}</span>
+        }
+      </div>
+      <div class="annotation-reactions">
+        <div class="reaction-block" (click)="toggleLikeAnnotazione(annotazioneAperta)">
+          <ion-icon [name]="haLikeAnnotazione(annotazioneAperta) ? 'thumbs-up-sharp' : 'thumbs-up-outline'" [class.active-like]="haLikeAnnotazione(annotazioneAperta)"></ion-icon>
+          <span>{{ annotazioneAperta.likes?.length || 0 }}</span>
+        </div>
+        <div class="reaction-block" (click)="toggleDislikeAnnotazione(annotazioneAperta)">
+          <ion-icon [name]="haDislikeAnnotazione(annotazioneAperta) ? 'thumbs-down-sharp' : 'thumbs-down-outline'" [class.active-dislike]="haDislikeAnnotazione(annotazioneAperta)"></ion-icon>
+          <span>{{ annotazioneAperta.dislikes?.length || 0 }}</span>
+        </div>
+      </div>
+      @if (mioUid) {
+        <div class="improvement-form">
+          <label class="traduzione-label">Suggest an improvement</label>
+          <textarea class="traduzione-textarea" [(ngModel)]="nuovoImprovementTesto" rows="3" placeholder="Enter a suggestion"></textarea>
+          <ion-button expand="block" color="warning" size="small" (click)="inviaImprovement(annotazioneAperta)" [disabled]="!nuovoImprovementTesto.trim()">
+            Submit
+          </ion-button>
+        </div>
+      }
+    }
+    @if (formAnnotazioneAperto) {
+      <div class="annotation-form">
+        <label class="traduzione-label">Your annotation</label>
+        <textarea class="traduzione-textarea" [(ngModel)]="nuovaAnnotazioneTesto" rows="5" placeholder="Write your annotation..."></textarea>
+        <ion-button expand="block" color="warning" (click)="inviaAnnotazione()" [disabled]="!nuovaAnnotazioneTesto.trim()">
+          <ion-icon slot="start" name="send-outline"></ion-icon>
+          Submit Annotation
+        </ion-button>
+      </div>
+    }
+  </div>
+</div>

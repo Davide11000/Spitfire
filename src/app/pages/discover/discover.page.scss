@@ -1,0 +1,36 @@
+.maindiv {
+    text-align: center; 
+    display: block;  
+    height: 100%; 
+    padding: 15% 0%;
+    justify-items: center;
+}
+
+.maininput {
+    margin: 32px 0px; 
+    font-size: 32px;
+    width: max-content;
+    /*
+    --border-color:grey;
+    --highlight-color-valid: yellow
+    */
+}
+
+.albumitem {
+    font-size: 32px;
+    height: max-content;
+}
+
+.biglabel {
+    --min-height: fit-content; 
+    display: block; 
+    font-size: 64px; 
+    margin: 32px; 
+    padding: 5px;
+    box-shadow: 0px 10px 10px -15px black;
+    color: antiquewhite;
+}
+
+ion-toolbar > ion-checkbox {
+    margin: 15px;
+}

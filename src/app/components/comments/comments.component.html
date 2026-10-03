@@ -1,0 +1,110 @@
+<div class="comments-section">
+  <h3 class="section-title">Comments ({{ tuttiICommenti.length }})</h3>
+
+  @if (utenteLoggatoUid) {
+    <div class="comment-box-container">
+      <ion-textarea 
+        rows="3" 
+        placeholder="Write a comment..." 
+        [(ngModel)]="nuovoCommentoTesto"
+        class="custom-textarea">
+      </ion-textarea>
+      <div class="button-wrapper">
+        <ion-button color="warning" (click)="pubblicaCommento()" [disabled]="!nuovoCommentoTesto.trim()">
+          Pubblica
+        </ion-button>
+      </div>
+    </div>
+  } @else {
+    <ion-item lines="none" color="rgba(0,0,0,0)" class="login-notice">
+      <ion-label style="color: #ccc; font-style: italic;">
+        Please <span style="color: #ffc409; cursor: pointer; text-decoration: underline;" (click)="pubblicaCommento()">login</span> to post a comment.
+      </ion-label>
+    </ion-item>
+  }
+
+  <ion-list class="comments-list">
+    @for (commento of commentiDellaPagina; track commento.id) {
+      <div class="comment-item">
+        <div class="comment-header">
+          <div class="author-info">
+            <ion-avatar class="comment-avatar">
+              <img [src]="commento.foto || commento.fotoUtente || commento.foto_utente || 'assets/shapes.svg'" alt="Avatar" />
+            </ion-avatar>
+            <div class="meta-data">
+              <div class="author-name-row">
+                <span class="author-name">{{ commento.nome_utente }}</span>
+                @if (commento.ruolo === 'admin') {
+                  <span class="role-badge badge-admin">⚡ Admin</span>
+                }
+                @if (commento.ruolo === 'moderator') {
+                  <span class="role-badge badge-moderator">🛡️ Mod</span>
+                }
+              </div>
+              <span class="comment-date">{{ commento.timestamp?.toDate() | date:'dd MMM yyyy, HH:mm' }}</span>
+            </div>
+          </div>
+          <div class="actions-info">
+            <div class="reactions-wrapper">
+              <div class="reaction-btn-block" (click)="toggleLike(commento)">
+                <ion-icon [name]="haMessoLike(commento) ? 'thumbs-up-sharp' : 'thumbs-up-outline'" [class.active-like]="haMessoLike(commento)"></ion-icon>
+                <span class="reaction-count">{{ commento.likes?.length || 0 }}</span>
+              </div>
+              <div class="reaction-btn-block" (click)="toggleDislike(commento)">
+                <ion-icon [name]="haMessoDislike(commento) ? 'thumbs-down-sharp' : 'thumbs-down-outline'" [class.active-dislike]="haMessoDislike(commento)"></ion-icon>
+                <span class="reaction-count">{{ commento.dislikes?.length || 0 }}</span>
+              </div>
+            </div>
+            @if (utenteLoggatoUid === commento.uid_utente) {
+              <ion-icon 
+                name="trash-outline" 
+                class="delete-btn" 
+                (click)="cancellaCommento(commento.id)">
+              </ion-icon>
+            } @else {
+              <ion-icon
+                name="flag-outline"
+                class="flag-btn"
+                (click)="segnalaCommento(commento)">
+              </ion-icon>
+            }
+          </div>
+        </div>
+        
+        <div class="comment-body" 
+             [class.can-truncate]="deveTroncare(commento.testo)"
+             [class.collapsed]="deveTroncare(commento.testo) && !commentiEspansi[commento.id]" 
+             [class.expanded]="commentiEspansi[commento.id]">
+          <p>{{ commento.testo }}</p>
+        </div>
+
+        @if (deveTroncare(commento.testo)) {
+          <div class="more-container" (click)="toggleEspandiCommento(commento.id)">
+            <span class="more-text">{{ commentiEspansi[commento.id] ? 'Less' : 'More' }}</span>
+            <ion-icon [name]="commentiEspansi[commento.id] ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          </div>
+        }
+      </div>
+    } @empty {
+      <div class="no-comments">
+        <p>There are no comments yet!</p>
+      </div>
+    }
+  </ion-list>
+
+  @if (pagineTotali.length > 1) {
+    <div class="pagination-container">
+      <span class="page-label">Page</span>
+      <div class="pages-wrapper">
+        @for (p of pagineTotali; track p) {
+          <button 
+            class="page-button" 
+            [class.active]="p === paginaCorrente" 
+            (click)="cambiaPagina(p)">
+            {{ p }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

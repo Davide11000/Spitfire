@@ -19,27 +19,27 @@ export class Playlist {
     });
   }
 
-  addSong(palylistId : number, songId : number): Observable<any> {
+  addSong(playlistId : number, songId : number): Observable<any> {
     const token = this.auth.getToken();
 
-    return this.http.post(`${this.baseUrl}/songs`, {palylistId, songId}, {
+    return this.http.post(`${this.baseUrl}/songs`, {playlistId, songId}, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
   }
 
-  removeSong(palylistId : number, songId : number): Observable<any> {
+  removeSong(playlistId : number, songId : number): Observable<any> {
     const token = this.auth.getToken();
 
     return this.http.delete(`${this.baseUrl}/songs`, {
-      body : {palylistId, songId},
+      body : {playlistId, songId},
       headers: { Authorization: `Bearer ${token}` }
     });
 
   }
 
-  getSongs(palylistId : number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${palylistId}/songs`);
+  getSongs(playlistId : number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${playlistId}/songs`);
   }
 
   getUserPlaylists(username: string): Observable<any> {

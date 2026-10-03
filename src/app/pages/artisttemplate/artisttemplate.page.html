@@ -1,0 +1,94 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="globalbg artist-content" *ngIf="artista">
+  <div class="artist-hero">
+    <div class="image-container">
+      <ion-img class="artist-main-img" [src]="artista.fotoBase64 || 'assets/shapes.svg'"></ion-img>
+    </div>
+
+    <div class="artist-info-card-overlay">
+      <h1 class="artist-title">{{ artista.nome }}</h1>
+      <p class="artist-subtitle" *ngIf="artista.dataNascita">
+        Birth / Foundation: {{ (artista.dataNascita.toString() | date:'dd/MM/yyyy':'UTC') }}
+      </p>
+      <ion-button
+        *ngIf="utenteLoggatoUid"
+        fill="outline"
+        [color]="isFavourite ? 'medium' : 'warning'"
+        size="small"
+        class="favourite-btn"
+        (click)="toggleFavourite()">
+        <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
+        {{ isFavourite ? 'Saved' : 'Save to Favourites' }}
+      </ion-button>
+    </div>
+  </div>
+
+  <div class="content-sections-wrapper">
+    <div class="popular-section">
+      <h2 class="section-title">Popular Songs</h2>
+      <ion-list class="transparent-list">
+        @for (canzone of canzoniPopolari; track canzone.id; let idx = $index) {
+          <ion-item lines="none" (click)="vaiAllaCanzone(canzone.id)" button class="song-row">
+            <span class="song-index" slot="start">{{ idx + 1 }}</span>
+            <ion-avatar slot="start" class="song-avatar">
+              <img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+            </ion-avatar>
+            <ion-label class="song-info">
+              <h2>{{ canzone.titolo }}</h2>
+            </ion-label>
+            <div slot="end" class="song-rating">
+              <ion-icon name="star" class="star-icon"></ion-icon>
+              <span>{{ canzone.ratingMedia || '0.0' }}</span>
+            </div>
+          </ion-item>
+        } @empty {
+          <div class="empty-state">No popular songs found.</div>
+        }
+      </ion-list>
+    </div>
+
+    <div class="releases-section">
+      <div class="releases-header-row">
+        <h2 class="section-title">All Releases</h2>
+      </div>
+
+      <ion-grid class="releases-grid">
+        <ion-row>
+          @for (album of albumMostrati; track album.id) {
+            <ion-col size="6" size-sm="4" size-md="3" size-lg="2" class="album-col">
+              <div class="album-card" (click)="vaiAllAlbum(album.id)">
+                <div class="album-img-wrapper">
+                  <img [src]="album.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover">
+                </div>
+                <div class="album-meta">
+                  <h3 class="album-title">{{ album.titolo }}</h3>
+                  <p class="album-year" *ngIf="album.dataRilascio">{{ album.dataRilascio | date:'yyyy':'UTC' }}</p>
+                </div>
+              </div>
+            </ion-col>
+          } @empty {
+            <div class="empty-state">No releases found for this artist.</div>
+          }
+        </ion-row>
+      </ion-grid>
+
+      <div class="center-buttons" *ngIf="tuttiGliAlbum.length > limiteAlbum">
+        <ion-button (click)="mostraAltriAlbum()" fill="outline" color="warning" class="load-more-btn">
+          Show More
+        </ion-button>
+      </div>
+    </div>
+
+    @if (utenteLoggatoUid) {
+      <div class="artist-actions-wrapper">
+        <ion-button fill="outline" color="medium" size="small" class="artist-action-btn" (click)="vaiACorrectEntry()">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Correct entry
+        </ion-button>
+      </div>
+    }
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

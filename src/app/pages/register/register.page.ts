@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
+import { IonContent, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
 import { Auth } from '../../services/auth';
@@ -11,7 +11,7 @@ import { Auth } from '../../services/auth';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
+  imports: [IonContent, CommonModule, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
 })
 export class RegisterPage implements OnInit {
 

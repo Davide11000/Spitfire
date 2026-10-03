@@ -1,0 +1,172 @@
+.globalbg {
+  --background: rgb(24, 24, 24);
+}
+
+.playlist-cover {
+  width: 100%;
+  max-width: 230px;
+  height: 230px;
+  margin: 10px auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 768px) {
+  .playlist-cover {
+    float: left;
+    margin: 0 24px 10px 0;
+  }
+}
+
+.playlist-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.playlist-tracks {
+  background: transparent !important;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.track-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  --min-height: 180px;
+  align-items: center;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: none; 
+
+
+  --background-hover: transparent !important;
+  --background-activated: transparent !important;
+  --background-focused: transparent !important;
+  --ripple-color: transparent !important;
+}
+
+.track-avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 8px;
+  margin-right: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  overflow: hidden;
+
+  img {
+    border-radius: 8px !important;
+  }
+}
+
+.track-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .song-title-link {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    cursor: pointer;
+    display: inline-block;
+    width: max-content;
+    max-width: 100%;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .artist-name-link {
+    color: #b3b3b3;
+    font-size: 1.3rem;
+    margin: 0;
+    cursor: pointer;
+    display: inline-block;
+    width: max-content;
+    max-width: 100%;
+
+    &:hover {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+  .user-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    color: #ffc409;
+    font-size: 0.85rem;
+    font-style: italic;
+
+    ion-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+  }
+}
+.empty-playlist {
+  text-align: center;
+  color: #666;
+  padding: 40px 0;
+  font-style: italic;
+}
+
+.pagination-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 24px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  .page-label {
+    color: #8e8e93;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .pages-wrapper {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .page-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    min-width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &.active {
+      background: #ffc409;
+      color: #000;
+      border-color: #ffc409;
+      box-shadow: 0 4px 12px rgba(255, 196, 9, 0.3);
+    }
+  }
+}
