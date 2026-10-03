@@ -1,0 +1,62 @@
+<ion-content class="globalbg" *ngIf="playlist">
+
+  <div class="playlist-header">
+
+    <div class="playlist-cover">
+      <img [src]="'assets/default-cover.svg'" />
+    </div>
+
+    <div class="playlist-info">
+      <div class="playlist-name-wrap">
+        <b class="playlist-name">{{ playlist.name }}</b>
+      </div>
+      <div class="playlist-creator">
+        Created by: <b>{{ playlist.username }}</b>
+      </div>
+
+      <div class="playlist-meta-row">
+        <div class="songs-count">
+          <b>{{ songs.length }} songs</b> saved
+        </div>
+      </div>
+    </div>
+
+    <div class="tracks-section">
+
+      <div class="add-tracks-row">
+        <ion-button fill="outline" class="action-btn">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Add Tracks
+        </ion-button>
+      </div>
+
+      <ion-list class="playlist-tracks">
+        @for (song of songs; track song.id) {
+          <ion-item lines="full" class="track-item">
+
+            <ion-avatar slot="start" class="track-avatar">
+              <img [src]="'assets/default-cover.svg'" />
+            </ion-avatar>
+
+            <ion-label class="track-details">
+              <h2 class="song-title">{{ song.songname }}</h2>
+              <p class="artist-name">{{ song.artname }}</p>
+            </ion-label>
+
+            <ion-button class="trash" slot="end" fill="clear">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+
+          </ion-item>
+        } @empty {
+          <div class="empty-playlist">
+            <p>This playlist is empty. Add some tracks!</p>
+          </div>
+        }
+      </ion-list>
+
+    </div>
+
+  </div>
+
+</ion-content>

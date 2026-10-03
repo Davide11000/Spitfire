@@ -1,0 +1,40 @@
+.navbar {
+  --background: #141414;
+  color: #f2f2f2;
+}
+
+.brand-title {
+  margin-left: 2%;
+  font-size: larger;
+  text-align: start;
+}
+
+.btn-wrapper {
+  ion-button {
+    --color: #f2f2f2;
+    text-transform: none;
+  }
+}
+
+.search-container {
+  width: auto;
+}
+
+.navbar-searchbar {
+  width: auto;
+  text-align: left;
+  --background: rgba(255, 255, 255, 0.06);
+  --color: #f2f2f2;
+  --placeholder-color: #999;
+}
+
+.search-icon {
+  font-size: x-large;
+  color: #f2f2f2;
+}
+
+.sign-in-btn {
+  --border-radius: 8px;
+  --color: #f2f2f2;
+  text-transform: none;
+}
