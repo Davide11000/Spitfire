@@ -1,19 +1,19 @@
 const db = require("../db/db");
 
 const Record = {
-  create: (recordname, artid, id) => {
+  create: (recordname, artid) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO artists (recordname, artid) VALUES (?, ?)`;
+      const query = `INSERT INTO records (recordname, artid) VALUES (?, ?)`;
       db.run(query, [recordname, artid], function (err) {
         if (err) reject(err);
-        else resolve({ recordname, artid });
+        else resolve({ id: this.lastID,recordname, artid });
       });
     });
   },
 
   findByRecordname: (recordname) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE recordname = ?`;
+      const query = `SELECT * FROM records WHERE recordname = ?`;
       db.all(query, [recordname], (err, row) => {
         if (err) reject(err);
         else resolve(row);
@@ -23,7 +23,7 @@ const Record = {
 
   findByArtid: (artid) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE artid = ?`;
+      const query = `SELECT * FROM records WHERE artid = ?`;
       db.get(query, [artid], (err, row) => {
         if (err) reject(err);
         else resolve(row);
@@ -33,7 +33,7 @@ const Record = {
 
   findById: (Id) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE id = ?`;
+      const query = `SELECT * FROM records WHERE id = ?`;
       db.get(query, [Id], (err, row) => {
         if (err) reject(err);
         else resolve(row);

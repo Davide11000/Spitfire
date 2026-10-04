@@ -8,7 +8,7 @@ exports.getSongByAlbumname = async (req, res) => {
     if (!record) {
       return res.status(404).json({ message: "No record found with that name" });
     }
-
+    res.json(record);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -40,7 +40,7 @@ exports.getRecordByArtID = async (req, res) => {
 
     res.json(record);
   }
-  catch {
+  catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
