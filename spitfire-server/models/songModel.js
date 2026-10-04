@@ -1,20 +1,20 @@
 const db = require("../db/db");
 
 const Song = {
-  create: (songname, recordid, id) => {
+  create: (songname, recordid) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO artists (songname, recordid) VALUES (?, ?)`;
+      const query = `INSERT INTO songs (songname, recordid) VALUES (?, ?)`;
       db.run(query, [songname, recordid], function (err) {
         if (err) reject(err);
-        else resolve({ songname, recordid });
+        else resolve({ id:this.lastID, songname, recordid });
       });
     });
   },
 
   findBysongname: (songname) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE songname = ?`;
-      db.get(query, [songname], (err, row) => {
+      const query = `SELECT * FROM songs WHERE songname = ?`;
+      db.all(query, [songname], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });
@@ -23,8 +23,8 @@ const Song = {
 
   findByrecordid: (recordid) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE recordid = ?`;
-      db.get(query, [recordid], (err, row) => {
+      const query = `SELECT * FROM songs WHERE recordid = ?`;
+      db.all(query, [recordid], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });

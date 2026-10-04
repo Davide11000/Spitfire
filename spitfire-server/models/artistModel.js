@@ -14,7 +14,7 @@ const Artist = {
   findByArtname: (artname) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM artists WHERE artname = ?`;
-      db.get(query, [artname], (err, row) => {
+      db.all(query, [artname], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });
