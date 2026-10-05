@@ -100,3 +100,18 @@ exports.getUserPlaylists = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getPlaylistById = async (req, res) => {
+  try {
+    const playlistId = req.params.playlistId;
+    const playlist = await Playlist.findById(playlistId);
+
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    res.json(playlist);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

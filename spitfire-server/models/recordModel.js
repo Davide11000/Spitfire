@@ -24,7 +24,7 @@ const Record = {
   findByArtid: (artid) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM records WHERE artid = ?`;
-      db.get(query, [artid], (err, row) => {
+      db.all(query, [artid], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });

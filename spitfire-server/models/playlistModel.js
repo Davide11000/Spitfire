@@ -34,8 +34,11 @@ const Playlist = {
 
     getSongs : (playlistId) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT songs.id, songs.songname, songs.recordid FROM playlist_songs 
+            const query = `SELECT songs.id, songs.songname, songs.recordid, artists.artname 
+                            FROM playlist_songs 
                             JOIN songs ON playlist_songs.song_id = songs.id
+                            JOIN records ON songs.recordid = records.id
+                            JOIN artists ON records.artid = artists.id
                             WHERE playlist_songs.playlist_id = ?`;
             db.all(query, [playlistId], (err, row) => {
                 if (err) reject(err);

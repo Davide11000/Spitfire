@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar } from '@ionic/angular/standalone';
+import { ActivatedRoute } from '@angular/router';
+import { Playlist } from 'src/app/services/playlist';
 
 @Component({
   selector: 'app-playlist',
@@ -14,15 +16,22 @@ export class PlaylistPage implements OnInit {
   public playlist: any = null;
   public songs: any[] = [];
 
-  constructor() { }
+  constructor(private pl : Playlist, private route : ActivatedRoute) { }
 
   ngOnInit() {
-    // per ora dati finti, giusto per vedere il layout
-    this.playlist = { id: 1, name: "Test Playlist", username: "mario" };
-    this.songs = [
-      { id: 1, songname: "Test Song 1", artname: "Test Artist" },
-      { id: 2, songname: "Test Song 2", artname: "Another Artist" }
-    ];
+    const playlistID = this.route.snapshot.paramMap.get("playlistId");
+    if (!playlistID) return;
+
+    this.pl.getPlaylistById(+playlistID).subscribe({
+      next: (res) => {this.playlist = res;},
+      error: (err) => {console.error("Playlist not found", err)}
+    });
+
+    this.pl.getSongs(+playlistID).subscribe({
+      next: (res) => {this.songs = res;},
+      error: (err) => {console.error("Songs not found", err)}
+    });
+    
   }
 
 }
