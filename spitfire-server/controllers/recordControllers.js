@@ -1,14 +1,14 @@
 const Record = require("../models/recordModel");
 
-exports.getSongByAlbumname = async (req, res) => {
+exports.getRecordByName = async (req, res) => {
   try {
     const recordname = req.params.recordName;
-    const record = await Record.findBysongname(recordname);
+    const record = await Record.findByRecordname(recordname);
 
     if (!record) {
       return res.status(404).json({ message: "No record found with that name" });
     }
-
+    res.json(record);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -40,7 +40,7 @@ exports.getRecordByArtID = async (req, res) => {
 
     res.json(record);
   }
-  catch {
+  catch (err) {
     res.status(500).json({ error: err.message });
   }
 }

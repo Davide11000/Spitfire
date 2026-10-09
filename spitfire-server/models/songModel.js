@@ -33,7 +33,7 @@ const Song = {
 
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE id = ?`;
+      const query = `SELECT * FROM songs WHERE id = ?`;
       db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);

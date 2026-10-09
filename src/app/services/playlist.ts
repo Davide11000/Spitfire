@@ -46,5 +46,9 @@ export class Playlist {
     return this.http.get(`${this.baseUrl}/user/${username}`);
   }
 
+  getPlaylistById(playlistId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${playlistId}`);
+  }
+
 
 }

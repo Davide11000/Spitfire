@@ -38,7 +38,7 @@ export class ProfilePage implements OnInit {
 
     this.auth.getUserProfile(this.targetUsername).subscribe({
       next: (res) => { this.user = res; },
-      error: (err) => { console.error('Utente non trovato', err); }
+      error: (err) => { console.error('User not founded', err); }
     });
 
     this.follow.getFollowers(this.targetUsername).subscribe({

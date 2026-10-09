@@ -1,12 +1,12 @@
 const db = require("../db/db");
 
 const Artist = {
-  create: (artname, id) => {
+  create: (artname) => {
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO artists (artname) VALUES (?)`;
-      db.run(query, [artname, id], function (err) {
+      db.run(query, [artname], function (err) {
         if (err) reject(err);
-        else resolve({ artname, id });
+        else resolve({ id: this.lastID, artname});
       });
     });
   },
