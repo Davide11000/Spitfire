@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Auth } from './auth';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Playlist {
   private baseUrl = "http://localhost:3000/playlists";
 
-  constructor(private http: HttpClient, private auth: Auth) {}
+  private http = inject(HttpClient);
+  private auth = inject(Auth);
 
   createPlaylist(playlistName : string, username : string): Observable<any> {
     const token = this.auth.getToken();

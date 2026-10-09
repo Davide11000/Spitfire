@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton } from '@ionic/angular/standalone';
 import { Auth } from 'src/app/services/auth';
@@ -11,7 +11,8 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton]
 })
 export class ProfilePage implements OnInit {
 

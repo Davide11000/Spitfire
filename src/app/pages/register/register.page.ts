@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
 import { RouterLink } from '@angular/router';
@@ -11,7 +11,8 @@ import { Auth } from 'src/app/services/auth';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
 })
 export class RegisterPage implements OnInit {
 

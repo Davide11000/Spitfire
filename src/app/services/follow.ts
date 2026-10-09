@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Auth } from './auth';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Follow {
   private baseUrl = "http://localhost:3000/follows";
 
-  constructor(private http: HttpClient, private auth: Auth) {}
+  private http = inject(HttpClient);
+  private auth = inject(Auth);
 
   followUser(username: string): Observable<any> {
     const token = this.auth.getToken();

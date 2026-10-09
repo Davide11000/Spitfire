@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInputPasswordToggle, IonButton, IonInput } from '@ionic/angular/standalone';
 import { RouterLink } from '@angular/router';
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, RouterLink]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, RouterLink]
 })
 export class LoginPage implements OnInit {
 

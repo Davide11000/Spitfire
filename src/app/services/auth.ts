@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class Auth {
 
   private baseUrl = "http://localhost:3000/auth";
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   login(id: string, password: string) : Observable<any>{
     return this.http.post(`${this.baseUrl}/login`, {id, password});

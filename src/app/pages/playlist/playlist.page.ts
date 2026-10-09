@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+
 import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { Playlist } from 'src/app/services/playlist';
@@ -9,7 +9,8 @@ import { Playlist } from 'src/app/services/playlist';
   templateUrl: './playlist.page.html',
   styleUrls: ['./playlist.page.scss'],
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, CommonModule]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar]
 })
 export class PlaylistPage implements OnInit {
 
