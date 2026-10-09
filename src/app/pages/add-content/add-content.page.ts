@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { 
@@ -21,10 +21,20 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./add-content.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, FormsModule, TopmenuComponent, IonContent, IonCard, 
-    IonCardTitle, IonSegment, IonSegmentButton, IonIcon, IonLabel, 
-    IonItem, IonInput, IonTextarea, IonButton
-  ]
+    FormsModule,
+    TopmenuComponent,
+    IonContent,
+    IonCard,
+    IonCardTitle,
+    IonSegment,
+    IonSegmentButton,
+    IonIcon,
+    IonLabel,
+    IonItem,
+    IonInput,
+    IonTextarea,
+    IonButton
+]
 })
 export class AddContentPage implements OnInit, OnDestroy {
 

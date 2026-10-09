@@ -1,6 +1,6 @@
 import { FormsModule } from '@angular/forms';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonList, IonItem, IonAvatar, IonLabel, IonIcon, IonButton, IonModal, IonHeader, IonToolbar, IonButtons, IonTitle, IonSearchbar, AlertController, IonToggle } from '@ionic/angular';
 import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
@@ -16,7 +16,7 @@ import { Auth } from '../../services/auth';
   templateUrl: './playlist.page.html',
   styleUrls: ['./playlist.page.scss'],
   standalone: true,
-  imports: [FormsModule, CommonModule, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonIcon, TopmenuComponent, FooterComponent, IonButton, IonModal, IonHeader, IonToolbar, IonButtons, IonTitle, IonSearchbar, CommentsComponent, IonToggle]
+  imports: [FormsModule, IonContent, IonList, IonItem, IonAvatar, IonLabel, IonIcon, TopmenuComponent, FooterComponent, IonButton, IonModal, IonHeader, IonToolbar, IonButtons, IonTitle, IonSearchbar, CommentsComponent, IonToggle]
 })
 export class PlaylistPage implements OnInit {
 

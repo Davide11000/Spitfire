@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton } from '@ionic/angular';
 import { Auth } from '../../services/auth';
@@ -11,7 +11,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, FormsModule, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton]
+  imports: [IonContent, FormsModule, IonGrid, IonRow, IonCol, IonCard, IonImg, IonSpinner, IonButton]
 })
 export class ProfilePage implements OnInit {
 

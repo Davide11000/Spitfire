@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonContent, IonSearchbar, IonIcon } from '@ionic/angular';
@@ -14,7 +14,7 @@ import { Auth } from '../../services/auth';
   templateUrl: './lists.page.html',
   styleUrls: ['./lists.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonSearchbar, IonIcon, TopmenuComponent, FooterComponent]
+  imports: [FormsModule, IonContent, IonSearchbar, IonIcon, TopmenuComponent, FooterComponent]
 })
 export class ListsPage implements OnInit {
 

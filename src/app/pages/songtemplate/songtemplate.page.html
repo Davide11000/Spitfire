@@ -1,54 +1,65 @@
 <app-topmenu></app-topmenu>
 
 <ion-content class="globalbg">
-  
+
   @if (canzone) {
     <div [style.background]="stileSfondoHeader" class="song-header-section">
       <ion-img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
-      
+
       <div class="song-info-card">
-      <div class="song-header-details">
-        <div class="song-title">
-          <b>{{ canzone.titolo }}</b>
+        <div class="song-header-details">
+          <div class="song-title">
+            <b>{{ canzone.titolo }}</b>
+          </div>
+          <div class="song-artist" (click)="vaiAllArtista(canzone.artista)">
+            {{ canzone.artista }}
+          </div>
+
+          @if (canzone.dataRilascio) {
+            <div class="song-meta">
+              <b>Release Date:</b> {{ canzone.dataRilascio | date:'dd/MM/yyyy' }}
+            </div>
+          }
+
+          @if (songId) {
+            <app-genres
+              [entityId]="songId"
+              tipo="song"
+              [generiAttuali]="canzone.generi || []"
+              [mioUid]="mioUid"
+              [mioNome]="mioNome"
+              [isAdmin]="isAdmin"
+              [isModerator]="isModerator">
+            </app-genres>
+          }
+
+
+          @if (canzone.lingua) {
+            <div class="song-meta">
+              <b>Language:</b> {{ canzone.lingua }}
+            </div>
+          }
+
+          @if (songId) {
+            <app-rating-stars [id]="songId" tipo="canzone"></app-rating-stars>
+          }
+
+          @if (canzone.album) {
+            <div class="song-meta">
+              <b>Album:</b>
+              <span class="link-album" (click)="vaiAllAlbum(canzone.albumId)">
+                {{ canzone.album }}
+              </span>
+            </div>
+          }
+
+          @if (mioUid) {
+            <ion-button fill="outline" color="warning" size="small" (click)="apriModalPlaylist()" class="add-playlist-btn">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              Add to a playlist
+            </ion-button>
+          }
         </div>
-        <div class="song-artist" (click)="vaiAllArtista(canzone.artista)">
-          {{ canzone.artista }}
-        </div>
-
-        <div *ngIf="canzone.dataRilascio" class="song-meta">
-          <b>Release Date:</b> {{ canzone.dataRilascio | date:'dd/MM/yyyy' }}
-        </div>
-
-        <app-genres
-          *ngIf="songId"
-          [entityId]="songId"
-          tipo="song"
-          [generiAttuali]="canzone.generi || []"
-          [mioUid]="mioUid"
-          [mioNome]="mioNome"
-          [isAdmin]="isAdmin"
-          [isModerator]="isModerator">
-        </app-genres>
-
-
-        <div *ngIf="canzone.lingua" class="song-meta">
-          <b>Language:</b> {{ canzone.lingua }}
-        </div>
-
-        <app-rating-stars *ngIf="songId" [id]="songId" tipo="canzone"></app-rating-stars>
-
-        <div *ngIf="canzone.album" class="song-meta">
-          <b>Album:</b>
-          <span class="link-album" (click)="vaiAllAlbum(canzone.albumId)">
-            {{ canzone.album }}
-          </span>
-        </div>
-
-        <ion-button *ngIf="mioUid" fill="outline" color="warning" size="small" (click)="apriModalPlaylist()" class="add-playlist-btn">
-          <ion-icon slot="start" name="add-outline"></ion-icon>
-          Add to a playlist
-        </ion-button>
-      </div>
       </div>
     </div>
   } @else {
@@ -129,7 +140,9 @@
 
   </div>
 
-  <app-comments *ngIf="songId" [id]="songId" [nomeEntita]="canzone?.titolo" tipo="canzone"></app-comments>
+  @if (songId) {
+    <app-comments [id]="songId" [nomeEntita]="canzone?.titolo" tipo="canzone"></app-comments>
+  }
 
   <app-footer></app-footer>
 
@@ -140,66 +153,66 @@
 @if (isModalPlaylistAperto) {
   <div class="playlist-overlay" (click)="chiudiModalPlaylist()"></div>
   <div class="playlist-sheet">
-      <div class="playlist-sheet-header">
-        <span class="playlist-sheet-title">Add to Playlist</span>
-        <button class="playlist-close-btn" (click)="chiudiModalPlaylist()">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="playlist-sheet-body">
-        <h3 class="playlist-section-title">Your Playlists</h3>
-        @if (userPlaylists.length === 0) {
-          <div class="playlist-empty">
-            <p>You don't have any playlists yet.</p>
-          </div>
-        } @else {
-          <div class="playlist-list">
-            @for (pl of userPlaylists; track pl.id) {
-              <div class="playlist-item" (click)="selezionaPlaylist(pl.id)">
-                <img class="playlist-item-img" [src]="pl.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" />
-                <div class="playlist-item-info">
-                  <span class="playlist-item-nome">{{ pl.nome }}</span>
-                  <span class="playlist-item-count">{{ pl.canzoni?.length || 0 }} songs</span>
-                </div>
-                <ion-icon name="add-outline" color="warning"></ion-icon>
-              </div>
-            }
-          </div>
-        }
-        <h3 class="playlist-section-title" style="margin-top: 24px;">Create a new playlist</h3>
-        <div class="playlist-create-form">
-          <input class="traduzione-input" [(ngModel)]="nuovaPlaylistNome" type="text" placeholder="Playlist Name" />
-          <textarea class="traduzione-textarea" [(ngModel)]="nuovaPlaylistDescrizione" rows="3" placeholder="Description (optional)"></textarea>
-          <ion-button expand="block" color="warning" (click)="rapidaCreaPlaylist()" [disabled]="!nuovaPlaylistNome.trim()">
-            <ion-icon slot="start" name="musical-notes-outline"></ion-icon>
-            Create Playlist
-          </ion-button>
+    <div class="playlist-sheet-header">
+      <span class="playlist-sheet-title">Add to Playlist</span>
+      <button class="playlist-close-btn" (click)="chiudiModalPlaylist()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="playlist-sheet-body">
+      <h3 class="playlist-section-title">Your Playlists</h3>
+      @if (userPlaylists.length === 0) {
+        <div class="playlist-empty">
+          <p>You don't have any playlists yet.</p>
         </div>
+      } @else {
+        <div class="playlist-list">
+          @for (pl of userPlaylists; track pl.id) {
+            <div class="playlist-item" (click)="selezionaPlaylist(pl.id)">
+              <img class="playlist-item-img" [src]="pl.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" />
+              <div class="playlist-item-info">
+                <span class="playlist-item-nome">{{ pl.nome }}</span>
+                <span class="playlist-item-count">{{ pl.canzoni?.length || 0 }} songs</span>
+              </div>
+              <ion-icon name="add-outline" color="warning"></ion-icon>
+            </div>
+          }
+        </div>
+      }
+      <h3 class="playlist-section-title" style="margin-top: 24px;">Create a new playlist</h3>
+      <div class="playlist-create-form">
+        <input class="traduzione-input" [(ngModel)]="nuovaPlaylistNome" type="text" placeholder="Playlist Name" />
+        <textarea class="traduzione-textarea" [(ngModel)]="nuovaPlaylistDescrizione" rows="3" placeholder="Description (optional)"></textarea>
+        <ion-button expand="block" color="warning" (click)="rapidaCreaPlaylist()" [disabled]="!nuovaPlaylistNome.trim()">
+          <ion-icon slot="start" name="musical-notes-outline"></ion-icon>
+          Create Playlist
+        </ion-button>
       </div>
     </div>
-  }
+  </div>
+}
 
 @if (isModalTraduzioneAperto) {
   <div class="traduzione-overlay" (click)="chiudiModalTraduzione()"></div>
   <div class="traduzione-sheet">
-      <div class="traduzione-sheet-header">
-        <span class="traduzione-sheet-title">Add a Translation</span>
-        <button class="traduzione-close-btn" (click)="chiudiModalTraduzione()">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="traduzione-sheet-body">
-        <div class="traduzione-field">
-          <label class="traduzione-label">Language</label>
-          <input class="traduzione-input" [(ngModel)]="nuovaTraduzioneLingua" type="text" placeholder="e.g. Italian, French..." />
-        </div>
-        <div class="traduzione-field">
-          <label class="traduzione-label">Translated Lyrics</label>
-          <textarea class="traduzione-textarea" [(ngModel)]="nuovaTraduzioneTestoInput" rows="12" placeholder="Enter the translated lyrics..."></textarea>
-        </div>
-        <ion-button expand="block" color="warning" (click)="inviaTraduzione()" [disabled]="!nuovaTraduzioneLingua.trim() || !nuovaTraduzioneTestoInput.trim()">
-          Submit Translation
-        </ion-button>
-      </div>
+    <div class="traduzione-sheet-header">
+      <span class="traduzione-sheet-title">Add a Translation</span>
+      <button class="traduzione-close-btn" (click)="chiudiModalTraduzione()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
     </div>
-  }
+    <div class="traduzione-sheet-body">
+      <div class="traduzione-field">
+        <label class="traduzione-label">Language</label>
+        <input class="traduzione-input" [(ngModel)]="nuovaTraduzioneLingua" type="text" placeholder="e.g. Italian, French..." />
+      </div>
+      <div class="traduzione-field">
+        <label class="traduzione-label">Translated Lyrics</label>
+        <textarea class="traduzione-textarea" [(ngModel)]="nuovaTraduzioneTestoInput" rows="12" placeholder="Enter the translated lyrics..."></textarea>
+      </div>
+      <ion-button expand="block" color="warning" (click)="inviaTraduzione()" [disabled]="!nuovaTraduzioneLingua.trim() || !nuovaTraduzioneTestoInput.trim()">
+        Submit Translation
+      </ion-button>
+    </div>
+  </div>
+}

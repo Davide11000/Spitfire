@@ -1,5 +1,5 @@
 import { Component, OnChanges, SimpleChanges, inject, ChangeDetectorRef, ElementRef, ViewChild, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonSpinner, IonIcon, IonTextarea, ToastController } from '@ionic/angular';
@@ -12,7 +12,7 @@ import { closeOutline, sendOutline, addCircleOutline, thumbsUpOutline, thumbsUpS
   standalone: true,
   templateUrl: './annotations.component.html',
   styleUrls: ['./annotations.component.scss'],
-  imports: [CommonModule, FormsModule, IonButton, IonSpinner, IonIcon]
+  imports: [FormsModule, IonButton, IonSpinner, IonIcon]
 })
 export class AnnotationsComponent implements OnChanges {
 

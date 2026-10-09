@@ -1,156 +1,149 @@
 <app-topmenu></app-topmenu>
 
-<ion-content class="globalbg" *ngIf="playlist">
-  
-  <div style="background: linear-gradient(to bottom, rgb(30, 30, 30), rgb(88, 28, 28)); padding: 4% 2%; color: antiquewhite; overflow: hidden;">
-    
-    <div class="playlist-cover" 
+@if (playlist) {
+  <ion-content class="globalbg">
+    <div style="background: linear-gradient(to bottom, rgb(30, 30, 30), rgb(88, 28, 28)); padding: 4% 2%; color: antiquewhite; overflow: hidden;">
+      <div class="playlist-cover"
         (click)="attivaSceltaFileCopertina(inputCopertina)"
         [style.cursor]="mioUid === playlist.creatoreUid ? 'pointer' : 'default'"
         style="width: 230px; height: 230px; overflow: hidden; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7); float: left; margin: 0 24px 10px 0;">
-      <img [src]="playlist.fotoBase64 || 'assets/shapes.svg'" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-    </div>
-
-    <input 
-      type="file" 
-      #inputCopertina 
-      accept="image/*" 
-      (change)="onCopertinaSelezionata($event)" 
-      style="display: none;" />
-
-    <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 12px;">
-      <div style="font-size: xx-large; margin-top: 10px;">
-        <b class="playlist-name">{{ playlist.nome }}</b>
+        <img [src]="playlist.fotoBase64 || 'assets/shapes.svg'" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
       </div>
-      <div style="font-size: medium; color: #aaa;">
-        Created by: <b style="cursor: pointer; color: antiquewhite;" (click)="vaiAlProfilo(playlist.creatoreUid)">{{ playlist.creatoreNome || 'Utente' }}</b>
-      </div>
-      <div *ngIf="playlist.descrizione" style="font-size: 1rem; color: antiquewhite; font-style: italic; max-width: 600px;">
-        "{{ playlist.descrizione }}"
-      </div>
-      
-      <div style="display: flex; align-items: center; justify-content: space-between; max-width: 600px; margin-top: 8px;">
-        <div style="font-size: 0.9rem; color: #ffc409;">
-          <b>{{ canzoniTotali.length }} songs</b> saved
-        </div>
-
-        <div *ngIf="mioUid === playlist.creatoreUid" style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-size: 0.85rem; font-weight: bold; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px;">
-            {{ playlist.pubblica ? 'Public' : 'Private' }}
-          </span>
-          <ion-toggle [(ngModel)]="playlist.pubblica" (ionChange)="aggiornaPrivacyPlaylist($event)" color="warning" style="--handle-background: #ffffff; margin: 0;"></ion-toggle>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top: 40px; clear: both;">
-      
-      <div *ngIf="!mioUid || mioUid === playlist.creatoreUid" style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-        <ion-button fill="clear" color="warning" (click)="apriModalCerca()" style="margin: 0; font-weight: bold;">
-          <ion-icon slot="start" name="add-outline"></ion-icon>
-          Add Tracks
-        </ion-button>
-      </div>
-
-      <ion-list class="playlist-tracks" style="background: transparent !important; max-width: 100%;">
-        @for (pezzo of canzoniVisualizzate; track pezzo.id || $index) {
-          <ion-item lines="full" style="--background: transparent; --color: white; margin-bottom: 8px;" class="track-item">
-            
-            <ion-avatar slot="start" class="track-avatar">
-              <img [src]="pezzo.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" style="object-fit: cover;" />
-            </ion-avatar>
-
-            <ion-label class="track-details">
-              <h2 class="song-title-link" (click)="vaiAllaCanzone(pezzo.id)">
-                {{ pezzo.titolo }}
-              </h2>
-              
-              <p class="artist-name-link">
-                {{ pezzo.artista }}
-              </p>
-              
-              <div *ngIf="pezzo.notaUtente" class="user-note">
-                <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                <span>{{ pezzo.notaUtente }}</span>
-              </div>
-            </ion-label>
-
-            <ion-button class="trash" *ngIf="mioUid === playlist.creatoreUid" slot="end" fill="clear" color="danger" (click)="rimuoviCanzone(pezzo, $event)" style="font-size: 120%;">
-              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-button>
-
-          </ion-item>
-        } @empty {
-          <div class="empty-playlist" style="text-align: center; color: #aaa; padding: 40px 0;">
-            <p>This playlist is empty. Add some tracks!</p>
+      <input
+        type="file"
+        #inputCopertina
+        accept="image/*"
+        (change)="onCopertinaSelezionata($event)"
+        style="display: none;" />
+        <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="font-size: xx-large; margin-top: 10px;">
+            <b class="playlist-name">{{ playlist.nome }}</b>
           </div>
-        }
-      </ion-list>
-
-      @if (arrayPagine.length > 1) {
-        <div class="pagination-container">
-          <span class="page-label">Page</span>
-          <div class="pages-wrapper">
-            @for (p of arrayPagine; track p) {
-              <button 
-                class="page-btn"
-                [class.active]="p === paginaCorrente"
-                (click)="cambiaPagina(p)">
-                {{ p }}
-              </button>
+          <div style="font-size: medium; color: #aaa;">
+            Created by: <b style="cursor: pointer; color: antiquewhite;" (click)="vaiAlProfilo(playlist.creatoreUid)">{{ playlist.creatoreNome || 'Utente' }}</b>
+          </div>
+          @if (playlist.descrizione) {
+            <div style="font-size: 1rem; color: antiquewhite; font-style: italic; max-width: 600px;">
+              "{{ playlist.descrizione }}"
+            </div>
+          }
+          <div style="display: flex; align-items: center; justify-content: space-between; max-width: 600px; margin-top: 8px;">
+            <div style="font-size: 0.9rem; color: #ffc409;">
+              <b>{{ canzoniTotali.length }} songs</b> saved
+            </div>
+            @if (mioUid === playlist.creatoreUid) {
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 0.85rem; font-weight: bold; color: #ccc; text-transform: uppercase; letter-spacing: 0.5px;">
+                  {{ playlist.pubblica ? 'Public' : 'Private' }}
+                </span>
+                <ion-toggle [(ngModel)]="playlist.pubblica" (ionChange)="aggiornaPrivacyPlaylist($event)" color="warning" style="--handle-background: #ffffff; margin: 0;"></ion-toggle>
+              </div>
             }
           </div>
         </div>
-      }
-    </div>
-
-  </div>
-
-  <div *ngIf="playlist.pubblica && playlistId" style="background-color: rgb(24, 24, 24); padding: 0 4% 4% 4%;">
-    <app-comments [id]="playlistId" tipo="playlist"></app-comments>
-  </div>
-
-  <ion-modal [isOpen]="isModalCercaAperto" (didDismiss)="chiudiModalCerca()">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar color="dark">
-          <ion-title>Search for songs to add</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="chiudiModalCerca()">
-              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-        <ion-toolbar color="dark">
-          <ion-searchbar [(ngModel)]="queryRicerca" (ionInput)="filtraCanzoni()" placeholder="Search by title or artist..."></ion-searchbar>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content style="--background: #181818; color: white;">
-        <ion-list lines="none" style="background: transparent; padding: 12px;">
-          
-          @for (canzone of canzoniFiltrate; track canzone.id || $index) {
-            <ion-item style="--background: rgba(255,255,255,0.04); margin-bottom: 8px; border-radius: 8px; --color: white;">
-              <ion-avatar slot="start">
-                <img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" style="object-fit: cover;" />
-              </ion-avatar>
-              <ion-label>
-                <h2 style="color: white; font-weight: bold; margin: 0;">{{ canzone.titolo }}</h2>
-                <p style="color: #aaa; margin: 2px 0 0 0;">{{ canzone.artista }}</p>
-              </ion-label>
-              <ion-button slot="end" fill="clear" color="warning" (click)="aggiungiCanzoneAQuestaPlaylist(canzone)">
-                <ion-icon slot="icon-only" name="add-outline" style="font-size: 1.6rem;"></ion-icon>
+        <div style="margin-top: 40px; clear: both;">
+          @if (!mioUid || mioUid === playlist.creatoreUid) {
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+              <ion-button fill="clear" color="warning" (click)="apriModalCerca()" style="margin: 0; font-weight: bold;">
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Add Tracks
               </ion-button>
-            </ion-item>
+            </div>
           }
-
-          <div *ngIf="canzoniFiltrate.length === 0" style="text-align: center; color: #aaa; padding: 30px 0;">
-            No songs found
-          </div>
-        </ion-list>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
-  <app-footer></app-footer>
-</ion-content>
+          <ion-list class="playlist-tracks" style="background: transparent !important; max-width: 100%;">
+            @for (pezzo of canzoniVisualizzate; track pezzo.id || $index) {
+              <ion-item lines="full" style="--background: transparent; --color: white; margin-bottom: 8px;" class="track-item">
+                <ion-avatar slot="start" class="track-avatar">
+                  <img [src]="pezzo.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" style="object-fit: cover;" />
+                </ion-avatar>
+                <ion-label class="track-details">
+                  <h2 class="song-title-link" (click)="vaiAllaCanzone(pezzo.id)">
+                    {{ pezzo.titolo }}
+                  </h2>
+                  <p class="artist-name-link">
+                    {{ pezzo.artista }}
+                  </p>
+                  @if (pezzo.notaUtente) {
+                    <div class="user-note">
+                      <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                      <span>{{ pezzo.notaUtente }}</span>
+                    </div>
+                  }
+                </ion-label>
+                @if (mioUid === playlist.creatoreUid) {
+                  <ion-button class="trash" slot="end" fill="clear" color="danger" (click)="rimuoviCanzone(pezzo, $event)" style="font-size: 120%;">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                }
+              </ion-item>
+              } @empty {
+              <div class="empty-playlist" style="text-align: center; color: #aaa; padding: 40px 0;">
+                <p>This playlist is empty. Add some tracks!</p>
+              </div>
+            }
+          </ion-list>
+          @if (arrayPagine.length > 1) {
+            <div class="pagination-container">
+              <span class="page-label">Page</span>
+              <div class="pages-wrapper">
+                @for (p of arrayPagine; track p) {
+                  <button
+                    class="page-btn"
+                    [class.active]="p === paginaCorrente"
+                    (click)="cambiaPagina(p)">
+                    {{ p }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      @if (playlist.pubblica && playlistId) {
+        <div style="background-color: rgb(24, 24, 24); padding: 0 4% 4% 4%;">
+          <app-comments [id]="playlistId" tipo="playlist"></app-comments>
+        </div>
+      }
+      <ion-modal [isOpen]="isModalCercaAperto" (didDismiss)="chiudiModalCerca()">
+        <ng-template>
+          <ion-header>
+            <ion-toolbar color="dark">
+              <ion-title>Search for songs to add</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="chiudiModalCerca()">
+                  <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+            <ion-toolbar color="dark">
+              <ion-searchbar [(ngModel)]="queryRicerca" (ionInput)="filtraCanzoni()" placeholder="Search by title or artist..."></ion-searchbar>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content style="--background: #181818; color: white;">
+            <ion-list lines="none" style="background: transparent; padding: 12px;">
+              @for (canzone of canzoniFiltrate; track canzone.id || $index) {
+                <ion-item style="--background: rgba(255,255,255,0.04); margin-bottom: 8px; border-radius: 8px; --color: white;">
+                  <ion-avatar slot="start">
+                    <img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" style="object-fit: cover;" />
+                  </ion-avatar>
+                  <ion-label>
+                    <h2 style="color: white; font-weight: bold; margin: 0;">{{ canzone.titolo }}</h2>
+                    <p style="color: #aaa; margin: 2px 0 0 0;">{{ canzone.artista }}</p>
+                  </ion-label>
+                  <ion-button slot="end" fill="clear" color="warning" (click)="aggiungiCanzoneAQuestaPlaylist(canzone)">
+                    <ion-icon slot="icon-only" name="add-outline" style="font-size: 1.6rem;"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              }
+              @if (canzoniFiltrate.length === 0) {
+                <div style="text-align: center; color: #aaa; padding: 30px 0;">
+                  No songs found
+                </div>
+              }
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+      <app-footer></app-footer>
+    </ion-content>
+  }

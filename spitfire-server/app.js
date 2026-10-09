@@ -27,4 +27,7 @@ app.use('/songs', songRoutes);
 const playlistRoutes = require('./routes/playlistRoutes');
 app.use('/playlists', playlistRoutes);
 
+const recordRoutes = require('./routes/recordRoutes');
+app.use('/records', recordRoutes);
+
 module.exports = app;

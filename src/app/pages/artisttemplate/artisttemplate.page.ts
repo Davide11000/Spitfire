@@ -4,9 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonImg, IonLabel, IonGrid, IonCol, IonRow, IonList, IonItem, IonButton, IonIcon, IonAvatar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { createOutline, star, heartOutline, heart } from 'ionicons/icons';
-import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { Auth } from '../../services/auth';
+import { Artist } from '../../services/artist';
+import { User } from '../../services/user';
+import { Record } from '../../services/record';
 
 @Component({
   selector: 'app-artisttemplate',
@@ -14,7 +17,7 @@ import { Auth } from '../../services/auth';
   styleUrls: ['./artisttemplate.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, IonContent, TopmenuComponent, FooterComponent,
+    CommonModule, IonContent, NavbarComponent, FooterComponent,
     IonGrid, IonCol, IonRow, IonImg, IonIcon, IonLabel,
     IonButton, IonList, IonItem, IonAvatar
 ]
@@ -35,7 +38,11 @@ export class ArtisttemplatePage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
-  private authService = inject(Auth);
+
+  private auth = inject(Auth);
+  private artistService = inject(Artist);
+  private userService = inject(User);
+  private recordService = inject(Record);
 
   constructor() {
     addIcons({ star, createOutline, heartOutline, heart });
@@ -49,7 +56,24 @@ export class ArtisttemplatePage implements OnInit {
       }
     });
 
-    this.authService.user$.subscribe(user => {
+    const token = this.auth.getToken();
+
+    if (token) {
+      this.auth.getProfile(token).subscribe((value) => {
+        if (value) {
+          this.utenteLoggatoUid = value.uid;
+          if (this.artistaId) {
+            this.controllaSeIsFavourite();
+          }
+        } else {
+          this.utenteLoggatoUid = '';
+          this.isFavourite = false;
+        }
+        this.cdr.detectChanges();
+      });
+    }
+
+    /*this.authService.user$.subscribe(user => {
       if (user) {
         this.utenteLoggatoUid = user.uid;
         if (this.artistaId) {
@@ -60,11 +84,30 @@ export class ArtisttemplatePage implements OnInit {
         this.isFavourite = false;
       }
       this.cdr.detectChanges();
-    });
+    });*/
   }
 
   async caricaDettagliArtista(id: string) {
     try {
+      this.artistService.getArtist(id).subscribe((value) => {
+        this.artista = value;
+      });
+
+      if (this.artista) {
+        await this.caricaAlbumArtista(this.artista.nome);
+        await this.calcolaBraniPopolari(this.artista.nome);
+      }
+
+      if (this.utenteLoggatoUid) {
+        await this.controllaSeIsFavourite();
+      }
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error(error);
+      alert("Artist not found.");
+      this.router.navigate(['/home']);
+    }
+    /*try {
       const docRef = doc(this.firestore, 'artists', id);
       const docSnap = await getDoc(docRef);
 
@@ -87,12 +130,23 @@ export class ArtisttemplatePage implements OnInit {
     } catch (error) {
       console.error(error);
       this.router.navigate(['/home']);
-    }
+    }*/
   }
 
   async controllaSeIsFavourite() {
     if (!this.utenteLoggatoUid || !this.artistaId) return;
     try {
+      this.userService.getUser(this.utenteLoggatoUid).subscribe((value) => {
+        const dati = value;
+        const favs: any[] = dati['artistiFavouriti'] || [];
+        this.isFavourite = favs.some((a: any) => a.id === this.artistaId);
+        this.cdr.detectChanges();
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Couldn't ascertain if this artist is among user's favourites.");
+    }
+    /*try {
       const docRef = doc(this.firestore, 'utenti', this.utenteLoggatoUid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
@@ -103,15 +157,21 @@ export class ArtisttemplatePage implements OnInit {
       }
     } catch (error) {
       console.error(error);
-    }
+    }*/
   }
 
   async toggleFavourite() {
     if (!this.utenteLoggatoUid || !this.artistaId || !this.artista) return;
     try {
-      const docRef = doc(this.firestore, 'utenti', this.utenteLoggatoUid);
+      /*const docRef = doc(this.firestore, 'utenti', this.utenteLoggatoUid);
       const docSnap = await getDoc(docRef);
-      let favs: any[] = docSnap.exists() ? (docSnap.data()['artistiFavouriti'] || []) : [];
+      let favs: any[] = docSnap.exists() ? (docSnap.data()['artistiFavouriti'] || []) : [];*/
+
+      let favs: any[] = [];
+      this.userService.getUser(this.utenteLoggatoUid).subscribe((value) => {
+        const dati = value;
+        favs = dati['artistiFavouriti'] || [];
+      });
 
       if (this.isFavourite) {
         favs = favs.filter((a: any) => a.id !== this.artistaId);
@@ -123,17 +183,27 @@ export class ArtisttemplatePage implements OnInit {
         });
       }
 
-      await updateDoc(docRef, { artistiFavouriti: favs });
-      this.isFavourite = !this.isFavourite;
+      if (!this.isFavourite) {
+        this.userService.addToFavouriteArtists(this.artistaId).subscribe((_value) => {
+          this.isFavourite = true;
+        })
+      }
+      else {
+        this.userService.removeFromFavouriteArtists(this.artistaId).subscribe((_value) => {
+          this.isFavourite = false;
+        })
+      }
+      /*await updateDoc(docRef, { artistiFavouriti: favs });
+      this.isFavourite = !this.isFavourite;*/
       this.cdr.detectChanges();
     } catch (error) {
       console.error(error);
     }
   }
 
-  async caricaAlbumArtista(nomeArtista: string) {
+  async caricaAlbumArtista(nomeArtista: string) { //il parametro va cambiato
     try {
-      const albumsRef = collection(this.firestore, 'albums');
+      /*const albumsRef = collection(this.firestore, 'albums');
       const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
       const q = query(albumsRef, where('artista_lowercase', '==', nomeInMinuscolo));
       const querySnapshot = await getDocs(q);
@@ -141,7 +211,11 @@ export class ArtisttemplatePage implements OnInit {
       this.tuttiGliAlbum = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      }));*/
+
+      this.artistService.getRecords(nomeArtista).subscribe((value) => {
+        this.tuttiGliAlbum = value;
+      });
 
       this.albumMostrati = this.tuttiGliAlbum.slice(0, this.limiteAlbum);
       this.cdr.detectChanges();
@@ -169,7 +243,7 @@ export class ArtisttemplatePage implements OnInit {
   }
 
   async calcolaBraniPopolari(nomeArtista: string) {
-    try {
+    /*try {
       const songsRef = collection(this.firestore, 'songs');
       const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
       const qSongs = query(songsRef, where('artista_lowercase', '==', nomeInMinuscolo));
@@ -204,7 +278,7 @@ export class ArtisttemplatePage implements OnInit {
       this.canzoniPopolari = elencoCanzoni.slice(0, 5);
     } catch (error) {
       console.error(error);
-    }
+    }*/
   }
 
   vaiACorrectEntry() {

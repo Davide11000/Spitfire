@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { IonContent, IonCard, IonItem, IonLabel, IonCardContent, IonButton, IonIcon, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.scss'],
   standalone: true,
-  imports: [CommonModule, TopmenuComponent, IonContent, IonCard, IonItem, IonLabel, IonCardContent, IonButton, IonIcon]
+  imports: [TopmenuComponent, IonContent, IonCard, IonItem, IonLabel, IonCardContent, IonButton, IonIcon]
 })
 export class ReportsPage implements OnInit, OnDestroy {
 

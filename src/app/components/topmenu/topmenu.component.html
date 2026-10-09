@@ -11,7 +11,7 @@
     <ion-button routerLink="/home">Home</ion-button>
     <ion-button routerLink="/lists">Playlist</ion-button>
     <ion-button routerLink="/discover">Discover</ion-button>
-    
+
     @if (authService.user$ | async) {
       @if (isAdmin) {
         <ion-button routerLink="/admin-request">Requests</ion-button>
@@ -25,8 +25,8 @@
   </ion-buttons>
 
   <div slot="end" class="search-container ion-display-none ion-display-sm-block">
-    <ion-searchbar 
-      style="width: auto; text-align: left;" 
+    <ion-searchbar
+      style="width: auto; text-align: left;"
       color="rgba(0,0,0,0)"
       placeholder="Search"
       (ionInput)="onCerca($event)"
@@ -55,24 +55,28 @@
     </div>
   }
 
-  <ion-buttons slot="end" *ngIf="authService.user$ | async as utenteLoggato">
-    <ion-button class="navbar-profile-btn" (click)="vaiAlProfilo(utenteLoggato.uid)">
-      <ion-avatar class="mini-avatar">
-        <img [src]="authService.fotoProfilo" alt="Profilo" />
-      </ion-avatar>
-    </ion-button>
-  </ion-buttons>
+  @if (authService.user$ | async; as utenteLoggato) {
+    <ion-buttons slot="end">
+      <ion-button class="navbar-profile-btn" (click)="vaiAlProfilo(utenteLoggato.uid)">
+        <ion-avatar class="mini-avatar">
+          <img [src]="authService.fotoProfilo" alt="Profilo" />
+        </ion-avatar>
+      </ion-button>
+    </ion-buttons>
+  }
 
-  <ion-buttons slot="end" class="ion-display-none ion-display-md-block" *ngIf="!(authService.user$ | async)">
-    <ion-button class="continua" routerLink="/login">
-      Sign In
-    </ion-button>
-  </ion-buttons>
+  @if (!(authService.user$ | async)) {
+    <ion-buttons slot="end" class="ion-display-none ion-display-md-block">
+      <ion-button class="continua" routerLink="/login">
+        Sign In
+      </ion-button>
+    </ion-buttons>
+  }
 </ion-toolbar>
 
 @if (haRisultati()) {
   <ion-list class="risultati-ricerca">
-    
+
     @if (canzoniTrovate.length > 0) {
       <div class="categoria-header">Songs</div>
       @for (canzone of canzoniTrovate; track canzone.id) {

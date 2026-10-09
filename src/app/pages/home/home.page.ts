@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
 import { 
   IonContent, 
@@ -21,18 +21,17 @@ import { musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOu
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
-    IonContent, 
-    IonGrid, 
-    IonRow, 
-    IonCol, 
-    IonButton, 
-    IonIcon, 
+    IonContent,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonButton,
+    IonIcon,
     IonSpinner,
-    TopmenuComponent, 
+    TopmenuComponent,
     FooterComponent
-  ],
+],
 })
 export class HomePage implements OnInit {
   private firestore = inject(Firestore);

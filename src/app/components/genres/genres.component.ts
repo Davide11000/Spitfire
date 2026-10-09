@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonIcon, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -15,7 +15,7 @@ import { GENERI_DISPONIBILI } from '../../constants/generi';
   standalone: true,
   templateUrl: './genres.component.html',
   styleUrls: ['./genres.component.scss'],
-  imports: [CommonModule, FormsModule, IonButton, IonIcon]
+  imports: [FormsModule, IonButton, IonIcon]
 })
 export class GenresComponent implements OnChanges {
   @Input() entityId!: string;
