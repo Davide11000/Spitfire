@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
-import { Playlist } from 'src/app/services/playlist';
+import { Playlist } from '../../services/playlist';
 
 @Component({
   selector: 'app-playlist',

@@ -43,6 +43,30 @@ db.exec(`
     FOREIGN KEY (following) REFERENCES users(username)
   );
 
+  CREATE TABLE IF NOT EXISTS favourite_artist (
+    user TEXT NOT NULL,
+    artid INTEGER,
+    PRIMARY KEY (user, artid),
+    FOREIGN KEY (user) REFERENCES users(username),
+    FOREIGN KEY (artid) REFERENCES artists(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS favourite_record (
+    user TEXT NOT NULL,
+    recordid INTEGER,
+    PRIMARY KEY (user, recordid),
+    FOREIGN KEY (user) REFERENCES users(username),
+    FOREIGN KEY (recordid) REFERENCES records(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS favourite_song (
+    user TEXT NOT NULL,
+    songid INTEGER,
+    PRIMARY KEY (user, songid),
+    FOREIGN KEY (user) REFERENCES users(username),
+    FOREIGN KEY (songid) REFERENCES songs(id)
+  );
+
   CREATE TABLE IF NOT EXISTS playlists (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,

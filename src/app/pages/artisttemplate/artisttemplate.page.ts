@@ -39,24 +39,25 @@ export class ArtisttemplatePage implements OnInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  private auth = inject(Auth);
-  private artistService = inject(Artist);
-  private userService = inject(User);
-  private recordService = inject(Record);
-
-  constructor() {
+  constructor(private auth: Auth, private artistService: Artist, private userService: User, private recordService: Record) {
     addIcons({ star, createOutline, heartOutline, heart });
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    /*this.route.paramMap.subscribe(params => {
       this.artistaId = params.get('id');
       if (this.artistaId) {
         this.caricaDettagliArtista(this.artistaId);
       }
-    });
+    });*/
+    this.artistaId = this.route.snapshot.paramMap.get("artId");
 
     const token = this.auth.getToken();
+
+    this.recordService.getAllRecordsByArtist(this.artistaId || '').subscribe({
+      next: (res) => {this.tuttiGliAlbum = res;},
+      error: (err) => {console.error("Records not found", err)}
+    });
 
     if (token) {
       this.auth.getProfile(token).subscribe((value) => {
@@ -89,8 +90,9 @@ export class ArtisttemplatePage implements OnInit {
 
   async caricaDettagliArtista(id: string) {
     try {
-      this.artistService.getArtist(id).subscribe((value) => {
-        this.artista = value;
+      this.artistService.getArtist(id).subscribe({
+        next: (res) => this.artista = res,
+        error: (err) => console.error(err)
       });
 
       if (this.artista) {

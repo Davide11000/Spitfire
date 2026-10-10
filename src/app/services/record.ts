@@ -7,11 +7,11 @@ export class Record {
     private baseUrl = "http://localhost:3000/records";
     private http = inject(HttpClient);
 
-    getRecord(id: string) {
+    getRecord(id: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
 
-    getAllRecordsByArtist(id: string) {
+    getAllRecordsByArtist(id: string) : Observable<any> {
         return this.http.get(`http://localhost:3000/artist/${id}`);
     }
 }
