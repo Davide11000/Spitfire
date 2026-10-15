@@ -1,4 +1,4 @@
-<app-topmenu></app-topmenu>
+<app-navbar></app-navbar>
 
 <ion-content class="globalbg">
   
@@ -35,21 +35,21 @@
           <ion-spinner color="warning"></ion-spinner>
         </div>
       } @else {
-        @if (recentSongs.length === 0) {
-          <p class="empty-text">No tracks added recently.</p>
+        @if (recentRecords.length === 0) {
+          <p class="empty-text">No records added recently.</p>
         } @else {
           <div class="custom-rows-list">
-            @for (song of recentSongs; track song.id; let idx = $index) {
-              <div class="rows-list-item" [routerLink]="['/songtemplate', song.id]">
+            @for (record of recentRecords; track record.id; let idx = $index) {
+              <div class="rows-list-item" [routerLink]="['/albumtemplate', record.id]">
                 <div class="item-index">{{ idx + 1 }}</div>
                 
                 <div class="item-mini-cover">
-                  <img [src]="song.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
+                  <img [src]="record.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
                 </div>
 
                 <div class="item-info">
-                  <div class="item-title">{{ song.titolo }}</div>
-                  <div class="item-artist">{{ song.artista }}</div>
+                  <div class="item-title">{{ record.titolo }}</div>
+                  <div class="item-artist">{{ record.artista }}</div>
                 </div>
                 <div class="item-arrow">
                   <ion-icon name="chevron-forward-outline"></ion-icon>

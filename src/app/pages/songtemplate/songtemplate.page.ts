@@ -7,12 +7,16 @@ import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { RatingStarsComponent } from "../../components/rating-stars/rating-stars.component";
 import { AnnotationsComponent } from '../../components/annotations/annotations.component';
-import { PlaylistdbService } from '../services/playlistdb';
 import { addIcons } from 'ionicons';
 import { addOutline, closeOutline, musicalNotesOutline, createOutline, languageOutline, sendOutline, pencilOutline } from 'ionicons/icons';
 import { CommentsComponent } from "../../components/comments/comments.component";
 import { Subscription } from 'rxjs';
 import { GenresComponent } from '../../components/genres/genres.component';
+import { Auth } from '../../services/auth';
+import { User } from '../../services/user';
+import { Song } from '../../services/song';
+import { Artist } from '../../services/artist';
+import { Playlist } from '../../services/playlist';
 
 @Component({
   selector: 'app-songtemplate',
@@ -52,10 +56,12 @@ export class SongtemplatePage implements OnInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
-  private authService = inject(Auth);
-  private playlistdbService = inject(PlaylistdbService);
+  private auth = inject(Auth);
+  private user = inject(User);
+  private song = inject(Song)
+  private artist = inject(Artist);
+  private playlist = inject(Playlist);
   private toastController = inject(ToastController);
   private adminSub!: Subscription;
   private moderatorSub!: Subscription;
@@ -67,7 +73,37 @@ export class SongtemplatePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.isMobile = window.innerWidth < 768;
 
-    this.authService.user$.subscribe(user => {
+    const token = this.auth.getToken();
+
+    if (token) {
+      this.auth.getProfile(token).subscribe({
+        next: (res) => {
+          this.mioUid = res.uid;
+          this.mioNome = res.username || "Utente";
+        },
+        error: (err) => {
+          this.mioUid = null;
+          console.error(err);
+        } 
+      });
+      
+      if (this.mioUid) {
+        this.user.getUserRole(this.mioUid).subscribe({
+          next: (res) => {
+            if (res === "admin") {
+              this.isAdmin = true;
+            }
+            else if (res === "mod") {
+              this.isModerator = true;
+            }
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error(err)
+        });
+      }
+    }
+
+    /*this.authService.user$.subscribe(user => {
       if (user) {
         this.mioUid = user.uid;
         this.mioNome = user.displayName || 'Utente';
@@ -84,7 +120,7 @@ export class SongtemplatePage implements OnInit, OnDestroy {
       if (this.songId) {
         this.caricaDettagliCanzone(this.songId);
       }
-    });
+    });*/
   }
 
   ngOnDestroy() {
@@ -106,8 +142,38 @@ export class SongtemplatePage implements OnInit, OnDestroy {
     this.traduzioniDisponibili = [];
     this.linguaSelezionata = 'original';
     this.cdr.detectChanges();
+
+    try {
+      this.song.getSongbyId(id).subscribe({
+        next: (res) => this.canzone = res,
+        error: (err) => console.error(err)
+      });
+  
+  
+      if (this.canzone) {
+        this.estraiColoriCopertina();
+        if (this.canzone.testo) {
+            this.testoFormattato = this.canzone.testo.replace(/\n/g, '<br>');
+          } else {
+            this.testoFormattato = "Testo non inserito per questo brano.";
+          }
+        this.testoMostrato = this.testoFormattato;
+        this.caricaTraduzioni(id);
+      }
+      else {
+        this.router.navigate(['/home']);
+      }
+      this.caricamentoTesto = false;
+      this.cdr.detectChanges();
+    } catch (err) {
+      console.error("Errore nel recupero della canzone da Firestore:", err);
+      this.testoFormattato = "Errore nel caricamento del testo.";
+      this.testoMostrato = this.testoFormattato;
+      this.caricamentoTesto = false;
+      this.cdr.detectChanges();
+    }
     
-    const docRef = doc(this.firestore, 'songs', id);
+    /*const docRef = doc(this.firestore, 'songs', id);
     
     getDoc(docRef).then(async docSnap => {
       if (docSnap.exists()) {
@@ -132,18 +198,18 @@ export class SongtemplatePage implements OnInit, OnDestroy {
       this.testoMostrato = this.testoFormattato;
       this.caricamentoTesto = false;
       this.cdr.detectChanges();
-    });
+    });*/
   }
 
   async caricaTraduzioni(songId: string) {
-    try {
+    /*try {
       const translationsRef = collection(this.firestore, 'songs', songId, 'translations');
       const snap = await getDocs(translationsRef);
       this.traduzioniDisponibili = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       this.cdr.detectChanges();
     } catch (err) {
       console.error("Errore nel recupero delle traduzioni:", err);
-    }
+    }*/
   }
 
   cambiaLingua(valore: string) {
@@ -207,7 +273,7 @@ export class SongtemplatePage implements OnInit, OnDestroy {
     };
 
     try {
-      await addDoc(collection(this.firestore, 'requests'), richiestaDoc);
+      /*await addDoc(collection(this.firestore, 'requests'), richiestaDoc);*/
       const toast = await this.toastController.create({ message: 'Translation submitted successfully!', duration: 3000, position: 'bottom', color: 'dark' });
       await toast.present();
       this.chiudiModalTraduzione();
@@ -226,12 +292,16 @@ export class SongtemplatePage implements OnInit, OnDestroy {
 
   async vaiAllArtista(nomeArtista: string) {
     if (!nomeArtista) return;
-    const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
+    this.artist.getArtist(nomeArtista).subscribe({
+      next: (res) => this.router.navigate(['/artisttemplate', res]),
+      error: (err) => console.error(err)
+    });
+    /*const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
     const q = query(collection(this.firestore, 'artists'), where('nome_lowercase', '==', nomeInMinuscolo));
     const snap = await getDocs(q);
     if (!snap.empty) {
       this.router.navigate(['/artisttemplate', snap.docs[0].id]);
-    }
+    }*/
   }
 
   async apriModalPlaylist() {
@@ -239,9 +309,13 @@ export class SongtemplatePage implements OnInit, OnDestroy {
      console.log('mioUid:', this.mioUid);
     if (!this.mioUid) return;
     try {
-      const q = query(collection(this.firestore, 'playlists'), where('creatoreUid', '==', this.mioUid));
+      this.playlist.getUserPlaylists(this.mioNome).subscribe({
+        next: (res) => this.userPlaylists = res,
+        error: (err) => console.error(err)
+      });
+      /*const q = query(collection(this.firestore, 'playlists'), where('creatoreUid', '==', this.mioUid));
       const querySnapshot = await getDocs(q);
-      this.userPlaylists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      this.userPlaylists = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));*/
     } catch (error) {
       console.error(error);
     }
@@ -258,15 +332,15 @@ export class SongtemplatePage implements OnInit, OnDestroy {
 
   async selezionaPlaylist(playlistId: string) {
     if (!this.songId || !this.canzone) return;
-    const tracciaStrutturata = {
+    /*const tracciaStrutturata = {
       id: this.songId,
       titolo: this.canzone.titolo,
       artista: this.canzone.artista,
       fotoBase64: this.canzone.fotoBase64 || '',
       notaUtente: ''
-    };
+    };*/
     try {
-      await this.playlistdbService.aggiungiCanzoneAPlaylist(playlistId, tracciaStrutturata);
+      await this.playlist.addSong(parseInt(playlistId), parseInt(this.songId));
       this.chiudiModalPlaylist();
     } catch (error) {
       console.error(error);
@@ -276,10 +350,10 @@ export class SongtemplatePage implements OnInit, OnDestroy {
   async rapidaCreaPlaylist() {
     if (!this.nuovaPlaylistNome.trim() || !this.mioUid) return;
     try {
-      const nuovaPlaylistId = await this.playlistdbService.creaPlaylist(
+      const nuovaPlaylistId = await this.playlist.createPlaylist(
         this.mioUid, this.mioNome,
-        this.nuovaPlaylistNome.trim(),
-        this.nuovaPlaylistDescrizione.trim(), ''
+        /*this.nuovaPlaylistNome.trim(),
+        this.nuovaPlaylistDescrizione.trim(), ''*/
       );
       const nuovaPlLocale = { id: nuovaPlaylistId, nome: this.nuovaPlaylistNome.trim(), fotoBase64: '', canzoni: [] };
       this.userPlaylists = [nuovaPlLocale, ...this.userPlaylists];

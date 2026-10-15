@@ -10,10 +10,11 @@ import {
   IonIcon, 
   IonSpinner
 } from '@ionic/angular';
-import { TopmenuComponent } from "../../components/topmenu/topmenu.component";
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from "../../components/footer/footer.component";
 import { addIcons } from 'ionicons';
 import { musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { Record } from '../../services/record';
 
 @Component({
   selector: 'app-home',
@@ -29,15 +30,14 @@ import { musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOu
     IonButton,
     IonIcon,
     IonSpinner,
-    TopmenuComponent,
+    NavbarComponent,
     FooterComponent
 ],
 })
 export class HomePage implements OnInit {
-  private firestore = inject(Firestore);
   private cdr = inject(ChangeDetectorRef);
 
-  public recentSongs: any[] = [];
+  public recentRecords: any[] = [];
   public topRatedSongs: any[] = [];
 
   public caricamentoRecenti: boolean = true;
@@ -48,23 +48,34 @@ export class HomePage implements OnInit {
   public altreRecentSongs: boolean = true;
   public altreTopSongs: boolean = true;
 
-  private lastRecentDoc: QueryDocumentSnapshot | null = null;
-  private lastTopDoc: QueryDocumentSnapshot | null = null;
+  //private lastRecentDoc: QueryDocumentSnapshot | null = null;
+  //private lastTopDoc: QueryDocumentSnapshot | null = null;
 
   private readonly LIMIT_RECENTI = 5;
   private readonly LIMIT_TOP = 4;
 
-  constructor() {
+  constructor(private recordService : Record) {
     addIcons({ musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOutline });
   }
 
   ngOnInit() {
     this.caricaContenutiRecenti();
-    this.caricaContenutiTopRated();
+    //this.caricaContenutiTopRated();
   }
 
   async caricaContenutiRecenti() {
     try {
+      this.recordService.getRecentRecords(this.LIMIT_RECENTI).subscribe({
+        next: (res) => this.recentRecords = res,
+        error: (err) => console.error(err)
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.caricamentoRecenti = false;
+      this.cdr.detectChanges();
+    }
+    /*try {
       const songsRef = collection(this.firestore, 'songs');
       const q = query(songsRef, orderBy('titolo', 'asc'), limit(this.LIMIT_RECENTI));
       const querySnapshot = await getDocs(q);
@@ -79,11 +90,11 @@ export class HomePage implements OnInit {
     } finally {
       this.caricamentoRecenti = false;
       this.cdr.detectChanges();
-    }
+    }*/
   }
 
   async caricaAltreRecenti() {
-    if (!this.lastRecentDoc || this.caricamentoAltriRecenti) return;
+    /*if (!this.lastRecentDoc || this.caricamentoAltriRecenti) return;
     this.caricamentoAltriRecenti = true;
     try {
       const songsRef = collection(this.firestore, 'songs');
@@ -99,11 +110,11 @@ export class HomePage implements OnInit {
     } finally {
       this.caricamentoAltriRecenti = false;
       this.cdr.detectChanges();
-    }
+    }*/
   }
 
   async caricaContenutiTopRated() {
-    try {
+    /*try {
       const songsRef = collection(this.firestore, 'songs');
       const q = query(songsRef, limit(this.LIMIT_TOP));
       const querySnapshot = await getDocs(q);
@@ -118,11 +129,11 @@ export class HomePage implements OnInit {
     } finally {
       this.caricamentoTop = false;
       this.cdr.detectChanges();
-    }
+    }*/
   }
 
   async caricaAltreTop() {
-    if (!this.lastTopDoc || this.caricamentoAltriTop) return;
+    /*if (!this.lastTopDoc || this.caricamentoAltriTop) return;
     this.caricamentoAltriTop = true;
     try {
       const songsRef = collection(this.firestore, 'songs');
@@ -138,6 +149,6 @@ export class HomePage implements OnInit {
     } finally {
       this.caricamentoAltriTop = false;
       this.cdr.detectChanges();
-    }
+    }*/
   }
 }

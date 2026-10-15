@@ -43,7 +43,7 @@ exports.getRecordByArtID = async (req, res) => {
   catch (err) {
     res.status(500).json({ error: err.message });
   }
-}
+};
 
 exports.getRecordByID = async (req, res) => {
   try {
@@ -58,5 +58,20 @@ exports.getRecordByID = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getRecentRecords = async (req, res) => {
+  try {
+    const len = req.params.len;
+    const records = await Record.getRecent(len);
+
+    if (!records) {
+      return res.status(404).json({ message: "No records found" });
+    }
+
+    res.json(records);
+  } catch (err) {
+    res.status(500).json({ error: err.message }); 
   }
 };

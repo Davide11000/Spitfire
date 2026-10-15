@@ -39,6 +39,16 @@ const Record = {
         else resolve(row);
       });
     });
+  },
+  
+  getRecent: (Len) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT TOP ? FROM records`;
+      db.get(query, [Len], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    })
   }
 };
 

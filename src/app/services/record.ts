@@ -14,4 +14,8 @@ export class Record {
     getAllRecordsByArtist(id: string) : Observable<any> {
         return this.http.get(`http://localhost:3000/artist/${id}`);
     }
+
+    getRecentRecords(len: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}`);
+    }
 }

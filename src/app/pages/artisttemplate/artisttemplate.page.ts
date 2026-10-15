@@ -60,7 +60,19 @@ export class ArtisttemplatePage implements OnInit {
     });
 
     if (token) {
-      this.auth.getProfile(token).subscribe((value) => {
+      this.auth.getProfile(token).subscribe({
+        next: (res) => {
+          this.utenteLoggatoUid = res.uid;
+          if (this.artistaId) {
+            this.controllaSeIsFavourite();
+          }
+        },
+        error: (err) => {
+          this.utenteLoggatoUid = '';
+          this.isFavourite = false;
+          console.error(err);
+        }
+      }/*(value) => {
         if (value) {
           this.utenteLoggatoUid = value.uid;
           if (this.artistaId) {
@@ -71,7 +83,7 @@ export class ArtisttemplatePage implements OnInit {
           this.isFavourite = false;
         }
         this.cdr.detectChanges();
-      });
+      }*/);
     }
 
     /*this.authService.user$.subscribe(user => {

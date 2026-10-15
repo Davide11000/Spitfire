@@ -11,6 +11,10 @@ export class User {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
 
+    getUserRole(id: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}/role`)
+    }
+
     addToFavouriteArtists(id: string) : Observable<any> {
         return this.http.post(`${this.baseUrl}/favourites/artists/`, id);
     }

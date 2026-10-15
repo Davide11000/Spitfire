@@ -47,6 +47,16 @@ const User = {
         else resolve(row);
       });
     });
+  },
+
+  getRole: (username) =>  {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT ruolo FROM users WHERE username = ?`;
+      db.get(query, [username], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    })
   }
 };
 

@@ -6,12 +6,15 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Auth } from '../../services/auth'
+import { User } from '../../services/user';
 import { addIcons } from 'ionicons';
 import { createOutline } from 'ionicons/icons';
 import { RatingStarsComponent } from '../../components/rating-stars/rating-stars.component';
 import { CommentsComponent } from "../../components/comments/comments.component";
 import { GenresComponent } from "../../components/genres/genres.component";
 import { Subscription } from 'rxjs';
+import { Record } from '../../services/record';
+import { Artist } from '../../services/artist';
 
 @Component({
   selector: 'app-albumtemplate',
@@ -27,9 +30,12 @@ import { Subscription } from 'rxjs';
 })
 export class AlbumtemplatePage implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
-  private authService = inject(Auth);
+  private auth = inject(Auth);
+  private user = inject(User);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private record = inject(Record);
+  private artist = inject(Artist);
 
   albumId: string | null = null;
   album: any = null;
@@ -54,7 +60,35 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
       this.caricaDettagliAlbum(this.albumId);
     }
 
-    this.authService.user$.subscribe(user => {
+    const token = this.auth.getToken();
+
+    if (token) {
+      this.auth.getProfile(token).subscribe({
+        next: (res) => {
+          this.utenteLoggatoUid = res.id;
+          this.mioNome = res.displayName || "Utente";
+        },
+        error: (err) => console.error(err)
+      });
+
+      if (this.utenteLoggatoUid) {
+        this.user.getUserRole(this.utenteLoggatoUid).subscribe({
+          next: (res) => {
+            if (res === "admin") {
+              this.isAdmin = true;
+            }
+            else if (res === "mod") {
+              this.isModerator = true;
+            }
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error(err)
+        });
+      }
+    }
+
+
+    /*this.authService.user$.subscribe(user => {
       if (user) {
         this.utenteLoggatoUid = user.uid;
         this.mioNome = user.displayName || 'Utente';
@@ -65,7 +99,7 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     });
 
     this.adminSub = this.authService.isAdmin$.subscribe(v => { this.isAdmin = v; this.cdr.detectChanges(); });
-    this.moderatorSub = this.authService.isModerator$.subscribe(v => { this.isModerator = v; this.cdr.detectChanges(); });
+    this.moderatorSub = this.authService.isModerator$.subscribe(v => { this.isModerator = v; this.cdr.detectChanges(); });*/
   }
 
   ngOnDestroy() {
@@ -75,7 +109,16 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   }
 
   async caricaDettagliAlbum(id: string) {
-    try {
+    this.record.getRecord(id).subscribe({
+      next: (res) => {
+        this.album = res;
+        this.tracklist = this.album.tracklist || this.album.canzoni || [];
+        this.estraiColoriCopertina();
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err)
+    });
+    /*try {
       const docRef = doc(this.firestore, 'albums', id);
       const docSnap = await getDoc(docRef);
 
@@ -90,7 +133,7 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     } catch (err) {
       console.error("Errore nel recupero dell'album da Firestore:", err);
       await this.router.navigate(['/home']);
-    }
+    }*/
   }
 
   vaiAllaCanzone(songId: string) {
@@ -100,13 +143,19 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   }
 
   async vaiAllArtista(nomeArtista: string) {
-    if (!nomeArtista) return;
+    this.artist.getArtist(nomeArtista).subscribe({
+      next: (res) => {
+        this.router.navigate(['/artisttemplate', res.id]);
+      },
+      error: (err) => console.error(err)
+    });
+    /*if (!nomeArtista) return;
     const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
     const q = query(collection(this.firestore, 'artists'), where('nome_lowercase', '==', nomeInMinuscolo));
     const snap = await getDocs(q);
     if (!snap.empty) {
       this.router.navigate(['/artisttemplate', snap.docs[0].id]);
-    }
+    }*/
   }
 
   vaiACorrectEntry() {
