@@ -1,34 +1,122 @@
-<ion-content [fullscreen]="true">
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12">
-        @if (user) {
-          <ion-card class="profile-card">
-            <div class="profile-header">
-              <ion-img [src]="'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
-              <div class="profile-info">
-                <div class="username">
-                  @{{user.username}}
-                </div>
-                <div class="stats">
-                   <span><strong>{{followersCount}}</strong> Followers</span>
-                   <span><strong>{{followingCount}}</strong> Following</span>
-                </div>
-                <div class="actions">
-                  @if (isOwnProfile) {
-                    <ion-button fill="outline" class="action-btn">Edit profile</ion-button>
-                    <ion-button fill="outline" color="danger" class="action-btn" (click)="onLogout()">Logout</ion-button>
-                  } @else {
-                    <ion-button fill="outline" class="action-btn" (click)="onFollow()">{{ isFollowing ? 'Unfollow' : 'Follow' }}</ion-button>
-                  }
-                </div>
-              </div>
-            </div>
-          </ion-card>
-        } @else {
-          <ion-spinner name="crescent"></ion-spinner>
+<ion-content class="globalbg">
+  @if (user) {
+    <div class="profile-header">
+      <div class="profile-photo">
+        <img [src]="getPhoto(user.foto_profilo)" />
+      </div>
+      <div class="profile-info">
+        <div class="username">
+          <b>{{ '@' + user.username }}</b>
+        </div>
+        <div class="stats">
+          <button class="stat" (click)="openFollowers()">
+            <b>{{ followers.length }}</b> Followers
+          </button>
+          <button class="stat" (click)="openFollowing()">
+            <b>{{ following.length }}</b> Following
+          </button>
+        </div>
+        <div class="actions">
+          @if (isOwnProfile) {
+            <!-- Il bottone apre l'input file nascosto -->
+            <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)" />
+            <ion-button fill="outline" class="action-btn" (click)="photoInput.click()">
+              <ion-icon slot="start" name="image-outline"></ion-icon>
+              Change photo
+            </ion-button>
+            @if (user.foto_profilo) {
+              <ion-button fill="outline" class="action-btn" (click)="onRemovePhoto()">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Remove photo
+              </ion-button>
+            }
+            <ion-button fill="outline" color="danger" class="action-btn" (click)="onLogout()">
+              <ion-icon slot="start" name="log-out-outline"></ion-icon>
+              Logout
+            </ion-button>
+          } @else {
+            <ion-button [fill]="isFollowing ? 'outline' : 'solid'" class="action-btn" (click)="onFollow()">
+              {{ isFollowing ? 'Unfollow' : 'Follow' }}
+            </ion-button>
+          }
+        </div>
+        @if (photoError) {
+          <ion-text color="danger">{{ photoError }}</ion-text>
         }
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+      </div>
+
+      <div class="section">
+        <div class="section-title-row">
+          <b class="section-title">Playlists</b>
+          @if (isOwnProfile) {
+            <ion-button fill="outline" class="action-btn" (click)="onCreatePlaylist()">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              New Playlist
+            </ion-button>
+          }
+        </div>
+
+        <div class="playlist-grid">
+          @for (playlist of playlists; track playlist.id) {
+            <button class="playlist-card" (click)="openPlaylist(playlist)">
+              <div class="playlist-card-cover">
+                <img [src]="getCover(playlist.image)" />
+              </div>
+              <div class="playlist-card-name">
+                @if (!playlist.is_public) {
+                  <ion-icon name="lock-closed-outline"></ion-icon>
+                }
+                {{ playlist.name }}
+              </div>
+            </button>
+          } @empty {
+            <div class="empty-section">
+              <p>{{ isOwnProfile ? 'You have no playlists yet. Create one!' : 'No playlists yet.' }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar class="modal-toolbar">
+            <ion-title>{{ modalTitle }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="isModalOpen = false">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="globalbg">
+          <ion-list class="users-list">
+            @for (u of modalUsers; track u.username) {
+              <ion-item lines="full" class="user-item" button (click)="goToProfile(u.username)">
+                <ion-avatar slot="start">
+                  <img [src]="getPhoto(u.foto_profilo)" />
+                </ion-avatar>
+                <ion-label>
+                  <h2 class="user-name">{{ '@' + u.username }}</h2>
+                </ion-label>
+              </ion-item>
+            } @empty {
+              <div class="empty-section">
+                <p>No users here yet.</p>
+              </div>
+            }
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  } @else if (errorMessage) {
+    <div class="empty-section">
+      <p>{{ errorMessage }}</p>
+    </div>
+  } @else {
+    <div class="empty-section">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  }
 </ion-content>

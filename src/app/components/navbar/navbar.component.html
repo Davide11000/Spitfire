@@ -1,34 +1,51 @@
 <ion-toolbar class="navbar">
-  <ion-buttons slot="start" class="ion-display-lg-none">
-    <ion-menu-button></ion-menu-button>
-  </ion-buttons>
-
   <ion-title slot="start" class="brand-title">
     <b>SPITFIRE</b>
   </ion-title>
 
-  <ion-buttons slot="end" class="ion-display-none ion-display-lg-block btn-wrapper">
+  <!-- Schermo grande: tasti delle pagine -->
+  <ion-buttons slot="end" class="ion-hide-lg-down btn-wrapper">
     <ion-button routerLink="/home">Home</ion-button>
     <ion-button routerLink="/lists">Playlists</ion-button>
     <ion-button routerLink="/discover">Discover</ion-button>
   </ion-buttons>
 
-  <div slot="end" class="search-container ion-display-none ion-display-sm-block">
+  <div slot="end" class="search-container">
     <ion-searchbar
       class="navbar-searchbar"
       placeholder="Search">
     </ion-searchbar>
   </div>
 
-  <ion-buttons slot="end" class="ion-display-sm-none">
-    <ion-button shape="round">
-      <ion-icon name="search" class="search-icon"></ion-icon>
-    </ion-button>
+  <!-- Loggato: foto profilo (su tutti gli schermi). Non loggato: Sign In (su schermo piccolo sta nell'hamburger) -->
+  <ion-buttons slot="end">
+    @if (isLoggedIn) {
+      <ion-avatar class="user-avatar" routerLink="/profile">
+        <img [src]="getPhoto()" />
+      </ion-avatar>
+    } @else {
+      <ion-button class="sign-in-btn ion-hide-lg-down" routerLink="/login">
+        Sign In
+      </ion-button>
+    }
   </ion-buttons>
 
-  <ion-buttons slot="end">
-    <ion-button class="sign-in-btn" routerLink="/login">
-      Sign In
+  <!-- Schermo piccolo: menu hamburger -->
+  <ion-buttons slot="end" class="ion-hide-lg-up">
+    <ion-button class="menu-btn" (click)="toggleMenu()">
+      <ion-icon slot="icon-only" [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
     </ion-button>
   </ion-buttons>
 </ion-toolbar>
+
+<!-- Schermo piccolo: tendina con gli stessi tasti -->
+@if (isMenuOpen) {
+  <div class="mobile-menu ion-hide-lg-up">
+    <ion-button fill="clear" expand="full" routerLink="/home">Home</ion-button>
+    <ion-button fill="clear" expand="full" routerLink="/lists">Playlists</ion-button>
+    <ion-button fill="clear" expand="full" routerLink="/discover">Discover</ion-button>
+    @if (!isLoggedIn) {
+      <ion-button fill="clear" expand="full" routerLink="/login">Sign In</ion-button>
+    }
+  </div>
+}

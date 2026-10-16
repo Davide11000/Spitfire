@@ -2,10 +2,10 @@ const Record = require("../models/recordModel");
 
 exports.getRecordByName = async (req, res) => {
   try {
-    const recordname = req.params.recordName;
+    const recordname = req.params.recordname;
     const record = await Record.findByRecordname(recordname);
 
-    if (!record) {
+    if (!record.length) {
       return res.status(404).json({ message: "No record found with that name" });
     }
     res.json(record);
@@ -16,13 +16,13 @@ exports.getRecordByName = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { recordname, artId } = req.body;
+    const { recordname, artId, image } = req.body;
 
     if (!recordname || !artId) {
       return res.status(400).json({ message: "Record name and artist ID required"});
     }
 
-    const record = await Record.create(recordname, artId);
+    const record = await Record.create(recordname, artId, image);
       res.status(201).json(record);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -31,10 +31,10 @@ exports.create = async (req, res) => {
 
 exports.getRecordByArtID = async (req, res) => {
   try {
-    const artid = req.params.id;
+    const artid = req.params.artid;
     const record = await Record.findByArtid(artid);
 
-    if (!record) {
+    if (!record.length) {
       return res.status(404).json({ message: "No records exist with this Artist ID" });
     }
 

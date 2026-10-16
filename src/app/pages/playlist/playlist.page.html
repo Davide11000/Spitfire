@@ -1,8 +1,8 @@
-@if (playlist) {
-  <ion-content class="globalbg">
+<ion-content class="globalbg">
+  @if (playlist) {
     <div class="playlist-header">
       <div class="playlist-cover">
-        <img [src]="'assets/default-cover.svg'" />
+        <img [src]="getImage(playlist.image)" />
       </div>
       <div class="playlist-info">
         <div class="playlist-name-wrap">
@@ -15,36 +15,103 @@
           <div class="songs-count">
             <b>{{ songs.length }} songs</b> saved
           </div>
+          @if (isOwner) {
+            <ion-button fill="outline" size="small" class="action-btn" (click)="toggleVisibility()">
+              <ion-icon slot="start" [name]="playlist.is_public ? 'globe-outline' : 'lock-closed-outline'"></ion-icon>
+              {{ playlist.is_public ? 'Public' : 'Private' }}
+            </ion-button>
+          } @else if (!playlist.is_public) {
+            <div class="visibility-label">
+              <ion-icon name="lock-closed-outline"></ion-icon> Private
+            </div>
+          }
         </div>
       </div>
       <div class="tracks-section">
-        <div class="add-tracks-row">
-          <ion-button fill="outline" class="action-btn">
-            <ion-icon slot="start" name="add-outline"></ion-icon>
-            Add Tracks
-          </ion-button>
-        </div>
+        @if (isOwner) {
+          <div class="add-tracks-row">
+            <ion-button fill="outline" class="action-btn" (click)="openAddTracks()">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              Add Tracks
+            </ion-button>
+          </div>
+        }
         <ion-list class="playlist-tracks">
           @for (song of songs; track song.id) {
             <ion-item lines="full" class="track-item">
               <ion-avatar slot="start" class="track-avatar">
-                <img [src]="'assets/default-cover.svg'" />
+                <img [src]="getSongImage(song)" />
               </ion-avatar>
               <ion-label class="track-details">
                 <h2 class="song-title">{{ song.songname }}</h2>
                 <p class="artist-name">{{ song.artname }}</p>
               </ion-label>
-              <ion-button class="trash" slot="end" fill="clear">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-              </ion-button>
+              @if (isOwner) {
+                <ion-button class="trash" slot="end" fill="clear" (click)="removeSong(song)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+              }
             </ion-item>
-            } @empty {
+          } @empty {
             <div class="empty-playlist">
-              <p>This playlist is empty. Add some tracks!</p>
+              <p>This playlist is empty.{{ isOwner ? ' Add some tracks!' : '' }}</p>
             </div>
           }
         </ion-list>
       </div>
     </div>
-  </ion-content>
-}
+
+    <ion-modal [isOpen]="isAddOpen" (didDismiss)="isAddOpen = false" class="dark-modal">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar class="modal-toolbar">
+            <ion-title>Add Tracks</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="isAddOpen = false">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+          <ion-toolbar class="modal-toolbar">
+            <ion-searchbar placeholder="Search a song" [debounce]="300" (ionInput)="onSearch($event)"></ion-searchbar>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="globalbg">
+          @if (searching) {
+            <div class="empty-playlist"><ion-spinner name="crescent"></ion-spinner></div>
+          }
+          <ion-list class="playlist-tracks">
+            @for (song of searchResults; track song.id) {
+              <ion-item lines="full" class="track-item">
+                <ion-avatar slot="start" class="track-avatar">
+                  <img [src]="getSongImage(song)" />
+                </ion-avatar>
+                <ion-label class="track-details">
+                  <h2 class="song-title">{{ song.songname }}</h2>
+                  <p class="artist-name">{{ song.artname }}</p>
+                </ion-label>
+                @if (isInPlaylist(song)) {
+                  <ion-icon slot="end" name="checkmark-outline" class="added-icon"></ion-icon>
+                } @else {
+                  <ion-button slot="end" fill="clear" class="trash" (click)="addSong(song)">
+                    <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+                  </ion-button>
+                }
+              </ion-item>
+            } @empty {
+              @if (!searching) {
+                <div class="empty-playlist">
+                  <p>Search a song to add it to the playlist.</p>
+                </div>
+              }
+            }
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  } @else if (errorMessage) {
+    <div class="empty-playlist">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+</ion-content>

@@ -1,13 +1,23 @@
 const db = require("../db/db");
 
 const Playlist = {
-    create : (name, username) => {
+    create : (name, username, image, isPublic) => {
         return new Promise((resolve, reject) => {
-            const query = `INSERT INTO playlists (name, username) VALUES (?,?)`;
-            db.run(query, [name, username], function (err) {
+            const query = `INSERT INTO playlists (name, username, image, is_public) VALUES (?,?,?,?)`;
+            db.run(query, [name, username, image, isPublic], function (err) {
                 if (err) reject(err);
-                else resolve({ id: this.lastID, name, username });
+                else resolve({ id: this.lastID, name, username, image, is_public: isPublic });
                     
+            });
+        });
+    },
+
+    setVisibility : (playlistId, isPublic) => {
+        return new Promise((resolve, reject) => {
+            const query = `UPDATE playlists SET is_public = ? WHERE id = ?`;
+            db.run(query, [isPublic, playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ id: playlistId, is_public: isPublic });
             });
         });
     },
@@ -34,7 +44,7 @@ const Playlist = {
 
     getSongs : (playlistId) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT songs.id, songs.songname, songs.recordid, artists.artname 
+            const query = `SELECT songs.id, songs.songname, songs.recordid, songs.image, artists.artname, records.image AS recordimage
                             FROM playlist_songs 
                             JOIN songs ON playlist_songs.song_id = songs.id
                             JOIN records ON songs.recordid = records.id
@@ -50,6 +60,16 @@ const Playlist = {
     findByUsername: (username) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT * FROM playlists WHERE username = ?`;
+            db.all(query, [username], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    findPublicByUsername: (username) => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM playlists WHERE username = ? AND is_public = 1`;
             db.all(query, [username], (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);

@@ -1,3 +1,11 @@
+/* :host è il tag <app-navbar>: lo metto sopra al contenuto della pagina,
+   altrimenti ion-content copre la tendina dell'hamburger */
+:host {
+  display: block;
+  position: relative;
+  z-index: 20;
+}
+
 .navbar {
   --background: #141414;
   color: #f2f2f2;
@@ -9,11 +17,17 @@
   text-align: start;
 }
 
-.btn-wrapper {
-  ion-button {
-    --color: #f2f2f2;
-    text-transform: none;
-  }
+/* Tutti i tasti: al passaggio del mouse cambia solo il colore del testo, con una breve dissolvenza */
+ion-button {
+  --color: #f2f2f2;
+  --color-hover: red;
+  --background-hover-opacity: 0;
+  text-transform: none;
+}
+
+/* "native" è il vero <button> dentro ion-button: la transizione va messa lì */
+ion-button::part(native) {
+  transition: color 0.3s ease;
 }
 
 .search-container {
@@ -28,13 +42,32 @@
   --placeholder-color: #999;
 }
 
-.search-icon {
-  font-size: x-large;
-  color: #f2f2f2;
-}
-
 .sign-in-btn {
   --border-radius: 8px;
-  --color: #f2f2f2;
-  text-transform: none;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  margin: 0 8px;
+  cursor: pointer;
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.menu-btn {
+  font-size: x-large;
+}
+
+/* La tendina si apre sopra la pagina, sotto la navbar */
+.mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #141414;
+  border-top: 1px solid #262626;
+  padding: 8px 0;
 }

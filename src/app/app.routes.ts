@@ -29,7 +29,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/profile/profile.page').then(m => m.ProfilePage)
   },
   {
-    path: 'playlist',
+    path: 'playlist/:playlistId',
     loadComponent: () => import('./pages/playlist/playlist.page').then( m => m.PlaylistPage)
   }
 ];

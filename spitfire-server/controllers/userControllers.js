@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const fs = require("fs");
 
 exports.create = async (req, res) => {
   try {
@@ -42,6 +43,48 @@ exports.getUserByEmail = async (req, res) => {
 
     const { password, ...safeUser } = user;
     res.json(safeUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.uploadPhoto = async (req, res) => {
+  try {
+    const username = req.user.username;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    const user = await User.findByUsername(username);
+    const photo = "/uploads/profiles/" + req.file.filename;
+
+    const result = await User.updatePhoto(username, photo);
+
+    // Cancello dal disco la foto vecchia, se c'era
+    if (user.foto_profilo) {
+      fs.unlink("." + user.foto_profilo, () => {});
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.removePhoto = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const user = await User.findByUsername(username);
+
+    if (!user.foto_profilo) {
+      return res.status(400).json({ message: "You have no profile photo" });
+    }
+
+    const result = await User.updatePhoto(username, null);
+    fs.unlink("." + user.foto_profilo, () => {});
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -3,17 +3,32 @@ const Song = require("../models/songModel");
 
 exports.create = async (req, res) => {
   try {
-    const {songname, recordid} = req.body;
+    const {songname, recordid, image} = req.body;
     
     if (!songname || !recordid) {
       return res.status(400).json({ message: "Name and recordid required"});
     }
     
-    const song = await Song.create(songname, recordid);
+    const song = await Song.create(songname, recordid, image);
     res.status(201).json(song);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }     
+};
+
+exports.search = async (req, res) => {
+  try {
+    const text = req.query.q;
+
+    if (!text) {
+      return res.json([]);
+    }
+
+    const songs = await Song.search(text);
+    res.json(songs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 exports.getSongBySongname = async (req, res) => {

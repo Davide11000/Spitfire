@@ -1,6 +1,18 @@
-import { Service } from '@angular/core';
+import { inject, Service } from '@angular/core';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Service()
 export class Record {
-  
+    private baseUrl = "http://localhost:3000/records";
+    private http = inject(HttpClient);
+
+    getRecord(id: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}`);
+    }
+
+    getAllRecordsByArtist(id: string): Observable<any> {
+        return this.http.get(`${this.baseUrl}/artist/${id}`);
+    }
+
 }

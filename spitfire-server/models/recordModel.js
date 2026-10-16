@@ -1,12 +1,12 @@
 const db = require("../db/db");
 
 const Record = {
-  create: (recordname, artid) => {
+  create: (recordname, artid, image) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO records (recordname, artid) VALUES (?, ?)`;
-      db.run(query, [recordname, artid], function (err) {
+      const query = `INSERT INTO records (recordname, artid, image) VALUES (?, ?, ?)`;
+      db.run(query, [recordname, artid, image], function (err) {
         if (err) reject(err);
-        else resolve({ id: this.lastID,recordname, artid });
+        else resolve({ id: this.lastID, recordname, artid, image });
       });
     });
   },

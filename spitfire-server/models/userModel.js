@@ -29,6 +29,16 @@ const User = {
         else resolve(row);
       });
     });
+  },
+
+  updatePhoto: (username, photo) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET foto_profilo = ? WHERE username = ?`;
+      db.run(query, [photo, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, foto_profilo: photo });
+      });
+    });
   }
 };
 

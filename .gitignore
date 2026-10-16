@@ -73,3 +73,7 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Immagini caricate dagli utenti
+spitfire-server/uploads/*
+!spitfire-server/uploads/.gitkeep

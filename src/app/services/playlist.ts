@@ -10,44 +10,65 @@ export class Playlist {
   private http = inject(HttpClient);
   private auth = inject(Auth);
 
-  createPlaylist(playlistName : string, username : string): Observable<any> {
+  createPlaylist(name : string, isPublic : boolean = true): Observable<any> {
     const token = this.auth.getToken();
 
-    return this.http.post(`${this.baseUrl}`, {name: playlistName}, {
+    return this.http.post(`${this.baseUrl}`, {name, isPublic}, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
 
-  addSong(palylistId : number, songId : number): Observable<any> {
+  addSong(playlistId : number, songId : number): Observable<any> {
     const token = this.auth.getToken();
 
-    return this.http.post(`${this.baseUrl}/songs`, {palylistId, songId}, {
+    return this.http.post(`${this.baseUrl}/songs`, {playlistId, songId}, {
       headers: { Authorization: `Bearer ${token}` }
     });
     
   }
 
-  removeSong(palylistId : number, songId : number): Observable<any> {
+  removeSong(playlistId : number, songId : number): Observable<any> {
     const token = this.auth.getToken();
 
     return this.http.delete(`${this.baseUrl}/songs`, {
-      body : {palylistId, songId},
+      body : {playlistId, songId},
       headers: { Authorization: `Bearer ${token}` }
     });
 
   }
 
-  getSongs(palylistId : number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${palylistId}/songs`);
+  setVisibility(playlistId : number, isPublic : boolean): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.patch(`${this.baseUrl}/${playlistId}/visibility`, {isPublic}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  getSongs(playlistId : number): Observable<any> {
+    // Mando il token così, se sono il proprietario, vedo anche le playlist private
+    const token = this.auth.getToken();
+
+    return this.http.get(`${this.baseUrl}/${playlistId}/songs`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
   getUserPlaylists(username: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/user/${username}`);
+    // Mando il token così, se sono il proprietario, vedo anche le playlist private
+    const token = this.auth.getToken();
+
+    return this.http.get(`${this.baseUrl}/user/${username}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
   getPlaylistById(playlistId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${playlistId}`);
+    // Mando il token così, se sono il proprietario, vedo anche le playlist private
+    const token = this.auth.getToken();
+
+    return this.http.get(`${this.baseUrl}/${playlistId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
-
-
 }

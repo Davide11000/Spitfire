@@ -2,14 +2,14 @@ const Artist = require("../models/artistModel");
 
 exports.create = async (req, res) => {
     try {
-        const {artname, id} = req.body;
+        const {artname, image} = req.body;
         
-        if (!artname || !id) {
-            return res.status(400).json({ message: "Creating a new artist require a name and an ID"});
+        if (!artname) {
+            return res.status(400).json({ message: "Creating a new artist requires a name"});
         }
         
-        const user = await Artist.create(artname, id);
-        res.status(201).json(user);
+        const artist = await Artist.create(artname, image);
+        res.status(201).json(artist);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }     
@@ -24,7 +24,7 @@ exports.findArtistbyName = async (req, res) => {
         }
 
         const artists = await Artist.findByArtname(artname);
-        res.status(201).json(artists);
+        res.json(artists);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -38,8 +38,13 @@ exports.findArtistbyID = async (req, res) => {
             return res.status(400).json({message: "Invalid ID"});
         }
 
-        const artists = await Artist.findById(ID);
-        res.status(201).json(artists);
+        const artist = await Artist.findById(ID);
+
+        if (!artist) {
+            return res.status(404).json({ message: "Artist not found" });
+        }
+
+        res.json(artist);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

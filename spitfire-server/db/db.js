@@ -18,13 +18,15 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS artists (
     id INTEGER PRIMARY KEY,
-    artname TEXT
+    artname TEXT,
+    image TEXT
   );
 
   CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY,
     recordname TEXT,
     artid INTEGER,
+    image TEXT,
     FOREIGN KEY (artid) REFERENCES artists(id)
   );
 
@@ -32,6 +34,7 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     songname TEXT,
     recordid INTEGER,
+    image TEXT,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
 
@@ -47,6 +50,8 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     username TEXT NOT NULL,
+    image TEXT,
+    is_public INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (username) REFERENCES users(username)
   );
 
@@ -56,6 +61,30 @@ db.exec(`
     PRIMARY KEY (playlist_id, song_id),
     FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (song_id) REFERENCES songs(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS favourite_artists (
+    username TEXT NOT NULL,
+    artist_id INTEGER NOT NULL,
+    PRIMARY KEY (username, artist_id),
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (artist_id) REFERENCES artists(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS favourite_songs (
+    username TEXT NOT NULL,
+    song_id INTEGER NOT NULL,
+    PRIMARY KEY (username, song_id),
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (song_id) REFERENCES songs(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS favourite_records (
+    username TEXT NOT NULL,
+    record_id INTEGER NOT NULL,
+    PRIMARY KEY (username, record_id),
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (record_id) REFERENCES records(id)
   );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);

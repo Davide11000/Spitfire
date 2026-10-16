@@ -8,6 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Immagini (copertine, foto profilo...): nel db si salva il percorso, es. "/uploads/records/1.jpg"
+app.use('/uploads', express.static('uploads'));
+
 app.get('/', (req, res) => {
   res.send('Server attivo');
 });

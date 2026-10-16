@@ -25,7 +25,10 @@ const Follow = {
 
     findFollowers : (username) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT * FROM follows WHERE following = ?`;
+            const query = `SELECT follows.*, users.foto_profilo
+                           FROM follows
+                           LEFT JOIN users ON users.username = follows.follower
+                           WHERE follows.following = ?`;
             db.all(query, [username], (err, row) => {
                 if (err) reject(err);
                 else resolve(row);
@@ -35,7 +38,10 @@ const Follow = {
 
     findFollowing: (username) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT * FROM follows WHERE follower = ?`;
+            const query = `SELECT follows.*, users.foto_profilo
+                           FROM follows
+                           LEFT JOIN users ON users.username = follows.following
+                           WHERE follows.follower = ?`;
             db.all(query, [username], (err, row) => {
                 if (err) reject(err);
                 else resolve(row);
