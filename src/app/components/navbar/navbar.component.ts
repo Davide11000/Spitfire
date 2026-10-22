@@ -1,17 +1,20 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar } from '@ionic/angular/standalone';
+import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader } from '@ionic/angular/standalone';
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { menuOutline, closeOutline } from 'ionicons/icons';
 import { Auth } from 'src/app/services/auth';
 import { User } from 'src/app/services/user';
+import { Song } from 'src/app/services/song';
+import { Record } from 'src/app/services/record';
+import { Artist } from 'src/app/services/artist';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, RouterLink],
+  imports: [IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader, RouterLink],
 })
 export class NavbarComponent  implements OnInit {
 
@@ -19,7 +22,14 @@ export class NavbarComponent  implements OnInit {
   public photo: string | null = null;
   public isMenuOpen = false;
 
-  constructor(private auth : Auth, private userService : User, private router : Router) {
+  // Ricerca
+  public searchText = '';
+  public foundSongs: any[] = [];
+  public foundRecords: any[] = [];
+  public foundArtists: any[] = [];
+
+  constructor(private auth : Auth, private userService : User, private router : Router,
+              private songService : Song, private recordService : Record, private artistService : Artist) {
     addIcons({ menuOutline, closeOutline });
   }
 
@@ -32,6 +42,7 @@ export class NavbarComponent  implements OnInit {
       if (event instanceof NavigationEnd) {
         this.checkLogin();
         this.isMenuOpen = false;
+        this.closeSearch();
       }
     });
   }
@@ -60,6 +71,51 @@ export class NavbarComponent  implements OnInit {
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  // Se l'immagine non c'è uso quella di default
+  getImage(image: string | null): string {
+    if (!image) return 'assets/default-cover.svg';
+    return 'http://localhost:3000' + image;
+  }
+
+  // La canzone usa la sua immagine, se non ce l'ha quella dell'album
+  getSongImage(song: any): string {
+    if (song.image) return this.getImage(song.image);
+    return this.getImage(song.recordimage);
+  }
+
+  onSearch(event: any) {
+    this.searchText = event.detail.value;
+
+    if (!this.searchText) {
+      this.closeSearch();
+      return;
+    }
+
+    this.isMenuOpen = false;
+
+    this.songService.search(this.searchText).subscribe({
+      next: (res) => { this.foundSongs = res; },
+      error: (err) => { console.error('Error searching songs', err); }
+    });
+
+    this.recordService.search(this.searchText).subscribe({
+      next: (res) => { this.foundRecords = res; },
+      error: (err) => { console.error('Error searching records', err); }
+    });
+
+    this.artistService.search(this.searchText).subscribe({
+      next: (res) => { this.foundArtists = res; },
+      error: (err) => { console.error('Error searching artists', err); }
+    });
+  }
+
+  closeSearch() {
+    this.searchText = '';
+    this.foundSongs = [];
+    this.foundRecords = [];
+    this.foundArtists = [];
   }
 
 }

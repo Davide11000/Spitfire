@@ -71,3 +71,52 @@ ion-button::part(native) {
   border-top: 1px solid #262626;
   padding: 8px 0;
 }
+
+/* Tendina dei risultati della ricerca, sopra la pagina come quella dell'hamburger */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: #141414;
+  border-top: 1px solid #262626;
+  padding: 8px 16px;
+}
+
+.results-list {
+  background: transparent;
+}
+
+.results-header {
+  --background: transparent;
+  --color: #999;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.result-item {
+  --background: transparent;
+  --color: #f2f2f2;
+
+  p {
+    color: #999;
+  }
+}
+
+.result-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+
+  &.round {
+    border-radius: 50%;
+  }
+}
+
+.no-results {
+  color: #999;
+  text-align: center;
+}

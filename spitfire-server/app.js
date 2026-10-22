@@ -36,4 +36,7 @@ app.use('/artists', artistRoutes);
 const recordRoutes = require('./routes/recordRoutes');
 app.use('/records', recordRoutes);
 
+const requestRoutes = require('./routes/requestRoutes');
+app.use('/requests', requestRoutes);
+
 module.exports = app;

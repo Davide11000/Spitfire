@@ -16,13 +16,13 @@ exports.getRecordByName = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { recordname, artId, image } = req.body;
+    const { recordname, artId, image, releaseDate, genre, language } = req.body;
 
     if (!recordname || !artId) {
       return res.status(400).json({ message: "Record name and artist ID required"});
     }
 
-    const record = await Record.create(recordname, artId, image);
+    const record = await Record.create(recordname, artId, image, releaseDate, genre, language);
       res.status(201).json(record);
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -56,6 +56,21 @@ exports.getRecordByID = async (req, res) => {
 
     res.json(record);
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.search = async (req, res) => {
+  try {
+    const text = req.query.q;
+
+    if (!text) {
+      return res.json([]);
+    }
+
+    const records = await Record.search(text);
+    res.json(records);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

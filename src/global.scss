@@ -35,3 +35,41 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+:root {
+  --ion-color-primary: #e53935;
+  --ion-color-primary-rgb: 229, 57, 53;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #ca322f;
+  --ion-color-primary-tint: #e84d49;
+}
+
+ion-popover.dark-select {
+  --background: #1f1f1f;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+  &::part(content) {
+    color-scheme: dark;
+    scrollbar-color: #444 #1f1f1f;
+  }
+
+  ion-list {
+    background: #1f1f1f;
+    padding: 4px 0;
+  }
+
+  ion-item {
+    --background: #1f1f1f;
+    --background-hover: #e53935;
+    --background-hover-opacity: 0.12;
+    --color: #f2f2f2;
+    --border-color: transparent;
+    font-size: 0.95rem;
+  }
+
+  ion-radio {
+    --color: #666;
+    --color-checked: var(--ion-color-primary);
+  }
+}

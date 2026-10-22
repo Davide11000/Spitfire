@@ -1,0 +1,213 @@
+.globalbg {
+  --background: #0d0d0d;
+}
+
+/* Contenitore centrato */
+.add-content {
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px;
+  color: #f2f2f2;
+}
+
+.card {
+  width: 100%;
+  max-width: 600px;
+  background: #141414;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.page-title {
+  font-size: xx-large;
+  text-align: center;
+}
+
+.page-subtitle {
+  color: #999;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.type-segment {
+  --background: #262626;
+
+  ion-segment-button {
+    --color: #999;
+    text-transform: none;
+  }
+}
+
+.form {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* Anno e genere affiancati */
+.field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.field-label {
+  font-weight: bold;
+}
+
+.optional {
+  color: #999;
+  font-weight: normal;
+}
+
+.field-input {
+  --color: #f2f2f2;
+  --placeholder-color: #999;
+  --border-radius: 8px;
+  /* Bordo rosso quando il campo è selezionato (vale per input, textarea e select).
+     Ionic altrimenti usa il verde per i campi già compilati ("valid") */
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary);
+}
+
+.suggestions {
+  background: transparent;
+  padding: 0;
+}
+
+.suggestion {
+  --background: #1f1f1f;
+  --color: #f2f2f2;
+  margin-bottom: 4px;
+  border-radius: 8px;
+
+  p {
+    color: #999;
+  }
+}
+
+.image-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.image-box {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #262626;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #666;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.small-btn {
+  --border-radius: 8px;
+  text-transform: none;
+}
+
+.message {
+  margin: 0;
+  text-align: center;
+}
+
+.send-btn {
+  --border-radius: 8px;
+  text-transform: none;
+  margin-top: 8px;
+}
+
+/* Pulsante che apre la scelta della data, con lo stesso aspetto dei campi */
+.date-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 16px;
+  border: 1px solid #8c8c8c;
+  border-radius: 8px;
+  background: transparent;
+  color: #f2f2f2;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+
+  &.empty {
+    color: #999;
+  }
+
+  &:hover {
+    border-color: #f2f2f2;
+  }
+
+  /* Rosso quando è selezionato o quando la finestra della data è aperta, come gli altri campi */
+  &:focus,
+  &.active {
+    outline: none;
+    border: 2px solid var(--ion-color-primary);
+  }
+}
+
+/* Tracklist: numero, campo e tasto per togliere la canzone */
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.track-number {
+  width: 20px;
+  text-align: right;
+  color: #999;
+}
+
+.add-track-btn {
+  align-self: flex-start;
+}
+
+/* Finestra piccola per le liste di giorno, mese e anno */
+.date-modal {
+  --width: 340px;
+  --height: auto;
+  --border-radius: 16px;
+}
+
+/* Liste di giorno, mese e anno con i colori scuri della pagina */
+.date-picker {
+  --background: #1f1f1f;
+  --background-rgb: 31, 31, 31;
+  --wheel-highlight-background: #2a2a2a;
+  --wheel-fade-background-rgb: 31, 31, 31;
+  color: #f2f2f2;
+}

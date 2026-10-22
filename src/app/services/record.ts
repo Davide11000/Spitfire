@@ -15,4 +15,12 @@ export class Record {
         return this.http.get(`${this.baseUrl}/artist/${id}`);
     }
 
+    getRecentRecords(len: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}`);
+    }
+
+    search(text: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/search?q=${text}`);
+    }
+
 }

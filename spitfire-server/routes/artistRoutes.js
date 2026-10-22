@@ -5,6 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
 router.post("/", authMiddleware, roleMiddleware, artistController.create);
+router.get("/search", artistController.search);
 router.get("/name/:artname", artistController.findArtistbyName);
 router.get("/:artId", artistController.findArtistbyID);
 

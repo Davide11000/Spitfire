@@ -1,0 +1,201 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg">
+  <div class="add-content">
+    <div class="card">
+      <div class="page-title">
+        <b>Add content</b>
+      </div>
+      <p class="page-subtitle">
+        Can't find a song, an album or an artist? Send a request and an admin will add it.
+      </p>
+
+      <ion-segment [value]="type" (ionChange)="onTypeChange($event)" class="type-segment">
+        <ion-segment-button value="song">
+          <ion-label>Song</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="record">
+          <ion-label>Album</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="artist">
+          <ion-label>Artist</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <div class="form">
+        <!-- Immagine: copertina per canzoni e album, foto per l'artista -->
+        <div class="image-row">
+          <div class="image-box">
+            @if (imagePreview) {
+              <img [src]="imagePreview" />
+            } @else {
+              <ion-icon name="image-outline"></ion-icon>
+            }
+          </div>
+          <div class="image-actions">
+            <label class="field-label">{{ type === 'artist' ? 'Photo' : 'Cover' }}</label>
+            <input #imageInput type="file" accept="image/*" hidden (change)="onImageSelected($event)" />
+            <div class="image-buttons">
+              <ion-button fill="outline" size="small" class="small-btn" (click)="imageInput.click()">Choose image</ion-button>
+              @if (image) {
+                <ion-button fill="clear" size="small" class="small-btn" (click)="removeImage()">Remove</ion-button>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Nome: c'è per tutti e tre i tipi -->
+        <div class="field">
+          <label class="field-label">
+            @if (type === 'song') { Song title }
+            @if (type === 'record') { Album title }
+            @if (type === 'artist') { Artist name }
+          </label>
+          <ion-input class="field-input" fill="outline" [(ngModel)]="name" placeholder="Write the name here"></ion-input>
+        </div>
+
+        <!-- Artista: per canzoni e album -->
+        @if (type === 'song' || type === 'record') {
+          <div class="field">
+            <label class="field-label">Artist</label>
+            <ion-input class="field-input" fill="outline" [value]="artistName" [debounce]="300" (ionInput)="onArtistInput($event)" placeholder="Artist name"></ion-input>
+            @if (artistSuggestions.length > 0) {
+              <ion-list class="suggestions">
+                @for (artist of artistSuggestions; track artist.id) {
+                  <ion-item button lines="none" class="suggestion" (click)="chooseArtist(artist)">
+                    <ion-label>{{ artist.artname }}</ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            }
+          </div>
+        }
+
+        <!-- Album: solo per le canzoni -->
+        @if (type === 'song') {
+          <div class="field">
+            <label class="field-label">Album</label>
+            <ion-input class="field-input" fill="outline" [value]="albumName" [debounce]="300" (ionInput)="onAlbumInput($event)" placeholder="Album title"></ion-input>
+            @if (albumSuggestions.length > 0) {
+              <ion-list class="suggestions">
+                @for (album of albumSuggestions; track album.id) {
+                  <ion-item button lines="none" class="suggestion" (click)="chooseAlbum(album)">
+                    <ion-label>
+                      <h3>{{ album.recordname }}</h3>
+                      <p>{{ album.artname }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            }
+          </div>
+        }
+
+        <!-- Data: uscita per canzoni e album, nascita per l'artista -->
+        <div class="field">
+          <label class="field-label">{{ type === 'artist' ? 'Birth date' : 'Release date' }}</label>
+          <button class="date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ getDate() ? formatDate(getDate()) : 'Choose a date' }}
+          </button>
+        </div>
+
+        <!-- Genere e lingua: per canzoni e album -->
+        @if (type === 'song' || type === 'record') {
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Genre</label>
+              <ion-select class="field-input" fill="outline" [(ngModel)]="genre" placeholder="Choose a genre" interface="popover" [interfaceOptions]="selectOptions">
+                @for (g of genreList; track g) {
+                  <ion-select-option [value]="g">{{ g }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+            <div class="field">
+              <label class="field-label">Language</label>
+              <ion-select class="field-input" fill="outline" [(ngModel)]="language" placeholder="Choose a language" interface="popover" [interfaceOptions]="selectOptions">
+                @for (l of languageList; track l) {
+                  <ion-select-option [value]="l">{{ l }}</ion-select-option>
+                }
+              </ion-select>
+            </div>
+          </div>
+        }
+
+        <!-- Testo: solo per le canzoni -->
+        @if (type === 'song') {
+          <div class="field">
+            <label class="field-label">Lyrics <span class="optional">(if the song has lyrics)</span></label>
+            <ion-textarea class="field-input" fill="outline" [(ngModel)]="lyrics" [autoGrow]="true" rows="6" placeholder="Write the lyrics here"></ion-textarea>
+          </div>
+        }
+
+        <!-- Tracklist: solo per gli album, una canzone per campo -->
+        @if (type === 'record') {
+          <div class="field">
+            <label class="field-label">Tracklist</label>
+            @for (track of tracks; track $index; let i = $index) {
+              <div class="track-row">
+                <span class="track-number">{{ i + 1 }}</span>
+                <ion-input class="field-input" fill="outline" [value]="track" (ionInput)="onTrackInput(i, $event)" placeholder="Song title"></ion-input>
+                @if (tracks.length > 1) {
+                  <ion-button fill="clear" class="small-btn" (click)="removeTrack(i)">
+                    <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                  </ion-button>
+                }
+              </div>
+            }
+            <ion-button fill="outline" size="small" class="small-btn add-track-btn" (click)="addTrack()">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              Add song
+            </ion-button>
+          </div>
+        }
+
+        <!-- Campi dell'artista -->
+        @if (type === 'artist') {
+          <div class="field">
+            <label class="field-label">Country</label>
+            <ion-input class="field-input" fill="outline" [(ngModel)]="country" placeholder="e.g. United Kingdom"></ion-input>
+          </div>
+          <div class="field">
+            <label class="field-label">Biography</label>
+            <ion-textarea class="field-input" fill="outline" [(ngModel)]="bio" [autoGrow]="true" rows="4" placeholder="A few words about the artist"></ion-textarea>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <ion-text color="danger"><p class="message">{{ errorMessage }}</p></ion-text>
+        }
+        @if (successMessage) {
+          <ion-text color="success"><p class="message">{{ successMessage }}</p></ion-text>
+        }
+
+        <ion-button class="send-btn" expand="block" [disabled]="sending" (click)="onSend()">
+          <ion-icon slot="start" name="send-outline"></ion-icon>
+          Send request
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finestra con le liste di giorno, mese e anno -->
+  <ion-modal class="date-modal" [isOpen]="isDateOpen" (didDismiss)="isDateOpen = false">
+    <ng-template>
+      <ion-datetime
+        class="date-picker"
+        locale="en-GB"
+        presentation="date"
+        [preferWheel]="true"
+        [showDefaultButtons]="true"
+        doneText="Done"
+        cancelText="Cancel"
+        min="1900-01-01"
+        [max]="today"
+        [value]="getDate() || null"
+        (ionChange)="onDateChange($event)"
+        (ionCancel)="isDateOpen = false">
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+</ion-content>

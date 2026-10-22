@@ -8,12 +8,16 @@
     <ion-button routerLink="/home">Home</ion-button>
     <ion-button routerLink="/lists">Playlists</ion-button>
     <ion-button routerLink="/discover">Discover</ion-button>
+    <ion-button routerLink="/add-content">Add content</ion-button>
   </ion-buttons>
 
   <div slot="end" class="search-container">
     <ion-searchbar
       class="navbar-searchbar"
-      placeholder="Search">
+      placeholder="Search"
+      [debounce]="300"
+      (ionInput)="onSearch($event)"
+      (ionClear)="closeSearch()">
     </ion-searchbar>
   </div>
 
@@ -44,8 +48,62 @@
     <ion-button fill="clear" expand="full" routerLink="/home">Home</ion-button>
     <ion-button fill="clear" expand="full" routerLink="/lists">Playlists</ion-button>
     <ion-button fill="clear" expand="full" routerLink="/discover">Discover</ion-button>
+    <ion-button fill="clear" expand="full" routerLink="/add-content">Add content</ion-button>
     @if (!isLoggedIn) {
       <ion-button fill="clear" expand="full" routerLink="/login">Sign In</ion-button>
+    }
+  </div>
+}
+
+<!-- Risultati della ricerca (per ora non sono cliccabili: mancano le pagine di canzone, album e artista) -->
+@if (searchText) {
+  <div class="search-results">
+    @if (foundSongs.length === 0 && foundRecords.length === 0 && foundArtists.length === 0) {
+      <p class="no-results">No results for "{{ searchText }}"</p>
+    }
+
+    @if (foundSongs.length > 0) {
+      <ion-list class="results-list">
+        <ion-list-header class="results-header">Songs</ion-list-header>
+        @for (song of foundSongs; track song.id) {
+          <ion-item lines="none" class="result-item">
+            <img slot="start" class="result-img" [src]="getSongImage(song)" />
+            <ion-label>
+              <h3>{{ song.songname }}</h3>
+              <p>{{ song.artname }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (foundRecords.length > 0) {
+      <ion-list class="results-list">
+        <ion-list-header class="results-header">Albums</ion-list-header>
+        @for (record of foundRecords; track record.id) {
+          <ion-item lines="none" class="result-item">
+            <img slot="start" class="result-img" [src]="getImage(record.image)" />
+            <ion-label>
+              <h3>{{ record.recordname }}</h3>
+              <p>{{ record.artname }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (foundArtists.length > 0) {
+      <ion-list class="results-list">
+        <ion-list-header class="results-header">Artists</ion-list-header>
+        @for (artist of foundArtists; track artist.id) {
+          <ion-item lines="none" class="result-item">
+            <img slot="start" class="result-img round" [src]="getImage(artist.image)" />
+            <ion-label>
+              <h3>{{ artist.artname }}</h3>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
     }
   </div>
 }

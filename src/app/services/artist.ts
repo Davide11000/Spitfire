@@ -11,4 +11,8 @@ export class Artist {
     getArtist(id: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
+
+    search(text: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/search?q=${text}`);
+    }
 }

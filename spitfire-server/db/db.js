@@ -19,7 +19,10 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS artists (
     id INTEGER PRIMARY KEY,
     artname TEXT,
-    image TEXT
+    image TEXT,
+    birth_date TEXT,
+    country TEXT,
+    bio TEXT
   );
 
   CREATE TABLE IF NOT EXISTS records (
@@ -27,6 +30,9 @@ db.exec(`
     recordname TEXT,
     artid INTEGER,
     image TEXT,
+    release_date TEXT,
+    genre TEXT,
+    language TEXT,
     FOREIGN KEY (artid) REFERENCES artists(id)
   );
 
@@ -35,6 +41,10 @@ db.exec(`
     songname TEXT,
     recordid INTEGER,
     image TEXT,
+    release_date TEXT,
+    genre TEXT,
+    language TEXT,
+    lyrics TEXT,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
 
@@ -85,6 +95,33 @@ db.exec(`
     PRIMARY KEY (username, record_id),
     FOREIGN KEY (username) REFERENCES users(username),
     FOREIGN KEY (record_id) REFERENCES records(id)
+  );
+
+  -- Richieste di aggiunta fatte dagli utenti (type = song | record | artist)
+  -- Le date sono salvate come testo "AAAA-MM-GG"
+  -- Non tutti i campi servono per ogni tipo:
+  --   song:   name, artist_name, album_name, release_date, genre, language, lyrics, image
+  --   record: name, artist_name, release_date, genre, language, tracklist, image
+  --   artist: name, birth_date, country, bio, image
+  CREATE TABLE IF NOT EXISTS requests (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    artist_name TEXT,
+    album_name TEXT,
+    release_date TEXT,
+    genre TEXT,
+    language TEXT,
+    lyrics TEXT,
+    birth_date TEXT,
+    country TEXT,
+    bio TEXT,
+    tracklist TEXT,
+    image TEXT,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
   );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);
