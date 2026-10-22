@@ -81,6 +81,14 @@ db.exec(`
     FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (song_id) REFERENCES songs(id)
   );
+
+  CREATE TABLE IF NOT EXISTS lyrics (
+    language TEXT NOT NULL,
+    lyrics TEXT,
+    songid INTEGER NOT NULL,
+    FOREIGN KEY (songid) REFERENCES songs(id)
+    PRIMARY KEY (language, songid)
+  );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);
   else console.log("Tables ready");
