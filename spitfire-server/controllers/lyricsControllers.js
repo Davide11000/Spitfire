@@ -18,7 +18,7 @@ exports.create = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: err.message });
     }  
-}
+};
 
 exports.findLyricsBySongId = async (req, res) => {
     try {
@@ -34,4 +34,4 @@ exports.findLyricsBySongId = async (req, res) => {
     } catch (error) {
         res.status(500).json({error: err.message});
     }
-}
+};
