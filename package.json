@@ -19,6 +19,6 @@
     "msgpackr-extract@3.0.4": true
   },
   "devDependencies": {
-    "@angular/build": "^22.2.0"
+    "@angular/build": "^22.1.9"
   }
 }
