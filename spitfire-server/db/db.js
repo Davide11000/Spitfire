@@ -94,4 +94,4 @@ db.exec(`
   else console.log("Tables ready");
 });
 
-export default db;
+module.exports = db;
