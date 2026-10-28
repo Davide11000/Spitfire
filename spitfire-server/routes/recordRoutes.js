@@ -9,6 +9,8 @@ router.get("/artist/:artid", recordController.getRecordByArtID);
 router.get("/record/:recordname", recordController.getRecordByName);
 router.get("/:id", recordController.getRecordByID);
 router.get("/", recordController.getRecentRecords);
+router.get("/", recordController.getTopRecords);
+router.get("/", recordController.getDiscoverRecords);
 
 
 module.exports = router;

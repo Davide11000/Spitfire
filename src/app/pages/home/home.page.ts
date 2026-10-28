@@ -60,7 +60,7 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.caricaContenutiRecenti();
-    //this.caricaContenutiTopRated();
+    this.caricaContenutiTopRated();
   }
 
   async caricaContenutiRecenti() {
@@ -69,6 +69,9 @@ export class HomePage implements OnInit {
         next: (res) => this.recentRecords = res,
         error: (err) => console.error(err)
       });
+      if (!this.recentRecords) {
+        this.recentRecords = [];
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -114,6 +117,20 @@ export class HomePage implements OnInit {
   }
 
   async caricaContenutiTopRated() {
+    try {
+      this.recordService.getRecentRecords(this.LIMIT_RECENTI).subscribe({
+        next: (res) => this.topRatedSongs = res,
+        error: (err) => console.error(err)
+      });
+      if (!this.topRatedSongs) {
+        this.topRatedSongs = [];
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.caricamentoTop = false;
+      this.cdr.detectChanges();
+    }
     /*try {
       const songsRef = collection(this.firestore, 'songs');
       const q = query(songsRef, limit(this.LIMIT_TOP));

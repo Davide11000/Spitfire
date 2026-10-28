@@ -1,20 +1,21 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { IonContent, IonLabel, IonList, IonItem, IonButtons, IonButton, IonIcon, IonToolbar, IonCheckbox, IonSearchbar, IonImg } from '@ionic/angular';
+import { IonContent, IonLabel, IonList, IonItem, IonButtons, IonButton, IonToolbar, IonCheckbox, IonSearchbar, IonImg } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, closeCircleSharp, refreshOutline } from 'ionicons/icons';
-import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { FormsModule } from '@angular/forms';
-import { GENERI_DISPONIBILI } from '../constants/generi';
-import { LINGUE_DISPONIBILI } from '../constants/lingue';
+import { GENERI_DISPONIBILI } from '../../constants/generi';
+import { LINGUE_DISPONIBILI } from '../../constants/lingue';
 import { Router } from '@angular/router';
+import { Record } from '../../services/record';
 
 @Component({
   selector: 'app-discover',
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.scss'],
   standalone: true,
-  imports: [IonContent, TopmenuComponent, FooterComponent,
+  imports: [IonContent, NavbarComponent, FooterComponent,
     IonLabel, FormsModule, IonButtons, IonButton, IonList, IonItem, IonCheckbox, IonToolbar, IonSearchbar, IonImg]
 })
 export class DiscoverPage implements OnInit {
@@ -22,6 +23,7 @@ export class DiscoverPage implements OnInit {
   public langInput = '';
   public searchResults: string[] = [];
   public langSearchResults: string[] = [];
+  private record = inject(Record);
   private cdr = inject(ChangeDetectorRef);
   genres: string[] = [];
   eras: number[] = [];
@@ -158,7 +160,14 @@ export class DiscoverPage implements OnInit {
   findRecords() {
     this.eras.sort();
 
-    const modified = this.eras.map(x => x + "-00-00");
+    this.record.getDiscoverRecords(this.genres, [] /*to replace with this.eras*/, this.langs).subscribe({
+      next: (res) => {
+      },
+      error: (err) => console.error(err) 
+  });
+  this.cdr.detectChanges();
+
+    /*const modified = this.eras.map(x => x + "-00-00");
     const albumsRef = collection(this.Firestore, 'albums');
     const constraints: QueryConstraint[] = [];
 
@@ -181,6 +190,6 @@ export class DiscoverPage implements OnInit {
         this.albums = albumsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })).slice(0, 5); 
         this.cdr.detectChanges();
       }).catch(err => console.error(err));
-      console.log(this.albums);
+      console.log(this.albums);*/
   }
 }

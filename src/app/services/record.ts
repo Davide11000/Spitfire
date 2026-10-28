@@ -18,4 +18,16 @@ export class Record {
     getRecentRecords(len: number) : Observable<any> {
         return this.http.get(`${this.baseUrl}`);
     }
+
+    getTopRatedRecords(len: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}`);
+    }
+
+    getRecordsByGenres(genres: string[]) {
+        return this.http.get(`${this.baseUrl}`);
+    }
+
+    getDiscoverRecords(genres: string[], eras: Date[], langs: string[]) {
+        return this.http.get(`${this.baseUrl}`);
+    }
 }

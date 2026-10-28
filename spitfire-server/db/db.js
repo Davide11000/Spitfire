@@ -18,13 +18,16 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS artists (
     id INTEGER PRIMARY KEY,
-    artname TEXT
+    artname TEXT,
+    birth-formation DATE
   );
 
   CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY,
     recordname TEXT,
     artid INTEGER,
+    rating NUMERIC DEFAULT 0,
+    release_date DATE,
     FOREIGN KEY (artid) REFERENCES artists(id)
   );
 
@@ -32,6 +35,8 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     songname TEXT,
     recordid INTEGER,
+    rating NUMERIC DEFAULT 0,
+    release_date DATE,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
 
@@ -89,6 +94,38 @@ db.exec(`
     FOREIGN KEY (songid) REFERENCES songs(id)
     PRIMARY KEY (language, songid)
   );
+
+  CREATE TABLE IF NOT EXISTS record_genres (
+    record_id INT NOT NULL,
+    FOREIGN KEY (record_id) REFERENCES records(id),
+    genre TEXT,
+    total_votes INT,
+    PRIMARY KEY (record_id, genre)
+  )
+
+  CREATE TABLE IF NOT EXISTS song_genres (
+    song_id INT NOT NULL,
+    FOREIGN KEY (song_id) REFERENCES song(id),
+    genre TEXT,
+    total_votes INT,
+    PRIMARY KEY (song_id, genre)
+  )
+
+  CREATE TABLE IF NOT EXISTS song_ratings (
+    song_id INT NOT NULL,
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    rating DECIMAL(1, 2),
+    total_ratings INT,
+    PRIMARY KEY (song_id, rating)
+  )
+
+  CREATE TABLE IF NOT EXISTS record_ratings (
+    record_id INT NOT NULL,
+    FOREIGN KEY (record_id) REFERENCES records(id),
+    rating DECIMAL(1, 2),
+    total_ratings INT,
+    PRIMARY KEY (record_id, rating)
+  )
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);
   else console.log("Tables ready");
