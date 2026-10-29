@@ -89,3 +89,18 @@ exports.removePhoto = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.search = async (req, res) => {
+  try {
+    const text = req.query.q;
+
+    if (!text) {
+      return res.json([]);
+    }
+
+    const users = await User.search(text);
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

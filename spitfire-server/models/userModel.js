@@ -39,6 +39,18 @@ const User = {
         else resolve({ username, foto_profilo: photo });
       });
     });
+  },
+
+  // Cerca gli utenti il cui username contiene il testo
+  // (restituisco solo username e foto: email e password non devono uscire)
+  search: (text) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT username, foto_profilo FROM users WHERE username LIKE ?`;
+      db.all(query, ["%" + text + "%"], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
   }
 };
 

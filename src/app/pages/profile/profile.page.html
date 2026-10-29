@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <ion-content class="globalbg">
   @if (user) {
     <div class="profile-header">
@@ -43,42 +45,168 @@
         @if (photoError) {
           <ion-text color="danger">{{ photoError }}</ion-text>
         }
+        @if (followError) {
+          <ion-text color="danger">{{ followError }}</ion-text>
+        }
       </div>
 
-      <div class="section">
-        <div class="section-title-row">
-          <b class="section-title">Playlists</b>
-          @if (isOwnProfile) {
-            <ion-button fill="outline" class="action-btn" (click)="onCreatePlaylist()">
-              <ion-icon slot="start" name="add-outline"></ion-icon>
-              New Playlist
-            </ion-button>
-          }
+      <!-- Due colonne sotto i dati dell'utente: playlist a sinistra, preferiti a destra -->
+      <div class="profile-columns">
+
+        <!-- COLONNA SINISTRA: PLAYLIST -->
+        <div class="column">
+          <div class="section-title-row">
+            <b class="column-title">Playlists</b>
+            @if (isOwnProfile) {
+              <ion-button fill="outline" class="action-btn" (click)="onCreatePlaylist()">
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                New Playlist
+              </ion-button>
+            }
+          </div>
+
+          <div class="card-grid">
+            @for (playlist of playlists; track playlist.id) {
+              <button class="card clickable" (click)="openPlaylist(playlist)">
+                <div class="card-cover">
+                  <img [src]="getCover(playlist.image)" />
+                </div>
+                <div class="card-name">
+                  @if (!playlist.is_public) {
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                  }
+                  {{ playlist.name }}
+                </div>
+              </button>
+            } @empty {
+              <div class="empty-section">
+                <p>{{ isOwnProfile ? 'You have no playlists yet. Create one!' : 'No playlists yet.' }}</p>
+              </div>
+            }
+          </div>
         </div>
 
-        <div class="playlist-grid">
-          @for (playlist of playlists; track playlist.id) {
-            <button class="playlist-card" (click)="openPlaylist(playlist)">
-              <div class="playlist-card-cover">
-                <img [src]="getCover(playlist.image)" />
-              </div>
-              <div class="playlist-card-name">
-                @if (!playlist.is_public) {
-                  <ion-icon name="lock-closed-outline"></ion-icon>
-                }
-                {{ playlist.name }}
-              </div>
-            </button>
-          } @empty {
-            <div class="empty-section">
-              <p>{{ isOwnProfile ? 'You have no playlists yet. Create one!' : 'No playlists yet.' }}</p>
+        <!-- COLONNA DESTRA: PREFERITI (per ora non cliccabili: mancano le pagine di canzone, album e artista) -->
+        <div class="column">
+          <div class="section-title-row">
+            <b class="column-title">Favourites</b>
+          </div>
+
+          <div class="subsection">
+            <b class="subsection-title">Songs</b>
+            <div class="song-list">
+              @for (song of favouriteSongs; track song.id) {
+                <div class="song-row">
+                  <img class="song-cover" [src]="getSongCover(song)" />
+                  <div class="song-info">
+                    <span class="song-name">{{ song.songname }}</span>
+                    <span class="card-sub">{{ song.artname }}</span>
+                  </div>
+                </div>
+              } @empty {
+                <p class="empty-text">No favourite songs yet.</p>
+              }
             </div>
-          }
+          </div>
+
+          <div class="subsection">
+            <b class="subsection-title">Albums</b>
+            <div class="card-grid small">
+              @for (record of favouriteRecords; track record.id) {
+                <div class="card">
+                  <div class="card-cover">
+                    <img [src]="getCover(record.image)" />
+                  </div>
+                  <div class="card-name">{{ record.recordname }}</div>
+                  <span class="card-sub">{{ record.artname }}</span>
+                </div>
+              } @empty {
+                <p class="empty-text">No favourite albums yet.</p>
+              }
+            </div>
+          </div>
+
+          <div class="subsection">
+            <b class="subsection-title">Artists</b>
+            <div class="card-grid small">
+              @for (artist of favouriteArtists; track artist.id) {
+                <div class="card artist-card">
+                  <div class="card-cover round">
+                    <img [src]="getPhoto(artist.image)" />
+                  </div>
+                  <div class="card-name">{{ artist.artname }}</div>
+                </div>
+              } @empty {
+                <p class="empty-text">No favourite artists yet.</p>
+              }
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
 
-    <ion-modal [isOpen]="isModalOpen" (didDismiss)="isModalOpen = false">
+    <!-- Finestra per creare una nuova playlist -->
+    <ion-modal class="create-modal" [isOpen]="isCreateOpen" (didDismiss)="onCreateClosed()">
+      <ng-template>
+        <div class="create-box">
+          <div class="create-header">
+            <b>New playlist</b>
+            <ion-button fill="clear" class="close-btn" (click)="isCreateOpen = false">
+              <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="create-body">
+            <!-- Copertina facoltativa: cliccando si sceglie l'immagine -->
+            <div class="create-cover-box">
+              <input #coverInput type="file" accept="image/*" hidden (change)="onCoverSelected($event)" />
+              <button class="create-cover" (click)="coverInput.click()">
+                <img [src]="newPlaylistPreview || 'assets/default-cover.svg'" />
+                <div class="cover-overlay">
+                  <ion-icon name="camera-outline"></ion-icon>
+                  <span>{{ newPlaylistImage ? 'Change' : 'Add a cover' }}</span>
+                </div>
+              </button>
+              @if (newPlaylistImage) {
+                <button class="remove-cover" (click)="removeCover()">Remove</button>
+              }
+            </div>
+
+            <div class="create-fields">
+              <label class="create-label">Name</label>
+              <ion-input class="create-input" fill="outline" placeholder="My playlist" [value]="newPlaylistName" (ionInput)="onNameInput($event)" (keyup.enter)="createPlaylist()"></ion-input>
+
+              <label class="create-label">Visibility</label>
+              <div class="visibility-options">
+                <button class="visibility-option" [class.selected]="newPlaylistPublic" (click)="newPlaylistPublic = true">
+                  <ion-icon name="globe-outline"></ion-icon>
+                  <span><b>Public</b><br />Everyone can see it</span>
+                </button>
+                <button class="visibility-option" [class.selected]="!newPlaylistPublic" (click)="newPlaylistPublic = false">
+                  <ion-icon name="lock-closed-outline"></ion-icon>
+                  <span><b>Private</b><br />Only you can see it</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          @if (createError) {
+            <ion-text color="danger"><p class="create-error">{{ createError }}</p></ion-text>
+          }
+
+          <div class="create-footer">
+            <ion-button fill="clear" class="action-btn cancel-btn" (click)="isCreateOpen = false">Cancel</ion-button>
+            <ion-button class="action-btn" [disabled]="creating" (click)="createPlaylist()">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              Create
+            </ion-button>
+          </div>
+        </div>
+      </ng-template>
+    </ion-modal>
+
+    <ion-modal [isOpen]="isModalOpen" (didDismiss)="onModalClosed()">
       <ng-template>
         <ion-header>
           <ion-toolbar class="modal-toolbar">

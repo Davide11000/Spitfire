@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButt
 import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
 import { Auth } from 'src/app/services/auth';
+import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-register',
@@ -12,7 +13,7 @@ import { Auth } from 'src/app/services/auth';
   styleUrls: ['./register.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
 })
 export class RegisterPage implements OnInit {
 

@@ -11,12 +11,12 @@
     <ion-button routerLink="/add-content">Add content</ion-button>
   </ion-buttons>
 
-  <div slot="end" class="search-container">
+  <div slot="end" class="search-container" #searchBox>
     <ion-searchbar
       class="navbar-searchbar"
       placeholder="Search"
       [debounce]="300"
-      (ionInput)="onSearch($event)"
+      (ionInput)="onSearch($event, searchBox)"
       (ionClear)="closeSearch()">
     </ion-searchbar>
   </div>
@@ -55,10 +55,11 @@
   </div>
 }
 
-<!-- Risultati della ricerca (per ora non sono cliccabili: mancano le pagine di canzone, album e artista) -->
+<!-- Risultati della ricerca, allineati sotto la barra di ricerca
+     (canzoni, album e artisti per ora non sono cliccabili: mancano le loro pagine) -->
 @if (searchText) {
-  <div class="search-results">
-    @if (foundSongs.length === 0 && foundRecords.length === 0 && foundArtists.length === 0) {
+  <div class="search-results" [style.left.px]="resultsLeft" [style.width.px]="resultsWidth">
+    @if (foundSongs.length === 0 && foundRecords.length === 0 && foundArtists.length === 0 && foundUsers.length === 0) {
       <p class="no-results">No results for "{{ searchText }}"</p>
     }
 
@@ -100,6 +101,20 @@
             <img slot="start" class="result-img round" [src]="getImage(artist.image)" />
             <ion-label>
               <h3>{{ artist.artname }}</h3>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (foundUsers.length > 0) {
+      <ion-list class="results-list">
+        <ion-list-header class="results-header">Users</ion-list-header>
+        @for (user of foundUsers; track user.username) {
+          <ion-item lines="none" class="result-item" button [routerLink]="['/profile', user.username]">
+            <img slot="start" class="result-img round" [src]="getUserPhoto(user.foto_profilo)" />
+            <ion-label>
+              <h3>{{ '@' + user.username }}</h3>
             </ion-label>
           </ion-item>
         }

@@ -73,47 +73,95 @@
   text-transform: none;
 }
 
-.section {
-  margin-top: 40px;
+/* Sotto i dati utente: due colonne affiancate (playlist | preferiti), della stessa altezza
+   (quella della più alta). Su schermo piccolo diventano una sotto l'altra */
+.profile-columns {
   clear: both;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+  padding-top: 40px;
+}
+
+@media (max-width: 991px) {
+  .profile-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 20px;
 }
 
 .section-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 40px;
   margin-bottom: 16px;
 }
 
-.section-title {
+.column-title {
   font-size: x-large;
 }
 
-.playlist-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 20px;
+.subsection {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
-.playlist-card {
+.subsection-title {
+  display: block;
+  font-size: 1.05rem;
+  color: #ccc;
+  margin-bottom: 12px;
+}
+
+/* Griglia di copertine (playlist, album, artisti) */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 20px;
+
+  &.small {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 14px;
+  }
+}
+
+.card {
   background: none;
   border: none;
   padding: 0;
   color: #f2f2f2;
   text-align: left;
-  cursor: pointer;
 
-  &:hover .playlist-card-cover {
-    transform: translateY(-4px);
+  /* Solo le playlist sono cliccabili per ora */
+  &.clickable {
+    cursor: pointer;
+
+    &:hover .card-cover {
+      transform: translateY(-4px);
+    }
   }
 }
 
-.playlist-card-cover {
+.card-cover {
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   transition: transform 0.15s;
+
+  &.round {
+    border-radius: 50%;
+  }
 
   img {
     width: 100%;
@@ -123,11 +171,11 @@
   }
 }
 
-.playlist-card-name {
+.card-name {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 10px;
+  margin-top: 8px;
   font-weight: bold;
 
   ion-icon {
@@ -136,13 +184,62 @@
   }
 }
 
+.card-sub {
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.artist-card {
+  text-align: center;
+
+  .card-name {
+    justify-content: center;
+  }
+}
+
+/* Canzoni preferite: elenco */
+.song-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.song-cover {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.song-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.song-name {
+  font-weight: bold;
+}
+
 .empty-section {
   grid-column: 1 / -1;
   text-align: center;
   color: #999;
-  padding: 40px 0;
+  padding: 30px 0;
 }
 
+.empty-text {
+  grid-column: 1 / -1;
+  color: #999;
+  margin: 0;
+}
+
+/* Finestra con follower / following */
 .modal-toolbar {
   --background: #141414;
   --color: #f2f2f2;
@@ -160,4 +257,174 @@
 .user-name {
   color: #f2f2f2;
   font-weight: bold;
+}
+
+/* Finestra "New playlist" */
+.create-modal {
+  --width: 560px;
+  --height: auto;
+  --border-radius: 16px;
+  --background: #1f1f1f;
+}
+
+.create-box {
+  padding: 20px 24px 24px;
+  color: #f2f2f2;
+}
+
+.create-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: x-large;
+  margin-bottom: 20px;
+}
+
+.close-btn {
+  --color: #999;
+}
+
+.create-body {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.create-cover-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Copertina cliccabile: passando sopra compare "Add a cover" */
+.create-cover {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover .cover-overlay {
+    opacity: 1;
+  }
+}
+
+.cover-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #f2f2f2;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+
+  ion-icon {
+    font-size: 1.8rem;
+  }
+}
+
+.remove-cover {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ion-color-primary);
+  }
+}
+
+.create-fields {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-label {
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.create-input {
+  --color: #f2f2f2;
+  --placeholder-color: #888;
+  --border-radius: 8px;
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary);
+}
+
+/* Le due scelte Public / Private */
+.visibility-options {
+  display: flex;
+  gap: 10px;
+}
+
+.visibility-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background: transparent;
+  color: #999;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  ion-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  b {
+    color: #f2f2f2;
+    font-size: 0.95rem;
+  }
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    color: #ccc;
+
+    ion-icon {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+.create-error {
+  margin: 16px 0 0;
+}
+
+.create-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.cancel-btn {
+  --color: #ccc;
 }

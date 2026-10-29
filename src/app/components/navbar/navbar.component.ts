@@ -27,6 +27,11 @@ export class NavbarComponent  implements OnInit {
   public foundSongs: any[] = [];
   public foundRecords: any[] = [];
   public foundArtists: any[] = [];
+  public foundUsers: any[] = [];
+
+  // Posizione della tendina dei risultati: sotto la barra di ricerca e larga come lei
+  public resultsLeft = 0;
+  public resultsWidth = 0;
 
   constructor(private auth : Auth, private userService : User, private router : Router,
               private songService : Song, private recordService : Record, private artistService : Artist) {
@@ -85,8 +90,13 @@ export class NavbarComponent  implements OnInit {
     return this.getImage(song.recordimage);
   }
 
-  onSearch(event: any) {
+  onSearch(event: any, searchBox: HTMLElement) {
     this.searchText = event.detail.value;
+
+    // La barra cambia posto a seconda dello schermo: leggo dove si trova adesso
+    const box = searchBox.getBoundingClientRect();
+    this.resultsLeft = box.left;
+    this.resultsWidth = box.width;
 
     if (!this.searchText) {
       this.closeSearch();
@@ -109,6 +119,11 @@ export class NavbarComponent  implements OnInit {
       next: (res) => { this.foundArtists = res; },
       error: (err) => { console.error('Error searching artists', err); }
     });
+
+    this.userService.search(this.searchText).subscribe({
+      next: (res) => { this.foundUsers = res; },
+      error: (err) => { console.error('Error searching users', err); }
+    });
   }
 
   closeSearch() {
@@ -116,6 +131,13 @@ export class NavbarComponent  implements OnInit {
     this.foundSongs = [];
     this.foundRecords = [];
     this.foundArtists = [];
+    this.foundUsers = [];
+  }
+
+  // Foto profilo di un utente trovato nella ricerca
+  getUserPhoto(photo: string | null): string {
+    if (!photo) return 'assets/default-avatar.svg';
+    return 'http://localhost:3000' + photo;
   }
 
 }

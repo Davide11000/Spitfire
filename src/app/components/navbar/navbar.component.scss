@@ -72,17 +72,19 @@ ion-button::part(native) {
   padding: 8px 0;
 }
 
-/* Tendina dei risultati della ricerca, sopra la pagina come quella dell'hamburger */
+/* Tendina dei risultati della ricerca: sotto la barra di ricerca, sopra la pagina.
+   Posizione orizzontale e larghezza le calcola onSearch() */
 .search-results {
   position: absolute;
   top: 100%;
-  left: 0;
-  right: 0;
   max-height: 70vh;
   overflow-y: auto;
   background: #141414;
-  border-top: 1px solid #262626;
-  padding: 8px 16px;
+  border: 1px solid #262626;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+  padding: 4px 8px 8px;
 }
 
 .results-list {

@@ -7,6 +7,7 @@ import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
 import { Request } from 'src/app/services/request';
 import { Artist } from 'src/app/services/artist';
 import { Record } from 'src/app/services/record';
+import { Genre } from 'src/app/services/genre';
 
 @Component({
   selector: 'app-add-content',
@@ -18,8 +19,8 @@ import { Record } from 'src/app/services/record';
 })
 export class AddContentPage implements OnInit {
 
-  public genreList = ['Pop', 'Rock', 'Hip-Hop', 'Rap', 'R&B', 'Soul', 'Funk', 'Jazz', 'Blues', 'Classical',
-                      'Electronic', 'Dance', 'Metal', 'Punk', 'Indie', 'Folk', 'Country', 'Reggae', 'Latin', 'Other'];
+  // I generi arrivano dal server (tabella genres), così l'elenco è uno solo per tutta l'app
+  public genreList: any[] = [];
 
   public languageList = ['English', 'Italian', 'Spanish', 'French', 'German', 'Portuguese', 'Japanese', 'Korean',
                          'Instrumental', 'Other'];
@@ -38,7 +39,7 @@ export class AddContentPage implements OnInit {
   public artistName = '';
   public albumName = '';
   public releaseDate = '';
-  public genre = '';
+  public genres: string[] = [];
   public language = '';
   public lyrics = '';
   public birthDate = '';
@@ -59,11 +60,15 @@ export class AddContentPage implements OnInit {
   public successMessage = '';
   public sending = false;
 
-  constructor(private requestService : Request, private artistService : Artist, private recordService : Record) {
+  constructor(private requestService : Request, private artistService : Artist, private recordService : Record, private genreService : Genre) {
     addIcons({ closeOutline, sendOutline, imageOutline, addOutline, calendarOutline });
   }
 
   ngOnInit() {
+    this.genreService.getAllGenres().subscribe({
+      next: (res) => { this.genreList = res; },
+      error: (err) => { console.error('Error loading genres', err); }
+    });
   }
 
   onTypeChange(event: any) {
@@ -77,7 +82,7 @@ export class AddContentPage implements OnInit {
     this.artistName = '';
     this.albumName = '';
     this.releaseDate = '';
-    this.genre = '';
+    this.genres = [];
     this.language = '';
     this.lyrics = '';
     this.birthDate = '';
@@ -199,12 +204,12 @@ export class AddContentPage implements OnInit {
     if (!this.name || !this.image) return false;
 
     if (this.type === 'song') {
-      return !!this.artistName && !!this.albumName && !!this.releaseDate && !!this.genre && !!this.language;
+      return !!this.artistName && !!this.albumName && !!this.releaseDate && this.genres.length > 0 && !!this.language;
     }
 
     if (this.type === 'record') {
       const filledTracks = this.tracks.filter(t => t);
-      return !!this.artistName && !!this.releaseDate && !!this.genre && !!this.language && filledTracks.length > 0;
+      return !!this.artistName && !!this.releaseDate && this.genres.length > 0 && !!this.language && filledTracks.length > 0;
     }
 
     return !!this.birthDate && !!this.country && !!this.bio;
@@ -231,7 +236,7 @@ export class AddContentPage implements OnInit {
       formData.append('artistName', this.artistName);
       formData.append('albumName', this.albumName);
       formData.append('releaseDate', this.releaseDate);
-      formData.append('genre', this.genre);
+      formData.append('genres', this.genres.join(', '));
       formData.append('language', this.language);
       formData.append('lyrics', this.lyrics);
     }
@@ -239,7 +244,7 @@ export class AddContentPage implements OnInit {
     if (this.type === 'record') {
       formData.append('artistName', this.artistName);
       formData.append('releaseDate', this.releaseDate);
-      formData.append('genre', this.genre);
+      formData.append('genres', this.genres.join(', '));
       formData.append('language', this.language);
       // Le canzoni vengono salvate una per riga, saltando i campi lasciati vuoti
       formData.append('tracklist', this.tracks.filter(t => t).join('\n'));

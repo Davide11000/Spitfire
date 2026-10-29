@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
-import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Playlist } from 'src/app/services/playlist';
 import { Song } from 'src/app/services/song';
 import { Auth } from 'src/app/services/auth';
+import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-playlist',
@@ -14,7 +15,7 @@ import { Auth } from 'src/app/services/auth';
   styleUrls: ['./playlist.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner]
+  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, NavbarComponent]
 })
 export class PlaylistPage implements OnInit {
 
@@ -22,13 +23,15 @@ export class PlaylistPage implements OnInit {
   public songs: any[] = [];
   public isOwner = false;
   public errorMessage = '';
+  public actionError = '';
 
   // Modal per aggiungere le canzoni
   public isAddOpen = false;
   public searchResults: any[] = [];
   public searching = false;
 
-  constructor(private pl : Playlist, private songService : Song, private auth : Auth, private route : ActivatedRoute) {
+  constructor(private pl : Playlist, private songService : Song, private auth : Auth, private route : ActivatedRoute,
+              private router : Router, private alertC : AlertController) {
     addIcons({ addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline });
   }
 
@@ -64,6 +67,28 @@ export class PlaylistPage implements OnInit {
     this.pl.getSongs(this.playlist.id).subscribe({
       next: (res) => {this.songs = res;},
       error: (err) => {console.error("Songs not found", err)}
+    });
+  }
+
+  // Chiede conferma, poi elimina la playlist e torna al profilo
+  async onDeletePlaylist() {
+    const alert = await this.alertC.create({
+      header: 'Delete playlist?',
+      message: '"' + this.playlist.name + '" will be deleted. This cannot be undone.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Delete', role: 'destructive', handler: () => { this.deletePlaylist(); } }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  deletePlaylist() {
+    this.pl.deletePlaylist(this.playlist.id).subscribe({
+      next: (res) => { this.router.navigate(['/profile']); },
+      error: (err) => { this.actionError = err.error.message || 'Error deleting playlist'; }
     });
   }
 

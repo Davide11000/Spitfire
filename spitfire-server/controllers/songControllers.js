@@ -1,15 +1,25 @@
 const Song = require("../models/songModel");
+const Genre = require("../models/genreModel");
 
 
 exports.create = async (req, res) => {
   try {
-    const {songname, recordid, image, releaseDate, genre, language, lyrics} = req.body;
+    const {songname, recordid, image, releaseDate, language, lyrics, genreIds} = req.body;
     
     if (!songname || !recordid) {
       return res.status(400).json({ message: "Name and recordid required"});
     }
     
-    const song = await Song.create(songname, recordid, image, releaseDate, genre, language, lyrics);
+    const song = await Song.create(songname, recordid, image, releaseDate, language, lyrics);
+
+    // genreIds è un elenco di id dei generi, es. [2, 3]: per ognuno creo il collegamento
+    if (genreIds) {
+      for (const genreId of genreIds) {
+        await Genre.addToSong(song.id, genreId);
+      }
+    }
+
+    song.genres = await Genre.findBySong(song.id);
     res.status(201).json(song);
   } catch (err) {
     res.status(500).json({ error: err.message });

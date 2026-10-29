@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
 import { Auth } from 'src/app/services/auth';
 import { Router } from '@angular/router';
+import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, RouterLink]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, RouterLink, NavbarComponent]
 })
 export class LoginPage implements OnInit {
 

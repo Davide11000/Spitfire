@@ -104,10 +104,10 @@
         @if (type === 'song' || type === 'record') {
           <div class="field-row">
             <div class="field">
-              <label class="field-label">Genre</label>
-              <ion-select class="field-input" fill="outline" [(ngModel)]="genre" placeholder="Choose a genre" interface="popover" [interfaceOptions]="selectOptions">
-                @for (g of genreList; track g) {
-                  <ion-select-option [value]="g">{{ g }}</ion-select-option>
+              <label class="field-label">Genres</label>
+              <ion-select class="field-input" fill="outline" [(ngModel)]="genres" [multiple]="true" placeholder="Choose one or more" interface="popover" [interfaceOptions]="selectOptions">
+                @for (g of genreList; track g.id) {
+                  <ion-select-option [value]="g.name">{{ g.name }}</ion-select-option>
                 }
               </ion-select>
             </div>

@@ -3,7 +3,7 @@ const Request = require("../models/requestModel");
 exports.create = async (req, res) => {
   try {
     const username = req.user.username;
-    const { type, name, artistName, albumName, releaseDate, genre, language, lyrics, birthDate, country, bio, tracklist } = req.body;
+    const { type, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist } = req.body;
 
     // L'immagine è obbligatoria: se c'è, multer l'ha già salvata in uploads/requests
     if (!req.file) {
@@ -17,21 +17,21 @@ exports.create = async (req, res) => {
     }
 
     if (type === "song") {
-      if (!artistName || !albumName || !releaseDate || !genre || !language) {
-        return res.status(400).json({ message: "Artist, album, release date, genre and language are required" });
+      if (!artistName || !albumName || !releaseDate || !genres || !language) {
+        return res.status(400).json({ message: "Artist, album, release date, genres and language are required" });
       }
 
       // Il testo della canzone è facoltativo (es. brani strumentali)
-      const result = await Request.createSong(username, name, artistName, albumName, releaseDate, genre, language, lyrics, image);
+      const result = await Request.createSong(username, name, artistName, albumName, releaseDate, genres, language, lyrics, image);
       return res.status(201).json(result);
     }
 
     if (type === "record") {
-      if (!artistName || !releaseDate || !genre || !language || !tracklist) {
-        return res.status(400).json({ message: "Artist, release date, genre, language and tracklist are required" });
+      if (!artistName || !releaseDate || !genres || !language || !tracklist) {
+        return res.status(400).json({ message: "Artist, release date, genres, language and tracklist are required" });
       }
 
-      const result = await Request.createRecord(username, name, artistName, releaseDate, genre, language, tracklist, image);
+      const result = await Request.createRecord(username, name, artistName, releaseDate, genres, language, tracklist, image);
       return res.status(201).json(result);
     }
 

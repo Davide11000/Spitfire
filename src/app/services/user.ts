@@ -14,6 +14,10 @@ export class User {
         return this.http.get(`${this.baseUrl}/${username}`);
     }
 
+    search(text: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/search?q=${text}`);
+    }
+
     // La foto viene mandata come form-data nel campo "photo"
     uploadPhoto(file: File) : Observable<any> {
         const token = this.auth.getToken();

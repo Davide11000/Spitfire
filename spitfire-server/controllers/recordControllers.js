@@ -1,4 +1,5 @@
 const Record = require("../models/recordModel");
+const Genre = require("../models/genreModel");
 
 exports.getRecordByName = async (req, res) => {
   try {
@@ -16,14 +17,23 @@ exports.getRecordByName = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { recordname, artId, image, releaseDate, genre, language } = req.body;
+    const { recordname, artId, image, releaseDate, language, genreIds } = req.body;
 
     if (!recordname || !artId) {
       return res.status(400).json({ message: "Record name and artist ID required"});
     }
 
-    const record = await Record.create(recordname, artId, image, releaseDate, genre, language);
-      res.status(201).json(record);
+    const record = await Record.create(recordname, artId, image, releaseDate, language);
+
+    // genreIds è un elenco di id dei generi, es. [2, 3]: per ognuno creo il collegamento
+    if (genreIds) {
+      for (const genreId of genreIds) {
+        await Genre.addToRecord(record.id, genreId);
+      }
+    }
+
+    record.genres = await Genre.findByRecord(record.id);
+    res.status(201).json(record);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }     

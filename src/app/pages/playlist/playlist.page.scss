@@ -135,3 +135,14 @@
     --icon-color: #999;
   }
 }
+
+/* Tasti del proprietario: visibilità ed eliminazione */
+.owner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action-error {
+  color: var(--ion-color-danger);
+  margin: 0;
+}

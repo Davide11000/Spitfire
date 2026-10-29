@@ -1,12 +1,26 @@
 const Playlist = require("../models/playlistModel");
+const fs = require("fs");
 
 exports.create = async (req, res) => {
     try {
         const username = req.user.username;
-        const {name, image, isPublic = true} = req.body;
+        const { name } = req.body;
 
         if (!name) {
             return res.status(400).json({ message: "Playlist name is required"});
+        }
+
+        // I dati arrivano come form-data (per via dell'immagine), quindi isPublic è il testo "true" o "false".
+        // Se manca, la playlist è pubblica
+        let isPublic = true;
+        if (req.body.isPublic === "false" || req.body.isPublic === false) {
+            isPublic = false;
+        }
+
+        // La copertina è facoltativa: se c'è, multer l'ha già salvata in uploads/playlists
+        let image = null;
+        if (req.file) {
+            image = "/uploads/playlists/" + req.file.filename;
         }
 
         const playlist = await Playlist.create(name, username, image, isPublic);
@@ -97,6 +111,36 @@ exports.setVisibility = async (req, res) => {
     }
 
     const result = await Playlist.setVisibility(playlistId, isPublic);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deletePlaylist = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const playlistId = req.params.playlistId;
+
+    const playlist = await Playlist.findById(playlistId);
+
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (playlist.username !== username) {
+      return res.status(403).json({ message: "You are not the owner of this playlist" });
+    }
+
+    // Prima tolgo le canzoni (tabella playlist_songs), poi la playlist
+    await Playlist.removeAllSongs(playlistId);
+    const result = await Playlist.delete(playlistId);
+
+    // Cancello dal disco la copertina, se c'era
+    if (playlist.image) {
+      fs.unlink("." + playlist.image, () => {});
+    }
+
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });

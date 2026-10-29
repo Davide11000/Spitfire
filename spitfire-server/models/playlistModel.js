@@ -12,6 +12,27 @@ const Playlist = {
         });
     },
 
+    // Toglie dalla playlist tutte le sue canzoni (serve prima di eliminarla)
+    removeAllSongs : (playlistId) => {
+        return new Promise((resolve, reject) => {
+            const query = `DELETE FROM playlist_songs WHERE playlist_id = ?`;
+            db.run(query, [playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ playlistId });
+            });
+        });
+    },
+
+    delete : (playlistId) => {
+        return new Promise((resolve, reject) => {
+            const query = `DELETE FROM playlists WHERE id = ?`;
+            db.run(query, [playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ id: playlistId });
+            });
+        });
+    },
+
     setVisibility : (playlistId, isPublic) => {
         return new Promise((resolve, reject) => {
             const query = `UPDATE playlists SET is_public = ? WHERE id = ?`;

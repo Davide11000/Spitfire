@@ -1,13 +1,14 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
-import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline } from 'ionicons/icons';
+import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline } from 'ionicons/icons';
 import { Auth } from 'src/app/services/auth';
 import { Follow } from 'src/app/services/follow';
 import { User } from 'src/app/services/user';
 import { Playlist } from 'src/app/services/playlist';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-profile',
@@ -15,7 +16,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput]
 })
 export class ProfilePage implements OnInit {
 
@@ -24,6 +25,7 @@ export class ProfilePage implements OnInit {
   public targetUsername: string | null = null;
   public errorMessage = '';
   public photoError = '';
+  public followError = '';
 
   public followers: any[] = [];
   public following: any[] = [];
@@ -31,14 +33,32 @@ export class ProfilePage implements OnInit {
 
   public playlists: any[] = [];
 
+  // Finestra per creare una nuova playlist
+  public isCreateOpen = false;
+  public newPlaylistName = '';
+  public newPlaylistPublic = true;
+  public newPlaylistImage: File | null = null;
+  public newPlaylistPreview = '';
+  public createError = '';
+  public creating = false;
+  // Playlist da aprire appena la finestra ha finito di chiudersi
+  private playlistToOpen: number | null = null;
+
+  // Preferiti
+  public favouriteSongs: any[] = [];
+  public favouriteRecords: any[] = [];
+  public favouriteArtists: any[] = [];
+
   // Modal con la lista di follower / following
   public isModalOpen = false;
   public modalTitle = '';
   public modalUsers: any[] = [];
+  // Profilo da aprire appena la modal ha finito di chiudersi
+  private profileToOpen: string | null = null;
 
   constructor(private auth : Auth, private router : Router, private route : ActivatedRoute, private follow : Follow,
-              private userService : User, private pl : Playlist, private alertC : AlertController) {
-    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline });
+              private userService : User, private pl : Playlist) {
+    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline });
   }
 
   ngOnInit() {
@@ -60,6 +80,21 @@ export class ProfilePage implements OnInit {
 
       this.isOwnProfile = myUsername === this.targetUsername;
       this.loadProfile(this.targetUsername, myUsername);
+    });
+  }
+
+  // Ionic chiama questa funzione ogni volta che si torna sulla pagina (ngOnInit invece parte solo la prima volta):
+  // ricarico le playlist, così dopo averne eliminata una non resta nella lista
+  ionViewWillEnter() {
+    if (this.targetUsername) {
+      this.loadPlaylists(this.targetUsername);
+    }
+  }
+
+  loadPlaylists(username: string) {
+    this.pl.getUserPlaylists(username).subscribe({
+      next: (res) => { this.playlists = res; },
+      error: (err) => { console.error('Error fetching playlists', err); }
     });
   }
 
@@ -85,9 +120,21 @@ export class ProfilePage implements OnInit {
       error: (err) => { console.error('Error fetching following', err); }
     });
 
-    this.pl.getUserPlaylists(username).subscribe({
-      next: (res) => { this.playlists = res; },
-      error: (err) => { console.error('Error fetching playlists', err); }
+    this.loadPlaylists(username);
+
+    this.userService.getFavouriteSongs(username).subscribe({
+      next: (res) => { this.favouriteSongs = res; },
+      error: (err) => { console.error('Error fetching favourite songs', err); }
+    });
+
+    this.userService.getFavouriteRecords(username).subscribe({
+      next: (res) => { this.favouriteRecords = res; },
+      error: (err) => { console.error('Error fetching favourite albums', err); }
+    });
+
+    this.userService.getFavouriteArtists(username).subscribe({
+      next: (res) => { this.favouriteArtists = res; },
+      error: (err) => { console.error('Error fetching favourite artists', err); }
     });
   }
 
@@ -102,6 +149,12 @@ export class ProfilePage implements OnInit {
     return 'http://localhost:3000' + image;
   }
 
+  // La canzone usa la sua immagine, se non ce l'ha quella dell'album
+  getSongCover(song: any): string {
+    if (song.image) return this.getCover(song.image);
+    return this.getCover(song.recordimage);
+  }
+
   onLogout() {
     this.auth.logout();
     this.router.navigate(['/login']);
@@ -109,6 +162,7 @@ export class ProfilePage implements OnInit {
 
   onFollow() {
     if (!this.targetUsername) return;
+    this.followError = '';
 
     const myUsername = this.auth.getUsernameFromToken();
     if (!myUsername) {
@@ -123,7 +177,7 @@ export class ProfilePage implements OnInit {
           this.followers = this.followers.filter(f => f.follower !== myUsername);
         },
         error: (err) => {
-          console.error('Error unfollowing user', err);
+          this.followError = err.error.message || 'Error unfollowing user';
         }
       });
     } else {
@@ -133,7 +187,7 @@ export class ProfilePage implements OnInit {
           this.followers.push({ follower: myUsername, following: this.targetUsername });
         },
         error: (err) => {
-          console.error('Error following user', err);
+          this.followError = err.error.message || 'Error following user';
         }
       });
     }
@@ -161,37 +215,98 @@ export class ProfilePage implements OnInit {
     this.isModalOpen = true;
   }
 
+  // Prima chiudo la modal, poi cambio pagina in onModalClosed():
+  // se cambiassi pagina subito, la modal resterebbe aperta sopra il nuovo profilo
   goToProfile(username: string) {
+    this.profileToOpen = username;
     this.isModalOpen = false;
-    this.router.navigate(['/profile', username]);
+  }
+
+  // Chiamata quando la modal ha finito di chiudersi (didDismiss)
+  onModalClosed() {
+    this.isModalOpen = false;
+
+    if (this.profileToOpen) {
+      const username = this.profileToOpen;
+      this.profileToOpen = null;
+      this.router.navigate(['/profile', username]);
+    }
   }
 
   openPlaylist(playlist: any) {
     this.router.navigate(['/playlist', playlist.id]);
   }
 
-  async onCreatePlaylist() {
-    const alert = await this.alertC.create({
-      header: 'New playlist',
-      inputs: [{ name: 'name', type: 'text', placeholder: 'Playlist name' }],
-      buttons: [
-        { text: 'Cancel', role: 'cancel' },
-        {
-          text: 'Create',
-          handler: (data) => {
-            if (!data.name) return false;
+  // NUOVA PLAYLIST
 
-            this.pl.createPlaylist(data.name).subscribe({
-              next: (res) => { this.playlists.push(res); },
-              error: (err) => { console.error('Error creating playlist', err); }
-            });
-            return true;
-          }
-        }
-      ]
+  onCreatePlaylist() {
+    this.newPlaylistName = '';
+    this.newPlaylistPublic = true;
+    this.newPlaylistImage = null;
+    this.newPlaylistPreview = '';
+    this.createError = '';
+    this.isCreateOpen = true;
+  }
+
+  // Chiamata quando la finestra "New playlist" ha finito di chiudersi (didDismiss):
+  // se la playlist è stata creata apro la sua pagina, se si è premuto Cancel non succede niente
+  onCreateClosed() {
+    this.isCreateOpen = false;
+
+    if (this.playlistToOpen) {
+      const id = this.playlistToOpen;
+      this.playlistToOpen = null;
+      this.router.navigate(['/playlist', id]);
+    }
+  }
+
+  onCoverSelected(event: any) {
+    this.createError = '';
+    const file = event.target.files[0];
+    event.target.value = ''; // così si può riscegliere lo stesso file
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      this.createError = 'The image must be smaller than 5 MB';
+      return;
+    }
+
+    this.newPlaylistImage = file;
+    this.newPlaylistPreview = URL.createObjectURL(file); // anteprima nel browser
+  }
+
+  removeCover() {
+    this.newPlaylistImage = null;
+    this.newPlaylistPreview = '';
+  }
+
+  onNameInput(event: any) {
+    this.newPlaylistName = event.detail.value;
+    this.createError = '';
+  }
+
+  createPlaylist() {
+    this.createError = '';
+
+    if (!this.newPlaylistName) {
+      this.createError = 'Please write a name for the playlist';
+      return;
+    }
+
+    this.creating = true;
+    this.pl.createPlaylist(this.newPlaylistName, this.newPlaylistPublic, this.newPlaylistImage).subscribe({
+      next: (res) => {
+        this.creating = false;
+        this.playlists.push(res);
+        // Chiudo la finestra: la pagina della playlist si apre in onCreateClosed()
+        this.playlistToOpen = res.id;
+        this.isCreateOpen = false;
+      },
+      error: (err) => {
+        this.creating = false;
+        this.createError = err.error.message || 'Error creating the playlist';
+      }
     });
-
-    await alert.present();
   }
 
   onPhotoSelected(event: any) {

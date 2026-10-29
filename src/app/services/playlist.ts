@@ -10,10 +10,18 @@ export class Playlist {
   private http = inject(HttpClient);
   private auth = inject(Auth);
 
-  createPlaylist(name : string, isPublic : boolean = true): Observable<any> {
+  // I dati vanno mandati come FormData perché insieme può esserci la copertina (facoltativa)
+  createPlaylist(name : string, isPublic : boolean = true, image : File | null = null): Observable<any> {
     const token = this.auth.getToken();
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('isPublic', String(isPublic));
 
-    return this.http.post(`${this.baseUrl}`, {name, isPublic}, {
+    if (image) {
+      formData.append('image', image);
+    }
+
+    return this.http.post(`${this.baseUrl}`, formData, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
@@ -35,6 +43,14 @@ export class Playlist {
       headers: { Authorization: `Bearer ${token}` }
     });
 
+  }
+
+  deletePlaylist(playlistId : number): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.delete(`${this.baseUrl}/${playlistId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
   }
 
   setVisibility(playlistId : number, isPublic : boolean): Observable<any> {

@@ -39,4 +39,7 @@ app.use('/records', recordRoutes);
 const requestRoutes = require('./routes/requestRoutes');
 app.use('/requests', requestRoutes);
 
+const genreRoutes = require('./routes/genreRoutes');
+app.use('/genres', genreRoutes);
+
 module.exports = app;

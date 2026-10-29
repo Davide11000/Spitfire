@@ -1,3 +1,5 @@
+<app-navbar></app-navbar>
+
 <ion-content class="globalbg">
   @if (playlist) {
     <div class="playlist-header">
@@ -16,10 +18,19 @@
             <b>{{ songs.length }} songs</b> saved
           </div>
           @if (isOwner) {
-            <ion-button fill="outline" size="small" class="action-btn" (click)="toggleVisibility()">
-              <ion-icon slot="start" [name]="playlist.is_public ? 'globe-outline' : 'lock-closed-outline'"></ion-icon>
-              {{ playlist.is_public ? 'Public' : 'Private' }}
-            </ion-button>
+            <div class="owner-actions">
+              <ion-button fill="outline" size="small" class="action-btn" (click)="toggleVisibility()">
+                <ion-icon slot="start" [name]="playlist.is_public ? 'globe-outline' : 'lock-closed-outline'"></ion-icon>
+                {{ playlist.is_public ? 'Public' : 'Private' }}
+              </ion-button>
+              <ion-button fill="outline" size="small" color="danger" class="action-btn" (click)="onDeletePlaylist()">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Delete
+              </ion-button>
+            </div>
+            @if (actionError) {
+              <p class="action-error">{{ actionError }}</p>
+            }
           } @else if (!playlist.is_public) {
             <div class="visibility-label">
               <ion-icon name="lock-closed-outline"></ion-icon> Private

@@ -33,6 +33,14 @@ export class Auth {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+
+      // Il token dura un'ora: exp è la scadenza in secondi, Date.now() è in millisecondi.
+      // Se è scaduto il server rifiuterebbe ogni azione, quindi lo tratto come un logout
+      if (payload.exp * 1000 < Date.now()) {
+        this.logout();
+        return null;
+      }
+
       return payload.username;
     } catch {
       return null;

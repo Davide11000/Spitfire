@@ -5,6 +5,9 @@ const favouriteController = require("../controllers/favouriteControllers");
 const authMiddleware = require("../middleware/authMiddleware");
 const uploadMiddleware = require("../middleware/uploadMiddleware");
 
+// Ricerca utenti (va prima di /:username, altrimenti "search" verrebbe preso per uno username)
+router.get("/search", userController.search);
+
 // Foto profilo dell'utente loggato
 router.put("/me/photo", authMiddleware, uploadMiddleware, userController.uploadPhoto);
 router.delete("/me/photo", authMiddleware, userController.removePhoto);

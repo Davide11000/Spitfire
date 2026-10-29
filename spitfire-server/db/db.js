@@ -31,7 +31,6 @@ db.exec(`
     artid INTEGER,
     image TEXT,
     release_date TEXT,
-    genre TEXT,
     language TEXT,
     FOREIGN KEY (artid) REFERENCES artists(id)
   );
@@ -42,11 +41,36 @@ db.exec(`
     recordid INTEGER,
     image TEXT,
     release_date TEXT,
-    genre TEXT,
     language TEXT,
     lyrics TEXT,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
+
+  CREATE TABLE IF NOT EXISTS genres (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE
+  );
+
+  CREATE TABLE IF NOT EXISTS record_genres (
+    record_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL,
+    PRIMARY KEY (record_id, genre_id),
+    FOREIGN KEY (record_id) REFERENCES records(id),
+    FOREIGN KEY (genre_id) REFERENCES genres(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS song_genres (
+    song_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL,
+    PRIMARY KEY (song_id, genre_id),
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (genre_id) REFERENCES genres(id)
+  );
+
+  -- Generi che sto aggiungendo manualmente poi si valutano
+  INSERT OR IGNORE INTO genres (name) VALUES
+    ('Pop'), ('Rock'), ('Hip-Hop'), ('Rap'), ('Soul'), ('Funk'), ('Jazz'), ('Blues'),
+    ('Electronic'), ('Dance'), ('Metal'), ('Punk'), ('Indie'), ('Folk'), ('Country'), ('Reggae');
 
   CREATE TABLE IF NOT EXISTS follows (
     follower TEXT NOT NULL,
@@ -97,12 +121,6 @@ db.exec(`
     FOREIGN KEY (record_id) REFERENCES records(id)
   );
 
-  -- Richieste di aggiunta fatte dagli utenti (type = song | record | artist)
-  -- Le date sono salvate come testo "AAAA-MM-GG"
-  -- Non tutti i campi servono per ogni tipo:
-  --   song:   name, artist_name, album_name, release_date, genre, language, lyrics, image
-  --   record: name, artist_name, release_date, genre, language, tracklist, image
-  --   artist: name, birth_date, country, bio, image
   CREATE TABLE IF NOT EXISTS requests (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL,
@@ -111,7 +129,7 @@ db.exec(`
     artist_name TEXT,
     album_name TEXT,
     release_date TEXT,
-    genre TEXT,
+    genres TEXT,
     language TEXT,
     lyrics TEXT,
     birth_date TEXT,
