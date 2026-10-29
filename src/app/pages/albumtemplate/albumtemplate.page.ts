@@ -73,16 +73,16 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
 
       if (this.utenteLoggatoUid) {
         this.user.getUserRole(this.utenteLoggatoUid).subscribe({
-          next: (res) => {
-            if (res === "admin") {
+          next: (res: any) => {
+            if (res.ruolo === "admin") {
               this.isAdmin = true;
             }
-            else if (res === "mod") {
+            else if (res.ruolo === "moderatore") {
               this.isModerator = true;
             }
             this.cdr.detectChanges();
           },
-          error: (err) => console.error(err)
+          error: (err: any) => console.error(err)
         });
       }
     }

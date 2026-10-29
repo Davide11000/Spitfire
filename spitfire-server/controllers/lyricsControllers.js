@@ -1,23 +1,29 @@
 const Lyrics = require("../models/lyricsModel");
+const Song = require("../models/songModel");
 
 exports.create = async (req, res) => {
     try {
-        const lyricsObj = {
-            lyrics: req.params.lyrics,
-            language: req.params.language,
-            songid: req.params.songid
-        };
+        const { songid, language, lyrics } = req.body;
 
-        if (!lyricsObj) {
-            return res.status(400).json({ message: "Invalid request"});
+        if (!songid || !language || !lyrics) {
+            return res.status(400).json({ message: "Song ID, language and lyrics are required" });
         }
 
-        const lyrics = await Lyrics.create(lyricsObj.songid, lyricsObj.language, lyricsObj.lyrics);
+        const song = await Song.findById(songid);
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
 
-        res.status(201).json(lyrics);
-    } catch (error) {
+        const existing = await Lyrics.findBySongId(songid);
+        if (existing.some(l => l.language === language)) {
+            return res.status(400).json({ message: "This song already has lyrics in this language" });
+        }
+
+        const result = await Lyrics.create(songid, language, lyrics);
+        res.status(201).json(result);
+    } catch (err) {
         res.status(500).json({ error: err.message });
-    }  
+    }
 };
 
 exports.findLyricsBySongId = async (req, res) => {
@@ -29,9 +35,8 @@ exports.findLyricsBySongId = async (req, res) => {
         }
 
         const lyrics = await Lyrics.findBySongId(songid);
-
-        res.status(201).json(lyrics);
-    } catch (error) {
-        res.status(500).json({error: err.message});
+        res.json(lyrics);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };

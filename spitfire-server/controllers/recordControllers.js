@@ -118,9 +118,19 @@ exports.getTopRecords = async (req, res) => {
 
 exports.getDiscoverRecords = async (req, res) => {
   try {
-    const genre = req.params.genre;
-    const era = req.params.era;
-    const records = await Record.discoverRecords(genre, era);
+    const genre = req.query.genre;
+    const era = req.query.era;
+
+    if (!genre) {
+      return res.status(400).json({ message: "Genre is required" });
+    }
+
+    let records;
+    if (era) {
+      records = await Record.discoverRecords(genre, era);
+    } else {
+      records = await Record.findByGenre(genre);
+    }
 
     if (!records) {
       return res.status(404).json({ message: "No records found" });

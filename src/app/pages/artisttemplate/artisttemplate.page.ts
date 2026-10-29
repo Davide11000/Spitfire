@@ -198,12 +198,12 @@ export class ArtisttemplatePage implements OnInit {
       }
 
       if (!this.isFavourite) {
-        this.userService.addToFavouriteArtists(this.artistaId).subscribe((_value) => {
+        this.userService.addFavouriteArtist(Number(this.artistaId)).subscribe(() => {
           this.isFavourite = true;
         })
       }
       else {
-        this.userService.removeFromFavouriteArtists(this.artistaId).subscribe((_value) => {
+        this.userService.removeFavouriteArtist(Number(this.artistaId)).subscribe(() => {
           this.isFavourite = false;
         })
       }

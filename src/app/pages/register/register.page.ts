@@ -12,7 +12,8 @@ import { Auth } from '../../services/auth';
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
 })
 export class RegisterPage implements OnInit {
 

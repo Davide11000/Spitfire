@@ -16,7 +16,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput]
 })
 export class ProfilePage implements OnInit {
 

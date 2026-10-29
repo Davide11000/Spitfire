@@ -89,16 +89,16 @@ export class SongtemplatePage implements OnInit, OnDestroy {
       
       if (this.mioUid) {
         this.user.getUserRole(this.mioUid).subscribe({
-          next: (res) => {
-            if (res === "admin") {
+          next: (res: any) => {
+            if (res.ruolo === "admin") {
               this.isAdmin = true;
             }
-            else if (res === "mod") {
+            else if (res.ruolo === "moderatore") {
               this.isModerator = true;
             }
             this.cdr.detectChanges();
           },
-          error: (err) => console.error(err)
+          error: (err: any) => console.error(err)
         });
       }
     }
@@ -347,22 +347,19 @@ export class SongtemplatePage implements OnInit, OnDestroy {
     }
   }
 
-  async rapidaCreaPlaylist() {
+  rapidaCreaPlaylist() {
     if (!this.nuovaPlaylistNome.trim() || !this.mioUid) return;
-    try {
-      const nuovaPlaylistId = await this.playlist.createPlaylist(
-        this.mioUid, this.mioNome,
-        /*this.nuovaPlaylistNome.trim(),
-        this.nuovaPlaylistDescrizione.trim(), ''*/
-      );
-      const nuovaPlLocale = { id: nuovaPlaylistId, nome: this.nuovaPlaylistNome.trim(), fotoBase64: '', canzoni: [] };
-      this.userPlaylists = [nuovaPlLocale, ...this.userPlaylists];
-      this.nuovaPlaylistNome = '';
-      this.nuovaPlaylistDescrizione = '';
-      this.cdr.detectChanges();
-    } catch (error) {
-      console.error(error);
-    }
+
+    this.playlist.createPlaylist(this.nuovaPlaylistNome.trim()).subscribe({
+      next: (res) => {
+        const nuovaPlLocale = { id: res.id, nome: res.name, fotoBase64: '', canzoni: [] };
+        this.userPlaylists = [nuovaPlLocale, ...this.userPlaylists];
+        this.nuovaPlaylistNome = '';
+        this.nuovaPlaylistDescrizione = '';
+        this.cdr.detectChanges();
+      },
+      error: (err) => { console.error(err); }
+    });
   }
 
   estraiColoriCopertina() {

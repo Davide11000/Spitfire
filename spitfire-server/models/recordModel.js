@@ -55,52 +55,74 @@ const Record = {
     });
   },
   
-  getRecent: (Len) => {
+  getRecent: (len) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM records LIMIT ?`;
-      db.all(query, [Len], (err, row) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     ORDER BY records.id DESC
+                     LIMIT ?`;
+      db.all(query, [len], (err, rows) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(rows);
       });
     })
   },
 
-  getTopRated: (Len) => {
+  getTopRated: (len) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM records ORDER BY rating DESC LIMIT ?`;
-      db.all(query, [Len], (err, row) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     ORDER BY records.rating DESC
+                     LIMIT ?`;
+      db.all(query, [len], (err, rows) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(rows);
       });
     })
   },
 
   findByGenre: (genre) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM records WHERE genre = ?`
-      db.all(query, [genre], (err, row) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     JOIN record_genres ON record_genres.record_id = records.id
+                     JOIN genres ON record_genres.genre_id = genres.id
+                     WHERE genres.name = ?`;
+      db.all(query, [genre], (err, rows) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(rows);
       })
     })
   },
 
   findByEra: (era) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM records WHERE release_date = ?`;
-      db.all(query, [era], (err, row) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     WHERE CAST(substr(records.release_date, 1, 4) AS INTEGER) BETWEEN ? AND ?`;
+      db.all(query, [era, Number(era) + 9], (err, rows) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(rows);
       })
     })
   },
 
   discoverRecords: (genre, era) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * from records WHERE release_date = ? AND genre = ?`;
-      db.all(query, [genre, era], (err, row) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     JOIN record_genres ON record_genres.record_id = records.id
+                     JOIN genres ON record_genres.genre_id = genres.id
+                     WHERE genres.name = ?
+                       AND CAST(substr(records.release_date, 1, 4) AS INTEGER) BETWEEN ? AND ?`;
+      db.all(query, [genre, era, Number(era) + 9], (err, rows) => {
         if (err) reject(err);
-        else resolve(row);
+        else resolve(rows);
       })
     })
   }

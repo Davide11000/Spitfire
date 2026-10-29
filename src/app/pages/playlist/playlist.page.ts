@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
-import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';

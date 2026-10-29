@@ -25,7 +25,7 @@ router.get("/:username/favourites/artists", favouriteController.getFavouriteArti
 router.get("/:username/favourites/records", favouriteController.getFavouriteRecords);
 router.get("/:username/favourites/songs", favouriteController.getFavouriteSongs);
 
+router.get("/:username/role", userController.getUserRole);
 router.get("/:username", userController.getUserByUsername);
-router.get("/:username", userController.getUserRole);
 
 module.exports = router;

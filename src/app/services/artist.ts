@@ -17,6 +17,6 @@ export class Artist {
     }
 
     getRecords(id: string) : Observable<any> {
-        return this.http.get(`${this.baseUrl}/${id}/records`);
+        return this.http.get(`http://localhost:3000/records/artist/${id}`);
     }
 }

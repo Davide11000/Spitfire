@@ -14,6 +14,10 @@ export class User {
         return this.http.get(`${this.baseUrl}/${username}`);
     }
 
+    getUserRole(username: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${username}/role`);
+    }
+
     search(text: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }

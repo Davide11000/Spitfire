@@ -16,22 +16,26 @@ export class Record {
     }
 
     getRecentRecords(len: number) : Observable<any> {
-        return this.http.get(`${this.baseUrl}`);
+        return this.http.get(`${this.baseUrl}/recent/${len}`);
+    }
+
+    getTopRatedRecords(len: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/top/${len}`);
+    }
+
+    getRecordsByGenres(genres: string[]) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/discover?genre=${genres[0]}`);
+    }
+
+    getDiscoverRecords(genres: string[], eras: number[], langs: string[]) : Observable<any> {
+        let url = `${this.baseUrl}/discover?genre=${genres[0]}`;
+        if (eras.length > 0) {
+            url += `&era=${eras[0]}`;
+        }
+        return this.http.get(url);
     }
 
     search(text: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
-    }
-
-    getTopRatedRecords(len: number) : Observable<any> {
-        return this.http.get(`${this.baseUrl}`);
-    }
-
-    getRecordsByGenres(genres: string[]) {
-        return this.http.get(`${this.baseUrl}`);
-    }
-
-    getDiscoverRecords(genres: string[], eras: Date[], langs: string[]) {
-        return this.http.get(`${this.baseUrl}`);
     }
 }

@@ -42,4 +42,7 @@ app.use('/requests', requestRoutes);
 const genreRoutes = require('./routes/genreRoutes');
 app.use('/genres', genreRoutes);
 
+const lyricsRoutes = require('./routes/lyricsRoutes');
+app.use('/lyrics', lyricsRoutes);
+
 module.exports = app;
