@@ -1,0 +1,66 @@
+<app-topmenu></app-topmenu>
+
+<ion-content class="ion-padding reports-background">
+  <div class="reports-container">
+    <div class="page-header">
+      <h1 class="reports-title">Moderation Dashboard</h1>
+      <p class="reports-subtitle">Review, accept, or discard reported comments from the community</p>
+    </div>
+
+    @if (segnalazioni.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="shield-outline"></ion-icon>
+        <p>No pending reports. The community is safe!</p>
+      </div>
+    }
+
+    <div class="reports-grid">
+      @for (rep of segnalazioni; track rep.id) {
+        <ion-card class="report-card">
+          <ion-item lines="none" class="report-header-item">
+            <ion-label>
+              <span class="reporter-badge" (click)="vaiAlProfilo(rep.uidSegnalante)">Reported by: {{ rep.nomeSegnalante }}</span>
+            </ion-label>
+          </ion-item>
+
+          <ion-card-content class="report-content">
+            
+            <div class="info-block">
+              <div class="info-label">Content Name</div>
+              <div class="info-value text-highlight" (click)="vaiAllaPagina(rep)">{{ rep.nomeEntita }}</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-label">Comment Author</div>
+              <div class="info-value" (click)="vaiAlProfilo(rep.uidAutoreCommento)">{{ rep.nomeAutoreCommento }}</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-label">Offensive Comment</div>
+              <div class="info-value text-box-reported">{{ rep.testoCommento }}</div>
+            </div>
+
+            @if (rep.motivazione) {
+              <div class="info-block">
+                <div class="info-label">Report Reason</div>
+                <div class="info-value reason-box">{{ rep.motivazione }}</div>
+              </div>
+            }
+
+          </ion-card-content>
+
+          <div class="card-actions">
+            <ion-button fill="solid" color="danger" class="action-btn" (click)="accettaSegnalazione(rep)">
+              <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+              Delete Comment
+            </ion-button>
+            <ion-button fill="solid" color="medium" class="action-btn" (click)="rifiutaSegnalazione(rep.id)">
+              <ion-icon slot="start" name="close-outline"></ion-icon>
+              Keep Comment
+            </ion-button>
+          </div>
+        </ion-card>
+      }
+    </div>
+  </div>
+</ion-content>

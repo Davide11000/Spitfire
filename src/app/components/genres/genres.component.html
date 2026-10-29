@@ -1,0 +1,92 @@
+<div class="genres-inline">
+  <b class="genres-label" (click)="toggleProposte()" title="Show contributions">Genres:</b>
+  <span class="genres-values">
+    {{ generiCorrenti.length ? generiVisualizzati : 'Empty' }}
+  </span>
+
+  @if (mioUid) {
+    <button class="genre-edit-btn" (click)="apriModal('add')" title="Propose genres">
+      <ion-icon name="pencil-outline"></ion-icon>
+    </button>
+    @if (generiCorrenti.length) {
+      <button class="genre-edit-btn" (click)="apriModal('remove')" title="Propose removal">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    }
+  }
+</div>
+
+@if (proposteVisibili && proposte.length) {
+  <div class="proposte-list">
+    @for (p of proposte; track p.id) {
+      <div class="proposta-chip" [class.stato-approved]="p.stato === 'approved'">
+        <span class="proposta-stato">
+          {{ p.stato === 'approved' ? '✓' : 'Unreviewed' }}
+        </span>
+        <span class="proposta-tipo">{{ p.tipo === 'remove' ? '− Remove' : '+ Add' }}</span>
+        <span class="proposta-generi">{{ p.generi?.join(', ') }}</span>
+
+        <span class="proposta-contributori">
+          @for (c of p.contributori; track c.uid) {
+            <span class="contributor-chip">{{ c.nome }}</span>
+          }
+        </span>
+
+        <span class="proposta-reactions">
+          <span class="reaction-block" (click)="toggleLike(p)">
+            <ion-icon [name]="haLike(p) ? 'thumbs-up-sharp' : 'thumbs-up-outline'"></ion-icon>
+            {{ p.likes?.length || 0 }}
+          </span>
+          <span class="reaction-block" (click)="toggleDislike(p)">
+            <ion-icon [name]="haDislike(p) ? 'thumbs-down-sharp' : 'thumbs-down-outline'"></ion-icon>
+            {{ p.dislikes?.length || 0 }}
+          </span>
+        </span>
+
+        @if (puoModerare() && p.stato !== 'approved') {
+          <button class="action-btn approve" (click)="approva(p)">
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </button>
+        }
+        @if (puoEliminare(p)) {
+          <button class="action-btn delete" (click)="elimina(p)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        }
+      </div>
+    }
+  </div>
+}
+
+@if (modalAperto) {
+  <div class="genre-modal-backdrop" (click)="chiudiModal()">
+    <div class="genre-modal" (click)="$event.stopPropagation()">
+      <div class="genre-modal-header">
+        <h3>{{ modalTipo === 'add' ? 'Propose genres' : 'Propose removal' }}</h3>
+        <button class="genre-modal-close" (click)="chiudiModal()">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="genre-modal-grid">
+        @for (g of generiModal; track g) {
+          <button
+            class="genre-option"
+            [class.selected]="isSelezionato(g)"
+            (click)="toggleGenere(g)">
+            {{ g }}
+          </button>
+        } @empty {
+          <p class="genre-modal-empty">No genres available.</p>
+        }
+      </div>
+
+      <div class="genre-modal-footer">
+        <ion-button fill="clear" (click)="chiudiModal()">Cancel</ion-button>
+        <ion-button color="warning" [disabled]="selezione.size === 0" (click)="confermaProposta()">
+          Submit
+        </ion-button>
+      </div>
+    </div>
+  </div>
+}

@@ -4,10 +4,10 @@ import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, 
 import { addIcons } from 'ionicons';
 import { addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Playlist } from 'src/app/services/playlist';
-import { Song } from 'src/app/services/song';
-import { Auth } from 'src/app/services/auth';
-import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
+import { Playlist } from '../../services/playlist';
+import { Song } from '../../services/song';
+import { Auth } from '../../services/auth';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-playlist',

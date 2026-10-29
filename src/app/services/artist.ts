@@ -15,4 +15,8 @@ export class Artist {
     search(text: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }
+
+    getRecords(id: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}/records`);
+    }
 }

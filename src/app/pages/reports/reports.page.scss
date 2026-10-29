@@ -1,0 +1,156 @@
+.reports-background {
+  --background: linear-gradient(to bottom, rgb(30, 30, 30), rgb(88, 28, 28));
+}
+
+.reports-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 8px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.reports-title {
+  font-family: 'Golos text', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.reports-subtitle {
+  font-size: 1rem;
+  color: #8e8e93;
+  margin-top: 6px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8e8e93;
+
+  ion-icon {
+    font-size: 4.5rem;
+    color: #2dd36f;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 0.95rem;
+  }
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.report-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  margin: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 196, 9, 0.3);
+  }
+}
+
+.report-header-item {
+  --background: rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 4px;
+}
+
+.reporter-badge {
+  font-size: 0.8rem;
+  color: #ffc409;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+  cursor: pointer;
+  &:hover{
+    text-decoration: underline;
+  }
+}
+
+.report-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-grow: 1;
+}
+
+.info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  color: #8e8e93;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+
+  &.text-highlight {
+    color: #ffc409;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  &:hover{
+    text-decoration: underline;
+  }
+}
+
+.text-box-reported {
+  background: rgba(235, 68, 90, 0.08);
+  border-left: 3px solid #eb445a;
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+  color: #f4f5f8;
+  line-height: 1.4;
+  font-style: italic;
+  word-break: break-word;
+}
+
+.card-actions {
+  display: flex;
+  padding: 12px 16px 16px;
+  gap: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 16px 16px;
+}
+
+.action-btn {
+  flex: 1;
+  margin: 0;
+  --border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  height: 40px;
+}

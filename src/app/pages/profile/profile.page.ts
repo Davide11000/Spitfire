@@ -1,14 +1,14 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
-import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline } from 'ionicons/icons';
-import { Auth } from 'src/app/services/auth';
-import { Follow } from 'src/app/services/follow';
-import { User } from 'src/app/services/user';
-import { Playlist } from 'src/app/services/playlist';
+import { Auth } from '../../services/auth';
+import { Follow } from '../../services/follow';
+import { User } from '../../services/user';
+import { Playlist } from '../../services/playlist';
 import { Router, ActivatedRoute } from '@angular/router';
-import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +16,7 @@ import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput]
+  imports: [IonContent, IonSpinner, IonButton]
 })
 export class ProfilePage implements OnInit {
 

@@ -1,19 +1,18 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular/standalone';
+import { IonContent, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
-import { Auth } from 'src/app/services/auth';
-import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
+  imports: [IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink]
 })
 export class RegisterPage implements OnInit {
 

@@ -1,0 +1,43 @@
+.backg{
+    background: black;
+    color: rgb(255, 255, 255);
+    padding: 2% 15% 1% 15%;
+}
+.first{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.sp{
+    font-size: 250%;
+}
+.social{
+    display: flex;
+    gap: 9.2%;
+     @media (max-width: 768px){
+        gap: 14.4%
+    }
+}
+ion-icon{
+    font-size: 150%;
+    color: rgb(194, 187, 187);
+
+    &:hover{
+        cursor: pointer;
+        color: white;
+        transition: 0.3s;
+    }
+}
+.info{
+    display: flex;
+    flex-direction: column;
+    font-size: 150%;
+    gap: 1rem;
+      @media (max-width: 768px){
+        padding-top: 6%;
+    }
+   
+} 
+.subsection{
+    font-size: 70%;
+}

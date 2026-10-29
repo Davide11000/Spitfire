@@ -4,7 +4,7 @@ import { authGuard } from './guards/auth-guard';
 export const routes: Routes = [
   {
     path: 'home',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },
   {
     path: '',
@@ -36,5 +36,9 @@ export const routes: Routes = [
     path: 'add-content',
     loadComponent: () => import('./pages/add-content/add-content.page').then( m => m.AddContentPage),
     canActivate: [authGuard]
+  },
+  {
+    path: 'discover',
+    loadComponent: () => import('./pages/discover/discover.page').then(m => m.DiscoverPage)
   }
 ];

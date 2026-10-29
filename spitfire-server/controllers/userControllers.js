@@ -104,3 +104,17 @@ exports.search = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+exports.getUserRole = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const role = await User.getRole(username);
+
+    if (!role) {
+      return res.status(404).json({ message: `No role assigned to user ${username}.`});
+    }
+    
+    res.json(role);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

@@ -23,4 +23,15 @@ export class Record {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }
 
+    getTopRatedRecords(len: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}`);
+    }
+
+    getRecordsByGenres(genres: string[]) {
+        return this.http.get(`${this.baseUrl}`);
+    }
+
+    getDiscoverRecords(genres: string[], eras: Date[], langs: string[]) {
+        return this.http.get(`${this.baseUrl}`);
+    }
 }

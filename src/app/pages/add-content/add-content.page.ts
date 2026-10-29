@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime } from '@ionic/angular/standalone';
+import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { closeOutline, sendOutline, imageOutline, addOutline, calendarOutline } from 'ionicons/icons';
-import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
-import { Request } from 'src/app/services/request';
-import { Artist } from 'src/app/services/artist';
-import { Record } from 'src/app/services/record';
-import { Genre } from 'src/app/services/genre';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { Request } from '../../services/request';
+import { Artist } from '../../services/artist';
+import { Record } from '../../services/record';
+import { Genre } from '../../services/genre';
 
 @Component({
   selector: 'app-add-content',

@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInputPasswordToggle, IonButton, IonInput } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInputPasswordToggle, IonButton, IonInput } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
-import { Auth } from 'src/app/services/auth';
+import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
-import { NavbarComponent } from 'src/app/components/navbar/navbar.component';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-login',

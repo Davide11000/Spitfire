@@ -1,13 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader } from '@ionic/angular/standalone';
+import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader } from '@ionic/angular';
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { menuOutline, closeOutline } from 'ionicons/icons';
-import { Auth } from 'src/app/services/auth';
-import { User } from 'src/app/services/user';
-import { Song } from 'src/app/services/song';
-import { Record } from 'src/app/services/record';
-import { Artist } from 'src/app/services/artist';
+import { Auth } from '../../services/auth';
+import { User } from '../../services/user';
+import { Song } from '../../services/song';
+import { Record } from '../../services/record';
+import { Artist } from '../../services/artist';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +16,7 @@ import { Artist } from 'src/app/services/artist';
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader, RouterLink],
 })
-export class NavbarComponent  implements OnInit {
+export class NavbarComponent implements OnInit {
 
   public isLoggedIn = false;
   public photo: string | null = null;
