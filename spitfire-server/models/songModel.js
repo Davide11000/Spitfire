@@ -11,6 +11,16 @@ const Song = {
     });
   },
 
+  update: (id, image, releaseDate, language, lyrics) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE songs SET image = ?, release_date = ?, language = ?, lyrics = ? WHERE id = ?`;
+      db.run(query, [image, releaseDate, language, lyrics, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, image, release_date: releaseDate, language, lyrics });
+      });
+    });
+  },
+
   // Cerca le canzoni il cui nome contiene il testo
   search: (text) => {
     return new Promise((resolve, reject) => {

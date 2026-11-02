@@ -8,6 +8,7 @@ import { Playlist } from '../../services/playlist';
 import { Song } from '../../services/song';
 import { Auth } from '../../services/auth';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { CommentsComponent } from '../../components/comments/comments.component';
 
 @Component({
   selector: 'app-playlist',
@@ -15,7 +16,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./playlist.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, NavbarComponent]
+  imports: [IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, NavbarComponent, CommentsComponent]
 })
 export class PlaylistPage implements OnInit {
 

@@ -1,156 +1,199 @@
-.reports-background {
-  --background: linear-gradient(to bottom, rgb(30, 30, 30), rgb(88, 28, 28));
+.globalbg {
+  --background: #0d0d0d;
 }
 
-.reports-container {
-  max-width: 1000px;
+.admin-page {
+  max-width: 860px;
   margin: 0 auto;
-  padding: 24px 8px;
+  padding: 32px 16px 60px;
+  color: #f2f2f2;
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 32px;
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: xx-large;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+
+  .count {
+    padding: 2px 12px;
+    border-radius: 14px;
+    background: #262626;
+    color: #ccc;
+    font-size: 1rem;
+  }
+}
+
+.page-subtitle {
+  color: #999;
+  margin: 8px 0 28px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.error {
+  color: var(--ion-color-primary);
+}
+
+.card {
+  background: #1a1a1a;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.target {
+  font-weight: bold;
+
+  &.link {
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.reply-tag {
+  color: #999;
+  font-size: 0.8rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.reported-comment {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-left: 3px solid var(--ion-color-primary);
+  border-radius: 8px;
+  background: #222;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.comment-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.username {
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &.small {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+}
+
+.date {
+  color: #888;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.comment-text {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.reports-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .reports-title {
-  font-family: 'Golos text', sans-serif;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-}
-
-.reports-subtitle {
-  font-size: 1rem;
-  color: #8e8e93;
-  margin-top: 6px;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #8e8e93;
-
-  ion-icon {
-    font-size: 4.5rem;
-    color: #2dd36f;
-    margin-bottom: 16px;
-  }
-
-  p {
-    font-size: 0.95rem;
-  }
-}
-
-.reports-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.report-card {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  margin: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-
-  &:hover {
-    border-color: rgba(255, 196, 9, 0.3);
-  }
-}
-
-.report-header-item {
-  --background: rgba(255, 255, 255, 0.02) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 8px 4px;
-}
-
-.reporter-badge {
+  color: #999;
   font-size: 0.8rem;
-  color: #ffc409;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
-  cursor: pointer;
-  &:hover{
-    text-decoration: underline;
-  }
-}
-
-.report-content {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  flex-grow: 1;
-}
-
-.info-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.info-label {
-  font-size: 0.75rem;
-  color: #8e8e93;
   text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.5px;
 }
 
-.info-value {
-  font-size: 0.95rem;
-  color: #ffffff;
-  font-weight: 500;
-  cursor: pointer;
-
-  &.text-highlight {
-    color: #ffc409;
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-  &:hover{
-    text-decoration: underline;
-  }
+.report {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
-.text-box-reported {
-  background: rgba(235, 68, 90, 0.08);
-  border-left: 3px solid #eb445a;
-  padding: 12px;
-  border-radius: 0 8px 8px 0;
-  font-size: 0.9rem;
-  color: #f4f5f8;
-  line-height: 1.4;
-  font-style: italic;
-  word-break: break-word;
+.reason {
+  flex: 1;
+  color: #ccc;
+  overflow-wrap: anywhere;
 }
 
 .card-actions {
   display: flex;
-  padding: 12px 16px 16px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 0 0 16px 16px;
+  margin-top: 18px;
 }
 
 .action-btn {
-  flex: 1;
-  margin: 0;
-  --border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  height: 40px;
+  --border-radius: 8px;
+  text-transform: none;
+}
+
+.keep-btn {
+  --color: #f2f2f2;
+  --border-color: #555;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 60px 0;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #555;
+  }
 }

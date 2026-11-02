@@ -1,0 +1,36 @@
+<div class="notifications">
+  @if (loading) {
+    <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else {
+    @for (n of notifications; track n.id) {
+      <button class="item" [class.new]="isNew(n)" (click)="onClick(n)">
+        <div class="photo" (click)="goToProfile($event, n.from_user)">
+          <img class="avatar" [src]="getPhoto(n.foto_profilo)" />
+          <span [class]="'type-icon ' + n.type">
+            <ion-icon [name]="getIcon(n.type)"></ion-icon>
+          </span>
+        </div>
+
+        <div class="content">
+          <span class="text">
+            <b class="username" (click)="goToProfile($event, n.from_user)">{{ '@' + n.from_user }}</b>
+            {{ getMessage(n.type) }}
+          </span>
+          @if (getPreview(n)) {
+            <span class="preview">"{{ getPreview(n) }}"</span>
+          }
+        </div>
+
+        <span class="time">{{ getTimeAgo(n.created_at) }}</span>
+        @if (isNew(n)) {
+          <span class="dot"></span>
+        }
+      </button>
+    } @empty {
+      <div class="center empty">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <p>No notifications yet.</p>
+      </div>
+    }
+  }
+</div>

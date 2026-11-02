@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, IonLabel, IonList, IonItem, IonButtons, IonButton, IonToolbar, IonCheckbox, IonSearchbar, IonImg } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { addCircleOutline, closeCircleSharp, refreshOutline } from 'ionicons/icons';
@@ -15,6 +15,7 @@ import { Record } from '../../services/record';
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonContent, NavbarComponent, FooterComponent,
     IonLabel, FormsModule, IonButtons, IonButton, IonList, IonItem, IonCheckbox, IonToolbar, IonSearchbar, IonImg]
 })

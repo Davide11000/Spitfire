@@ -1,0 +1,64 @@
+<div class="messages" [class.chat-open]="selected">
+  <div class="sidebar">
+    <ion-searchbar
+      class="search"
+      placeholder="Search a user to chat with"
+      [value]="searchText"
+      [debounce]="300"
+      (ionInput)="onSearch($event)"
+      (ionClear)="closeSearch()">
+    </ion-searchbar>
+
+    <div class="list">
+      @if (searchText) {
+        @for (user of searchResults; track user.username) {
+          <button class="item" (click)="openChat(user.username)">
+            <img class="avatar" [src]="getPhoto(user.foto_profilo)" />
+            <div class="item-info">
+              <b>{{ '@' + user.username }}</b>
+              <span class="preview">Start a chat</span>
+            </div>
+          </button>
+        } @empty {
+          <p class="empty-text">No users found</p>
+        }
+      } @else {
+        @for (c of conversations; track c.other_user) {
+          <button class="item" [class.active]="c.other_user === selected" (click)="openChat(c.other_user)">
+            <img class="avatar" [src]="getPhoto(c.foto_profilo)" />
+            <div class="item-info">
+              <div class="item-top">
+                <b>{{ '@' + c.other_user }}</b>
+                <span class="time">
+                  {{ isToday(c.created_at) ? (getDate(c.created_at) | date:'HH:mm') : (getDate(c.created_at) | date:'dd MMM') }}
+                </span>
+              </div>
+              <div class="item-bottom">
+                <span class="preview" [class.unread]="c.unread > 0">
+                  @if (c.sender === myUsername) { You: }
+                  {{ c.text }}
+                </span>
+                @if (c.unread > 0) {
+                  <span class="badge">{{ c.unread }}</span>
+                }
+              </div>
+            </div>
+          </button>
+        } @empty {
+          <p class="empty-text">No chats yet. Search a user to start one!</p>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="chat-area">
+    @if (selected) {
+      <app-chat [username]="selected" [backButton]="true" (back)="closeChat()" (sent)="loadConversations()"></app-chat>
+    } @else {
+      <div class="no-chat">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+        <p>Select a chat or search a user to start one</p>
+      </div>
+    }
+  </div>
+</div>

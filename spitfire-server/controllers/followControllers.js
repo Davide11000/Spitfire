@@ -1,4 +1,5 @@
 const Follow = require("../models/followModel");
+const Notification = require("../models/notificationModel");
 
 exports.follow = async (req, res) => {
     try { 
@@ -15,6 +16,7 @@ exports.follow = async (req, res) => {
         }
 
         const result = await Follow.follow(follower, following);
+        await Notification.create(following, "follow", follower, null, null);
         res.status(201).json(result);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -33,6 +35,7 @@ exports.unfollow = async (req, res) => {
         }
 
         const result = await Follow.unfollow(follower, following);
+        await Notification.removeFollow(following, follower);
         res.status(200).json(result);
     } catch (err) {
         res.status(500).json({ error: err.message });

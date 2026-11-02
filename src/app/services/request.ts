@@ -26,4 +26,28 @@ export class Request {
             headers: { Authorization: `Bearer ${token}` }
         });
     }
+
+    getPendingRequests() : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.get(`${this.baseUrl}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    acceptRequest(id: number) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.post(`${this.baseUrl}/${id}/accept`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    rejectRequest(id: number) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.post(`${this.baseUrl}/${id}/reject`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
 }

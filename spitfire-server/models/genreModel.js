@@ -22,6 +22,16 @@ const Genre = {
     });
   },
 
+  findByName: (name) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM genres WHERE name = ?`;
+      db.get(query, [name], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  },
+
   // ALBUM
 
   // Generi di un album

@@ -1,0 +1,64 @@
+<div class="chat">
+  <div class="chat-header">
+    @if (backButton) {
+      <ion-button fill="clear" class="icon-btn back-btn" (click)="back.emit()">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    }
+    <div class="chat-user" (click)="goToProfile()">
+      <img class="avatar" [src]="getPhoto(photo)" />
+      <b>{{ '@' + username }}</b>
+    </div>
+    @if (closable) {
+      <ion-button fill="clear" class="icon-btn" (click)="closed.emit()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    }
+  </div>
+
+  <div class="chat-messages" #scrollBox>
+    @if (loading) {
+      <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else {
+      @for (message of messages; track message.id; let i = $index) {
+        @if (isNewDay(i)) {
+          <div class="day">
+            <span>{{ getDayLabel(message.created_at) || (getDate(message.created_at) | date:'dd MMM yyyy') }}</span>
+          </div>
+        }
+        <div class="bubble-row" [class.mine]="message.sender === myUsername">
+          <div class="bubble">
+            <span class="bubble-text">{{ message.text }}</span>
+            <span class="bubble-time">{{ getDate(message.created_at) | date:'HH:mm' }}</span>
+          </div>
+        </div>
+      } @empty {
+        <div class="center empty">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <p>No messages yet. Say hi to {{ '@' + username }}!</p>
+        </div>
+      }
+    }
+  </div>
+
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  <div class="chat-input">
+    <ion-textarea
+      class="message-input"
+      fill="outline"
+      [autoGrow]="true"
+      [rows]="1"
+      [maxlength]="1000"
+      placeholder="Write a message..."
+      [value]="newText"
+      (ionInput)="onTextInput($event)"
+      (keydown)="onKeyDown($event)">
+    </ion-textarea>
+    <ion-button class="send-btn" [disabled]="!newText.trim() || sending" (click)="sendMessage()">
+      <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+    </ion-button>
+  </div>
+</div>

@@ -122,3 +122,26 @@ ion-button::part(native) {
   color: #999;
   text-align: center;
 }
+
+.avatar-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  border: 2px solid #141414;
+  background: var(--ion-color-primary);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

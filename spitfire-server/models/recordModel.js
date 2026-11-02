@@ -11,6 +11,16 @@ const Record = {
     });
   },
 
+  update: (id, image, releaseDate, language) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE records SET image = ?, release_date = ?, language = ? WHERE id = ?`;
+      db.run(query, [image, releaseDate, language, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, image, release_date: releaseDate, language });
+      });
+    });
+  },
+
   findByRecordname: (recordname) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM records WHERE recordname = ?`;

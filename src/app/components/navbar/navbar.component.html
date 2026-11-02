@@ -9,6 +9,12 @@
     <ion-button routerLink="/lists">Playlists</ion-button>
     <ion-button routerLink="/discover">Discover</ion-button>
     <ion-button routerLink="/add-content">Add content</ion-button>
+    @if (role === 'admin' || role === 'moderatore') {
+      <ion-button routerLink="/reports">Reports</ion-button>
+    }
+    @if (role === 'admin') {
+      <ion-button routerLink="/requests">Requests</ion-button>
+    }
   </ion-buttons>
 
   <div slot="end" class="search-container" #searchBox>
@@ -24,9 +30,14 @@
   <!-- Loggato: foto profilo (su tutti gli schermi). Non loggato: Sign In (su schermo piccolo sta nell'hamburger) -->
   <ion-buttons slot="end">
     @if (isLoggedIn) {
-      <ion-avatar class="user-avatar" routerLink="/profile">
-        <img [src]="getPhoto()" />
-      </ion-avatar>
+      <div class="avatar-wrapper" routerLink="/profile">
+        <ion-avatar class="user-avatar">
+          <img [src]="getPhoto()" />
+        </ion-avatar>
+        @if (notificationService.unread > 0) {
+          <span class="badge">{{ notificationService.unread > 9 ? '9+' : notificationService.unread }}</span>
+        }
+      </div>
     } @else {
       <ion-button class="sign-in-btn ion-hide-lg-down" routerLink="/login">
         Sign In
@@ -49,6 +60,12 @@
     <ion-button fill="clear" expand="full" routerLink="/lists">Playlists</ion-button>
     <ion-button fill="clear" expand="full" routerLink="/discover">Discover</ion-button>
     <ion-button fill="clear" expand="full" routerLink="/add-content">Add content</ion-button>
+    @if (role === 'admin' || role === 'moderatore') {
+      <ion-button fill="clear" expand="full" routerLink="/reports">Reports</ion-button>
+    }
+    @if (role === 'admin') {
+      <ion-button fill="clear" expand="full" routerLink="/requests">Requests</ion-button>
+    }
     @if (!isLoggedIn) {
       <ion-button fill="clear" expand="full" routerLink="/login">Sign In</ion-button>
     }

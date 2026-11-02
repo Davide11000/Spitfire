@@ -45,4 +45,16 @@ app.use('/genres', genreRoutes);
 const lyricsRoutes = require('./routes/lyricsRoutes');
 app.use('/lyrics', lyricsRoutes);
 
+const commentRoutes = require('./routes/commentRoutes');
+app.use('/comments', commentRoutes);
+
+const reportRoutes = require('./routes/reportRoutes');
+app.use('/reports', reportRoutes);
+
+const messageRoutes = require('./routes/messageRoutes');
+app.use('/messages', messageRoutes);
+
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/notifications', notificationRoutes);
+
 module.exports = app;

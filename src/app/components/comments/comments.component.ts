@@ -1,253 +1,297 @@
-import { Component, Input, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonItem, IonLabel, IonTextarea, IonButton, IonList, IonText, IonNote, IonAvatar, IonIcon, AlertController } from '@ionic/angular';
-import { CommentService } from '../../services/comment';
-import { ReportService } from '../../services/report';
-import { Auth } from '../../services/auth';
-import { InteractionService } from '../../services/interaction';
-import { UserService } from '../../services/user';
+import { IonButton, IonIcon, IonTextarea, IonSpinner, IonModal, AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { chevronDownOutline, chevronUpOutline, trashOutline, flagOutline, thumbsUpSharp, thumbsUpOutline, thumbsDownSharp, thumbsDownOutline } from 'ionicons/icons';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { thumbsUp, thumbsUpOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle } from 'ionicons/icons';
+import { Comment } from '../../services/comment';
+import { Auth } from '../../services/auth';
+import { User } from '../../services/user';
+import { Report } from '../../services/report';
 
 @Component({
   selector: 'app-comments',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonItem, IonLabel, IonTextarea, IonButton, IonList, IonAvatar, IonIcon],
   templateUrl: './comments.component.html',
-  styleUrls: ['./comments.component.scss']
+  styleUrls: ['./comments.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonButton, IonIcon, IonTextarea, IonSpinner, IonModal, DatePipe],
 })
-export class CommentsComponent implements OnInit, OnDestroy {
-  @Input() id!: string;
-  @Input() tipo!: 'album' | 'canzone' | 'playlist';
-  @Input() nomeEntita: string = '';
+export class CommentsComponent implements OnChanges {
+  @Input() type!: string;
+  @Input() id!: number | string;
 
-  private commentService = inject(CommentService);
-  private reportService = inject(ReportService);
-  public authService = inject(Auth);
-  private interactionService = inject(InteractionService);
-  private userService = inject(UserService);
-  private router = inject(Router);
-  private alertController = inject(AlertController);
-  private cdr = inject(ChangeDetectorRef);
+  public myUsername: string | null = null;
+  public canModerate = false;
 
-  utenteLoggatoUid: string = '';
-  utenteLoggatoNome: string = '';
-  utenteLoggatoFoto: string = '';
-  utenteLoggatoRuolo: string = 'user';
-  nuovoCommentoTesto: string = '';
+  public comments: any[] = [];
+  public total = 0;
+  public page = 1;
+  public pages: number[] = [];
+  public loading = false;
 
-  tuttiICommenti: any[] = [];
-  commentiDellaPagina: any[] = [];
+  public newText = '';
+  public posting = false;
+  public error = '';
 
-  paginaCorrente: number = 1;
-  elementiPerPagina: number = 5;
-  pagineTotali: number[] = [];
+  public isReportOpen = false;
+  public reportedComment: any = null;
+  public reportReason = '';
+  public reportError = '';
+  public reporting = false;
+  public reasons = ['Spam', 'Offensive language', 'Harassment', 'Spoiler', 'Off topic'];
 
-  commentiEspansi: { [key: string]: boolean } = {};
-
-  private authSub!: Subscription;
-  private commentiSub!: Subscription;
-
-  constructor() {
-    addIcons({ chevronDownOutline, chevronUpOutline, trashOutline, flagOutline, thumbsUpSharp, thumbsUpOutline, thumbsDownOutline, thumbsDownSharp });
+  constructor(private commentService : Comment, private auth : Auth, private userService : User,
+              private reportService : Report, private router : Router, private alertC : AlertController,
+              private toastC : ToastController) {
+    addIcons({ thumbsUp, thumbsUpOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle });
   }
 
-  ngOnInit() {
-    this.authSub = this.authService.user$.subscribe(user => {
-      if (user) {
-        this.utenteLoggatoUid = user.uid || '';
-        this.utenteLoggatoNome = user.displayName || 'Utente';
-        this.utenteLoggatoFoto = this.authService.fotoProfilo || user.photoURL || 'assets/shapes.svg';
+  ngOnChanges() {
+    this.myUsername = this.auth.getUsernameFromToken();
+    this.canModerate = false;
 
-        this.userService.getProfiloById(user.uid).pipe(take(1)).subscribe(profilo => {
-          this.utenteLoggatoRuolo = profilo?.ruolo || 'user';
-        });
-      } else {
-        this.utenteLoggatoUid = '';
-        this.utenteLoggatoNome = '';
-        this.utenteLoggatoFoto = '';
-        this.utenteLoggatoRuolo = 'user';
-      }
-      this.cdr.detectChanges();
-    });
+    if (this.myUsername) {
+      this.userService.getUserRole(this.myUsername).subscribe({
+        next: (res) => { this.canModerate = res.ruolo === 'admin' || res.ruolo === 'moderatore'; },
+        error: (err) => { console.error('Error fetching role', err); }
+      });
+    }
 
-    if (this.id) {
-      this.caricaCommenti();
+    if (this.type && this.id) {
+      this.loadComments(1);
     }
   }
 
-  ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.commentiSub) this.commentiSub.unsubscribe();
-  }
+  loadComments(page: number) {
+    this.loading = true;
 
-  caricaCommenti() {
-    if (this.commentiSub) this.commentiSub.unsubscribe();
+    this.commentService.getComments(this.type, Number(this.id), page).subscribe({
+      next: (res) => {
+        this.comments = res.comments;
+        this.total = res.total;
+        this.page = res.page;
 
-    this.commentiSub = this.commentService.getCommenti(this.id, this.tipo).subscribe({
-      next: (data) => {
-        this.tuttiICommenti = data;
-        this.calcolaPagine();
-        this.aggiornaPagina();
-        this.cdr.detectChanges();
+        this.pages = [];
+        for (let i = 1; i <= res.totalPages; i++) {
+          this.pages.push(i);
+        }
+
+        this.loading = false;
       },
       error: (err) => {
-        console.error("Errore nella lettura dei commenti:", err);
+        console.error('Error fetching comments', err);
+        this.loading = false;
       }
     });
   }
 
-  calcolaPagine() {
-    const numeroPagine = Math.ceil(this.tuttiICommenti.length / this.elementiPerPagina);
-    this.pagineTotali = Array.from({ length: numeroPagine }, (_, i) => i + 1);
+  goToPage(page: number) {
+    if (page < 1 || page > this.pages.length || page === this.page) return;
+    this.loadComments(page);
   }
 
-  aggiornaPagina() {
-    const inizio = (this.paginaCorrente - 1) * this.elementiPerPagina;
-    const fine = inizio + this.elementiPerPagina;
-    this.commentiDellaPagina = this.tuttiICommenti.slice(inizio, fine);
+  getPhoto(photo: string | null): string {
+    if (!photo) return 'assets/default-avatar.svg';
+    return 'http://localhost:3000' + photo;
   }
 
-  cambiaPagina(pagina: number) {
-    this.paginaCorrente = pagina;
-    this.aggiornaPagina();
-    this.cdr.detectChanges();
+  getDate(date: string): Date {
+    return new Date(date.replace(' ', 'T') + 'Z');
   }
 
-  deveTroncare(testo: string): boolean {
-    if (!testo) return false;
-    return testo.length > 150;
+  goToProfile(username: string) {
+    this.router.navigate(['/profile', username]);
   }
 
-  toggleEspandiCommento(commentoId: string) {
-    this.commentiEspansi[commentoId] = !this.commentiEspansi[commentoId];
+  goToLogin() {
+    this.router.navigate(['/login']);
   }
 
-  async pubblicaCommento() {
-    if (!this.utenteLoggatoUid) {
-      await this.router.navigate(['/login']);
+  canDelete(comment: any): boolean {
+    return comment.username === this.myUsername || this.canModerate;
+  }
+
+  canReport(comment: any): boolean {
+    return comment.username !== this.myUsername;
+  }
+
+  onTextInput(event: any) {
+    this.newText = event.detail.value;
+    this.error = '';
+  }
+
+  postComment() {
+    if (!this.newText.trim()) return;
+
+    this.posting = true;
+    this.commentService.createComment(this.type, Number(this.id), this.newText).subscribe({
+      next: (res) => {
+        this.posting = false;
+        this.newText = '';
+        this.loadComments(1);
+      },
+      error: (err) => {
+        this.posting = false;
+        this.error = err.error.message || 'Error posting the comment';
+      }
+    });
+  }
+
+  toggleReplies(comment: any) {
+    if (comment.showReplies) {
+      comment.showReplies = false;
       return;
     }
 
-    if (!this.nuovoCommentoTesto || !this.nuovoCommentoTesto.trim()) return;
-
-    const fotoDaInviare = this.authService.fotoProfilo || this.utenteLoggatoFoto || 'assets/shapes.svg';
-
-    this.commentService.inviaCommento(
-      this.id,
-      this.tipo,
-      this.utenteLoggatoUid,
-      this.utenteLoggatoNome,
-      fotoDaInviare,
-      this.nuovoCommentoTesto,
-      this.utenteLoggatoRuolo
-    ).then(() => {
-      this.nuovoCommentoTesto = '';
-      this.cdr.detectChanges();
-    }).catch(err => {
-      console.error("Errore durante l'addDoc nel database:", err);
+    this.commentService.getReplies(comment.id).subscribe({
+      next: (res) => {
+        comment.repliesList = res;
+        comment.showReplies = true;
+      },
+      error: (err) => { console.error('Error fetching replies', err); }
     });
   }
 
-  async cancellaCommento(idCommento: string) {
-    const alert = await this.alertController.create({
-      header: 'ELIMINA COMMENTO',
-      subHeader: 'Sei sicuro di volerlo fare?',
-      cssClass: 'spitfire-alert',
-      buttons: [
-        { text: 'INDIETRO', role: 'cancel', cssClass: 'alert-btn-cancel' },
-        {
-          text: 'ELIMINA ORA',
-          cssClass: 'alert-btn-delete',
-          handler: () => {
-            this.commentService.eliminaCommento(this.id, this.tipo, idCommento).then(() => {
-              this.cdr.detectChanges();
-            }).catch(err => {
-              console.error("Errore eliminazione:", err);
-            });
-          }
+  toggleReplyBox(comment: any) {
+    if (!this.myUsername) {
+      this.goToLogin();
+      return;
+    }
+
+    comment.showReplyBox = !comment.showReplyBox;
+    comment.replyText = '';
+  }
+
+  onReplyInput(comment: any, event: any) {
+    comment.replyText = event.detail.value;
+  }
+
+  postReply(comment: any) {
+    if (!comment.replyText || !comment.replyText.trim()) return;
+
+    this.commentService.createComment(this.type, Number(this.id), comment.replyText, comment.id).subscribe({
+      next: (res) => {
+        comment.replies++;
+        comment.showReplyBox = false;
+        comment.replyText = '';
+
+        if (comment.showReplies) {
+          comment.repliesList.push(res);
+        } else {
+          this.toggleReplies(comment);
         }
+      },
+      error: (err) => { this.error = err.error.message || 'Error posting the reply'; }
+    });
+  }
+
+  toggleLike(comment: any) {
+    if (!this.myUsername) {
+      this.goToLogin();
+      return;
+    }
+
+    if (comment.liked) {
+      this.commentService.removeLike(comment.id).subscribe({
+        next: (res) => {
+          comment.liked = 0;
+          comment.likes = res.likes;
+        },
+        error: (err) => { console.error('Error removing like', err); }
+      });
+    } else {
+      this.commentService.addLike(comment.id).subscribe({
+        next: (res) => {
+          comment.liked = 1;
+          comment.likes = res.likes;
+        },
+        error: (err) => { console.error('Error adding like', err); }
+      });
+    }
+  }
+
+  async onDelete(comment: any, parent: any) {
+    const alert = await this.alertC.create({
+      header: 'Delete comment?',
+      message: parent ? 'The reply will be deleted.' : 'The comment and its replies will be deleted.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Delete', role: 'destructive', handler: () => { this.deleteComment(comment, parent); } }
       ]
     });
+
     await alert.present();
   }
 
-  async segnalaCommento(commento: any) {
-    if (!this.utenteLoggatoUid) {
-      await this.router.navigate(['/login']);
-      return;
-    }
-
-    const alert = await this.alertController.create({
-      header: 'SEGNALA COMMENTO',
-      subHeader: 'Specifica la motivazione della segnalazione:',
-      cssClass: 'spitfire-alert',
-      inputs: [
-        {
-          name: 'motivazione',
-          type: 'textarea',
-          placeholder: 'Scrivi qui il motivo... (es. insulti, spam, ecc.)'
+  deleteComment(comment: any, parent: any) {
+    this.commentService.deleteComment(comment.id).subscribe({
+      next: (res) => {
+        if (parent) {
+          parent.repliesList = parent.repliesList.filter((r: any) => r.id !== comment.id);
+          parent.replies--;
+        } else if (this.comments.length === 1 && this.page > 1) {
+          this.loadComments(this.page - 1);
+        } else {
+          this.loadComments(this.page);
         }
-      ],
-      buttons: [
-        { text: 'ANNULLA', role: 'cancel', cssClass: 'alert-btn-cancel' },
-        {
-          text: 'SEGNALA',
-          cssClass: 'alert-btn-delete',
-          handler: (data) => {
-            const motivo = data.motivazione ? data.motivazione.trim() : '';
-            this.reportService.inviaSegnalazione(
-              commento.id,
-              commento.testo,
-              commento.uid_utente,
-              commento.nome_utente,
-              this.id,
-              this.tipo,
-              this.nomeEntita,
-              this.utenteLoggatoUid,
-              this.utenteLoggatoNome,
-              motivo
-            ).catch(err => {
-              console.error("Errore invio segnalazione:", err);
-            });
-          }
-        }
-      ]
+      },
+      error: (err) => { this.error = err.error.message || 'Error deleting the comment'; }
     });
-    await alert.present();
   }
 
-  haMessoLike(commento: any): boolean {
-    if (!this.utenteLoggatoUid || !commento.likes) return false;
-    return commento.likes.includes(this.utenteLoggatoUid);
-  }
-
-  haMessoDislike(commento: any): boolean {
-    if (!this.utenteLoggatoUid || !commento.dislikes) return false;
-    return commento.dislikes.includes(this.utenteLoggatoUid);
-  }
-
-  async toggleLike(commento: any) {
-    if (!this.utenteLoggatoUid) {
-      await this.router.navigate(['/login']);
+  openReport(comment: any) {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
-    const giaLike = this.haMessoLike(commento);
-    const giaDislike = this.haMessoDislike(commento);
-    await this.interactionService.gestisciLike(this.id, this.tipo, commento.id, this.utenteLoggatoUid, giaLike, giaDislike);
+
+    this.reportedComment = comment;
+    this.reportReason = '';
+    this.reportError = '';
+    this.isReportOpen = true;
   }
 
-  async toggleDislike(commento: any) {
-    if (!this.utenteLoggatoUid) {
-      await this.router.navigate(['/login']);
+  closeReport() {
+    this.isReportOpen = false;
+  }
+
+  chooseReason(reason: string) {
+    this.reportReason = reason;
+    this.reportError = '';
+  }
+
+  onReasonInput(event: any) {
+    this.reportReason = event.detail.value;
+    this.reportError = '';
+  }
+
+  sendReport() {
+    if (!this.reportReason.trim()) {
+      this.reportError = 'Please write the reason of the report';
       return;
     }
-    const giaLike = this.haMessoLike(commento);
-    const giaDislike = this.haMessoDislike(commento);
-    await this.interactionService.gestisciDislike(this.id, this.tipo, commento.id, this.utenteLoggatoUid, giaLike, giaDislike);
+
+    this.reporting = true;
+    this.reportService.reportComment(this.reportedComment.id, this.reportReason).subscribe({
+      next: async (res) => {
+        this.reporting = false;
+        this.isReportOpen = false;
+
+        const toast = await this.toastC.create({
+          message: 'Thanks! Your report has been sent to the moderators.',
+          icon: 'checkmark-circle',
+          duration: 3000,
+          position: 'bottom',
+          cssClass: 'dark-toast'
+        });
+        await toast.present();
+      },
+      error: (err) => {
+        this.reporting = false;
+        this.reportError = err.error.message || 'Error sending the report';
+      }
+    });
   }
+
 }

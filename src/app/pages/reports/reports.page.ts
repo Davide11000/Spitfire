@@ -1,127 +1,148 @@
-import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
-
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonContent, IonCard, IonItem, IonLabel, IonCardContent, IonButton, IonIcon, ToastController } from '@ionic/angular';
+import { IonContent, IonButton, IonIcon, IonSpinner, AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { shieldOutline, checkmarkOutline, closeOutline, alertCircleOutline } from 'ionicons/icons';
-import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
-import { Auth } from '../../services/auth';
-import { ReportService } from '../services/report';
-import { Subscription } from 'rxjs';
+import { flagOutline, trashOutline, checkmarkOutline, checkmarkCircle, shieldCheckmarkOutline } from 'ionicons/icons';
+import { forkJoin } from 'rxjs';
+import { Report } from '../../services/report';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.page.html',
   styleUrls: ['./reports.page.scss'],
   standalone: true,
-  imports: [TopmenuComponent, IonContent, IonCard, IonItem, IonLabel, IonCardContent, IonButton, IonIcon]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonContent, IonButton, IonIcon, IonSpinner, DatePipe, NavbarComponent]
 })
-export class ReportsPage implements OnInit, OnDestroy {
+export class ReportsPage implements OnInit {
 
-  public segnalazioni: any[] = [];
-  private authSub!: Subscription;
-  private reportSub!: Subscription;
+  public groups: any[] = [];
+  public loading = true;
+  public errorMessage = '';
 
-  private authService = inject(Auth);
-  private reportService = inject(ReportService);
-  private router = inject(Router);
-  private cdr = inject(ChangeDetectorRef);
-  private toastController = inject(ToastController);
-
-  constructor() {
-    addIcons({ shieldOutline, checkmarkOutline, closeOutline, alertCircleOutline });
+  constructor(private reportService : Report, private router : Router, private alertC : AlertController,
+              private toastC : ToastController) {
+    addIcons({ flagOutline, trashOutline, checkmarkOutline, checkmarkCircle, shieldCheckmarkOutline });
   }
 
   ngOnInit() {
-    this.authSub = this.authService.user$.subscribe(user => {
-      if (!user) {
-        this.router.navigate(['/login']);
-      } else {
-        this.authService.isModerator$.subscribe(isMod => {
-          this.authService.isAdmin$.subscribe(isAdmin => {
-            if (!isMod && !isAdmin) {
-              this.router.navigate(['/home']);
-            }
-          });
-        });
+    this.loadReports();
+  }
+
+  loadReports() {
+    this.loading = true;
+
+    this.reportService.getReports().subscribe({
+      next: (res) => {
+        this.groups = [];
+
+        for (const report of res) {
+          let group = this.groups.find(g => g.comment_id === report.comment_id);
+
+          if (!group) {
+            group = {
+              comment_id: report.comment_id,
+              parent_id: report.parent_id,
+              text: report.comment_text,
+              author: report.comment_author,
+              author_photo: report.author_photo,
+              date: report.comment_date,
+              target_type: report.target_type,
+              target_id: report.target_id,
+              target_name: report.target_name,
+              reports: []
+            };
+            this.groups.push(group);
+          }
+
+          group.reports.push(report);
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error.message || 'Error loading the reports';
+        this.loading = false;
       }
     });
-
-    this.reportSub = this.reportService.getSegnalazioni().subscribe(data => {
-      this.segnalazioni = data;
-      this.cdr.detectChanges();
-    });
   }
 
-  ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.reportSub) this.reportSub.unsubscribe();
+  getPhoto(photo: string | null): string {
+    if (!photo) return 'assets/default-avatar.svg';
+    return 'http://localhost:3000' + photo;
   }
 
-  async accettaSegnalazione(segnalazione: any) {
-    try {
-      let percorsoCollezione = '';
-      if (segnalazione.tipoEntita === 'canzone') {
-        percorsoCollezione = 'valutazioni_canzoni';
-      } else if (segnalazione.tipoEntita === 'album') {
-        percorsoCollezione = 'valutazioni_album';
-      } else if (segnalazione.tipoEntita === 'playlist') {
-        percorsoCollezione = 'playlists';
-      }
+  getDate(date: string): Date {
+    return new Date(date.replace(' ', 'T') + 'Z');
+  }
 
-      if (percorsoCollezione) {
-        const commentoDocRef = doc(
-          this.firestore, 
-          percorsoCollezione, 
-          segnalazione.idEntita, 
-          'commenti', 
-          segnalazione.idCommento
-        );
-        await deleteDoc(commentoDocRef);
-      }
+  getTargetLabel(type: string): string {
+    if (type === 'song') return 'Song';
+    if (type === 'record') return 'Album';
+    if (type === 'artist') return 'Artist';
+    return 'Playlist';
+  }
 
-      await this.reportService.eliminaSegnalazione(segnalazione.id);
-      this.mostraToast('Comment removed and report closed.');
-    } catch (e) {
-      console.error(e);
-      this.mostraToast('Error during comment deletion.');
+  goToProfile(username: string) {
+    this.router.navigate(['/profile', username]);
+  }
+
+  goToTarget(group: any) {
+    if (group.target_type === 'playlist') {
+      this.router.navigate(['/playlist', group.target_id]);
     }
   }
 
-  async rifiutaSegnalazione(idSegnalazione: string) {
-    try {
-      await this.reportService.eliminaSegnalazione(idSegnalazione);
-      this.mostraToast('Report discarded without changes.');
-    } catch (e) {
-      console.error(e);
-      this.mostraToast('Error during report deletion.');
-    }
-  }
-
-  vaiAlProfilo(usId: string) {
-    if (usId) {
-      this.router.navigate(['/profile', usId]);
-    } else {
-      console.warn("Impossibile navigare.");
-    }
-  }
-
-  vaiAllaPagina(page: any){
-    if(page){
-      page.tipoEntita == "canzone" ? this.router.navigate(['/songtemplate', page.idEntita]) : this.router.navigate(['/albumtemplate', page.idEntita]);
-    }
-    else{
-      console.warn("Impossibile navigare.");
-    }
-  }
-
-  private async mostraToast(msg: string) {
-    const toast = await this.toastController.create({
-      message: msg,
-      duration: 3000,
+  async showToast(message: string) {
+    const toast = await this.toastC.create({
+      message: message,
+      icon: 'checkmark-circle',
+      duration: 2500,
       position: 'bottom',
-      color: 'dark'
+      cssClass: 'dark-toast'
     });
     await toast.present();
   }
+
+  async onAccept(group: any) {
+    const alert = await this.alertC.create({
+      header: 'Delete comment?',
+      message: 'The comment by @' + group.author + ' and its replies will be deleted.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Delete', role: 'destructive', handler: () => { this.acceptReport(group); } }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  acceptReport(group: any) {
+    this.reportService.acceptReport(group.reports[0].id).subscribe({
+      next: (res) => {
+        this.groups = this.groups.filter(g => g.comment_id !== group.comment_id && g.parent_id !== group.comment_id);
+        this.showToast('Comment deleted');
+      },
+      error: (err) => { group.error = err.error.message || 'Error deleting the comment'; }
+    });
+  }
+
+  onReject(group: any) {
+    const requests = [];
+    for (const report of group.reports) {
+      requests.push(this.reportService.rejectReport(report.id));
+    }
+
+    forkJoin(requests).subscribe({
+      next: (res) => {
+        this.groups = this.groups.filter(g => g.comment_id !== group.comment_id);
+        this.showToast('Report rejected, the comment stays');
+      },
+      error: (err) => { group.error = err.error.message || 'Error rejecting the report'; }
+    });
+  }
+
 }

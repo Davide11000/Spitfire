@@ -8,6 +8,7 @@ import { User } from '../../services/user';
 import { Song } from '../../services/song';
 import { Record } from '../../services/record';
 import { Artist } from '../../services/artist';
+import { Notification } from '../../services/notification';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +21,7 @@ export class NavbarComponent implements OnInit {
 
   public isLoggedIn = false;
   public photo: string | null = null;
+  public role = '';
   public isMenuOpen = false;
 
   // Ricerca
@@ -34,12 +36,14 @@ export class NavbarComponent implements OnInit {
   public resultsWidth = 0;
 
   constructor(private auth : Auth, private userService : User, private router : Router,
-              private songService : Song, private recordService : Record, private artistService : Artist) {
+              private songService : Song, private recordService : Record, private artistService : Artist,
+              public notificationService : Notification) {
     addIcons({ menuOutline, closeOutline });
   }
 
   ngOnInit() {
     this.checkLogin();
+    this.notificationService.startPolling();
 
     // Ionic tiene in memoria le pagine già aperte, quindi ngOnInit non riparte dopo il login o il logout:
     // ricontrollo a ogni cambio di pagina
@@ -58,12 +62,17 @@ export class NavbarComponent implements OnInit {
     if (!username) {
       this.isLoggedIn = false;
       this.photo = null;
+      this.role = '';
       return;
     }
 
     this.isLoggedIn = true;
+    this.notificationService.refreshUnread();
     this.userService.getUser(username).subscribe({
-      next: (res) => { this.photo = res.foto_profilo; },
+      next: (res) => {
+        this.photo = res.foto_profilo;
+        this.role = res.ruolo;
+      },
       error: (err) => { console.error('Error fetching user', err); }
     });
   }

@@ -167,6 +167,62 @@ db.exec(`
     PRIMARY KEY (record_id, rating),
     FOREIGN KEY (record_id) REFERENCES records(id)
   );
+
+  CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    target_type TEXT NOT NULL,
+    target_id INTEGER NOT NULL,
+    parent_id INTEGER,
+    text TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (parent_id) REFERENCES comments(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS comment_likes (
+    comment_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    PRIMARY KEY (comment_id, username),
+    FOREIGN KEY (comment_id) REFERENCES comments(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS comment_reports (
+    id INTEGER PRIMARY KEY,
+    comment_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES comments(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY,
+    sender TEXT NOT NULL,
+    receiver TEXT NOT NULL,
+    text TEXT NOT NULL,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender) REFERENCES users(username),
+    FOREIGN KEY (receiver) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    type TEXT NOT NULL,
+    from_user TEXT NOT NULL,
+    comment_id INTEGER,
+    text TEXT,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username),
+    FOREIGN KEY (from_user) REFERENCES users(username),
+    FOREIGN KEY (comment_id) REFERENCES comments(id)
+  );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);
   else console.log("Tables ready");

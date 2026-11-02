@@ -1,110 +1,213 @@
 <div class="comments-section">
-  <h3 class="section-title">Comments ({{ tuttiICommenti.length }})</h3>
+  <h3 class="section-title">Comments <span class="count">{{ total }}</span></h3>
 
-  @if (utenteLoggatoUid) {
-    <div class="comment-box-container">
-      <ion-textarea 
-        rows="3" 
-        placeholder="Write a comment..." 
-        [(ngModel)]="nuovoCommentoTesto"
-        class="custom-textarea">
+  @if (myUsername) {
+    <div class="write-box">
+      <ion-textarea
+        class="comment-input"
+        fill="outline"
+        [autoGrow]="true"
+        [rows]="2"
+        [maxlength]="1000"
+        placeholder="Write a comment..."
+        [value]="newText"
+        (ionInput)="onTextInput($event)">
       </ion-textarea>
-      <div class="button-wrapper">
-        <ion-button color="warning" (click)="pubblicaCommento()" [disabled]="!nuovoCommentoTesto.trim()">
-          Pubblica
+      <div class="write-actions">
+        <ion-button class="post-btn" [disabled]="!newText.trim() || posting" (click)="postComment()">
+          Post
         </ion-button>
       </div>
     </div>
   } @else {
-    <ion-item lines="none" color="rgba(0,0,0,0)" class="login-notice">
-      <ion-label style="color: #ccc; font-style: italic;">
-        Please <span style="color: #ffc409; cursor: pointer; text-decoration: underline;" (click)="pubblicaCommento()">login</span> to post a comment.
-      </ion-label>
-    </ion-item>
+    <p class="login-notice">
+      <span class="link" (click)="goToLogin()">Sign in</span> to write a comment.
+    </p>
   }
 
-  <ion-list class="comments-list">
-    @for (commento of commentiDellaPagina; track commento.id) {
-      <div class="comment-item">
-        <div class="comment-header">
-          <div class="author-info">
-            <ion-avatar class="comment-avatar">
-              <img [src]="commento.foto || commento.fotoUtente || commento.foto_utente || 'assets/shapes.svg'" alt="Avatar" />
-            </ion-avatar>
-            <div class="meta-data">
-              <div class="author-name-row">
-                <span class="author-name">{{ commento.nome_utente }}</span>
-                @if (commento.ruolo === 'admin') {
-                  <span class="role-badge badge-admin">⚡ Admin</span>
-                }
-                @if (commento.ruolo === 'moderator') {
-                  <span class="role-badge badge-moderator">🛡️ Mod</span>
-                }
-              </div>
-              <span class="comment-date">{{ commento.timestamp?.toDate() | date:'dd MMM yyyy, HH:mm' }}</span>
-            </div>
+  @if (error) {
+    <p class="error">{{ error }}</p>
+  }
+
+  @if (loading) {
+    <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+  } @else {
+    @for (comment of comments; track comment.id) {
+      <div class="comment">
+        <img class="avatar" [src]="getPhoto(comment.foto_profilo)" (click)="goToProfile(comment.username)" />
+
+        <div class="comment-content">
+          <div class="comment-header">
+            <span class="username" (click)="goToProfile(comment.username)">{{ '@' + comment.username }}</span>
+            <span class="date">{{ getDate(comment.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>
           </div>
-          <div class="actions-info">
-            <div class="reactions-wrapper">
-              <div class="reaction-btn-block" (click)="toggleLike(commento)">
-                <ion-icon [name]="haMessoLike(commento) ? 'thumbs-up-sharp' : 'thumbs-up-outline'" [class.active-like]="haMessoLike(commento)"></ion-icon>
-                <span class="reaction-count">{{ commento.likes?.length || 0 }}</span>
-              </div>
-              <div class="reaction-btn-block" (click)="toggleDislike(commento)">
-                <ion-icon [name]="haMessoDislike(commento) ? 'thumbs-down-sharp' : 'thumbs-down-outline'" [class.active-dislike]="haMessoDislike(commento)"></ion-icon>
-                <span class="reaction-count">{{ commento.dislikes?.length || 0 }}</span>
-              </div>
-            </div>
-            @if (utenteLoggatoUid === commento.uid_utente) {
-              <ion-icon 
-                name="trash-outline" 
-                class="delete-btn" 
-                (click)="cancellaCommento(commento.id)">
-              </ion-icon>
-            } @else {
-              <ion-icon
-                name="flag-outline"
-                class="flag-btn"
-                (click)="segnalaCommento(commento)">
-              </ion-icon>
+
+          <p class="comment-text">{{ comment.text }}</p>
+
+          <div class="comment-actions">
+            <button class="action" [class.liked]="comment.liked" (click)="toggleLike(comment)">
+              <ion-icon [name]="comment.liked ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+              {{ comment.likes }}
+            </button>
+            <button class="action" (click)="toggleReplyBox(comment)">
+              <ion-icon name="chatbubble-outline"></ion-icon>
+              Reply
+            </button>
+            @if (canReport(comment)) {
+              <button class="action report" title="Report" (click)="openReport(comment)">
+                <ion-icon name="flag-outline"></ion-icon>
+              </button>
+            }
+            @if (canDelete(comment)) {
+              <button class="action delete" title="Delete" (click)="onDelete(comment, null)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
             }
           </div>
-        </div>
-        
-        <div class="comment-body" 
-             [class.can-truncate]="deveTroncare(commento.testo)"
-             [class.collapsed]="deveTroncare(commento.testo) && !commentiEspansi[commento.id]" 
-             [class.expanded]="commentiEspansi[commento.id]">
-          <p>{{ commento.testo }}</p>
-        </div>
 
-        @if (deveTroncare(commento.testo)) {
-          <div class="more-container" (click)="toggleEspandiCommento(commento.id)">
-            <span class="more-text">{{ commentiEspansi[commento.id] ? 'Less' : 'More' }}</span>
-            <ion-icon [name]="commentiEspansi[commento.id] ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-          </div>
-        }
+          @if (comment.showReplyBox) {
+            <div class="write-box reply-box">
+              <ion-textarea
+                class="comment-input"
+                fill="outline"
+                [autoGrow]="true"
+                [rows]="1"
+                [maxlength]="1000"
+                [placeholder]="'Reply to @' + comment.username + '...'"
+                [value]="comment.replyText"
+                (ionInput)="onReplyInput(comment, $event)">
+              </ion-textarea>
+              <div class="write-actions">
+                <ion-button fill="clear" class="cancel-btn" (click)="toggleReplyBox(comment)">Cancel</ion-button>
+                <ion-button class="post-btn" [disabled]="!comment.replyText || !comment.replyText.trim()" (click)="postReply(comment)">
+                  Reply
+                </ion-button>
+              </div>
+            </div>
+          }
+
+          @if (comment.replies > 0) {
+            <button class="view-replies" (click)="toggleReplies(comment)">
+              <ion-icon [name]="comment.showReplies ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+              @if (comment.showReplies) {
+                Hide replies
+              } @else if (comment.replies === 1) {
+                View 1 reply
+              } @else {
+                View {{ comment.replies }} replies
+              }
+            </button>
+          }
+
+          @if (comment.showReplies) {
+            <div class="replies">
+              @for (reply of comment.repliesList; track reply.id) {
+                <div class="comment reply">
+                  <img class="avatar small" [src]="getPhoto(reply.foto_profilo)" (click)="goToProfile(reply.username)" />
+
+                  <div class="comment-content">
+                    <div class="comment-header">
+                      <span class="username" (click)="goToProfile(reply.username)">{{ '@' + reply.username }}</span>
+                      <span class="date">{{ getDate(reply.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>
+                    </div>
+
+                    <p class="comment-text">{{ reply.text }}</p>
+
+                    <div class="comment-actions">
+                      <button class="action" [class.liked]="reply.liked" (click)="toggleLike(reply)">
+                        <ion-icon [name]="reply.liked ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+                        {{ reply.likes }}
+                      </button>
+                      @if (canReport(reply)) {
+                        <button class="action report" title="Report" (click)="openReport(reply)">
+                          <ion-icon name="flag-outline"></ion-icon>
+                        </button>
+                      }
+                      @if (canDelete(reply)) {
+                        <button class="action delete" title="Delete" (click)="onDelete(reply, comment)">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
       </div>
     } @empty {
-      <div class="no-comments">
-        <p>There are no comments yet!</p>
-      </div>
+      <p class="no-comments">There are no comments yet. Be the first!</p>
     }
-  </ion-list>
+  }
 
-  @if (pagineTotali.length > 1) {
-    <div class="pagination-container">
-      <span class="page-label">Page</span>
-      <div class="pages-wrapper">
-        @for (p of pagineTotali; track p) {
-          <button 
-            class="page-button" 
-            [class.active]="p === paginaCorrente" 
-            (click)="cambiaPagina(p)">
-            {{ p }}
-          </button>
-        }
-      </div>
+  @if (pages.length > 1) {
+    <div class="pagination">
+      <button class="page-btn" [disabled]="page === 1" (click)="goToPage(page - 1)">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      @for (p of pages; track p) {
+        <button class="page-btn" [class.active]="p === page" (click)="goToPage(p)">{{ p }}</button>
+      }
+      <button class="page-btn" [disabled]="page === pages.length" (click)="goToPage(page + 1)">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
     </div>
   }
 </div>
+
+<ion-modal class="report-modal" [isOpen]="isReportOpen" (didDismiss)="closeReport()">
+  <ng-template>
+    <div class="report-box">
+      <div class="report-header">
+        <span class="report-title">
+          <ion-icon name="flag-outline"></ion-icon>
+          Report comment
+        </span>
+        <ion-button fill="clear" class="close-btn" (click)="closeReport()">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+
+      @if (reportedComment) {
+        <div class="reported-comment">
+          <img class="avatar small" [src]="getPhoto(reportedComment.foto_profilo)" />
+          <div>
+            <span class="username">{{ '@' + reportedComment.username }}</span>
+            <p class="reported-text">{{ reportedComment.text }}</p>
+          </div>
+        </div>
+      }
+
+      <label class="report-label">Why are you reporting it?</label>
+      <div class="reason-chips">
+        @for (reason of reasons; track reason) {
+          <button class="chip" [class.selected]="reportReason === reason" (click)="chooseReason(reason)">{{ reason }}</button>
+        }
+      </div>
+
+      <ion-textarea
+        class="comment-input"
+        fill="outline"
+        [autoGrow]="true"
+        [rows]="3"
+        [maxlength]="500"
+        [counter]="true"
+        placeholder="Tell the moderators what's wrong..."
+        [value]="reportReason"
+        (ionInput)="onReasonInput($event)">
+      </ion-textarea>
+
+      @if (reportError) {
+        <p class="error">{{ reportError }}</p>
+      }
+
+      <div class="write-actions">
+        <ion-button fill="clear" class="cancel-btn" (click)="closeReport()">Cancel</ion-button>
+        <ion-button class="post-btn" [disabled]="!reportReason.trim() || reporting" (click)="sendReport()">
+          Send report
+        </ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

@@ -34,6 +34,40 @@ const Request = {
     });
   },
 
+  findById: (id) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT * FROM requests WHERE id = ?`;
+      db.get(query, [id], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  },
+
+  findPending: () => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT requests.*, users.foto_profilo
+                     FROM requests
+                     LEFT JOIN users ON users.username = requests.username
+                     WHERE requests.status = 'pending'
+                     ORDER BY requests.id ASC`;
+      db.all(query, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
+  setStatus: (id, status) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE requests SET status = ? WHERE id = ?`;
+      db.run(query, [status, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, status });
+      });
+    });
+  },
+
   findByUsername: (username) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM requests WHERE username = ?`;

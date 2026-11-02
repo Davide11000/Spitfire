@@ -40,6 +40,10 @@
             <ion-button [fill]="isFollowing ? 'outline' : 'solid'" class="action-btn" (click)="onFollow()">
               {{ isFollowing ? 'Unfollow' : 'Follow' }}
             </ion-button>
+            <ion-button fill="outline" class="action-btn" (click)="openChat()">
+              <ion-icon slot="start" name="chatbubble-outline"></ion-icon>
+              Message
+            </ion-button>
           }
         </div>
         @if (photoError) {
@@ -144,7 +148,29 @@
         </div>
 
       </div>
+
+      @if (isOwnProfile && isActive) {
+        <div class="column messages-section">
+          <div class="section-title-row">
+            <b class="column-title">Notifications</b>
+          </div>
+          <app-notifications (openChat)="openChatFromNotification($event, messagesBox)"></app-notifications>
+        </div>
+
+        <div class="column messages-section" #messagesBox>
+          <div class="section-title-row">
+            <b class="column-title">Messages</b>
+          </div>
+          <app-messages></app-messages>
+        </div>
+      }
     </div>
+
+    <ion-modal class="chat-modal" [isOpen]="isChatOpen" (didDismiss)="isChatOpen = false">
+      <ng-template>
+        <app-chat [username]="user.username" [closable]="true" (closed)="isChatOpen = false"></app-chat>
+      </ng-template>
+    </ion-modal>
 
     <!-- Finestra per creare una nuova playlist -->
     <ion-modal class="create-modal" [isOpen]="isCreateOpen" (didDismiss)="onCreateClosed()">

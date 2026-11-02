@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 import { 
@@ -21,6 +21,7 @@ import { Record } from '../../services/record';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     RouterLink,
     IonContent,

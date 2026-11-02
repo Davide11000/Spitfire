@@ -1,0 +1,147 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg">
+  <div class="admin-page">
+    <div class="page-header">
+      <div class="page-title">
+        <ion-icon name="file-tray-full-outline"></ion-icon>
+        <b>Requests</b>
+        @if (!loading) {
+          <span class="count">{{ requests.length }}</span>
+        }
+      </div>
+      <p class="page-subtitle">
+        Songs, albums and artists the users want to add. If you accept, the page is created; if you reject, nothing happens.
+      </p>
+    </div>
+
+    <ion-segment [value]="filter" (ionChange)="onFilterChange($event)" class="filter-segment">
+      <ion-segment-button value="all">
+        <ion-label>All ({{ requests.length }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="song">
+        <ion-label>Songs ({{ countType('song') }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="record">
+        <ion-label>Albums ({{ countType('record') }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="artist">
+        <ion-label>Artists ({{ countType('artist') }})</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (loading) {
+      <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else if (errorMessage) {
+      <p class="error">{{ errorMessage }}</p>
+    } @else {
+      @for (request of getFiltered(); track request.id) {
+        <div class="card">
+          <div class="card-body">
+            <img class="cover" [class.round]="request.type === 'artist'" [src]="getImage(request.image)" />
+
+            <div class="details">
+              <span class="badge">{{ getTypeLabel(request.type) }}</span>
+              <div class="name">{{ request.name }}</div>
+
+              @if (request.type === 'song') {
+                <div class="sub">{{ request.artist_name }} · {{ request.album_name }}</div>
+              }
+              @if (request.type === 'record') {
+                <div class="sub">{{ request.artist_name }}</div>
+              }
+
+              <div class="info-grid">
+                @if (request.release_date) {
+                  <span class="info-label">Release date</span>
+                  <span>{{ request.release_date | date:'dd MMM yyyy' }}</span>
+                }
+                @if (request.birth_date) {
+                  <span class="info-label">Birth date</span>
+                  <span>{{ request.birth_date | date:'dd MMM yyyy' }}</span>
+                }
+                @if (request.country) {
+                  <span class="info-label">Country</span>
+                  <span>{{ request.country }}</span>
+                }
+                @if (request.language) {
+                  <span class="info-label">Language</span>
+                  <span>{{ request.language }}</span>
+                }
+                @if (request.genres) {
+                  <span class="info-label">Genres</span>
+                  <div class="genres">
+                    @for (genre of getGenres(request); track genre) {
+                      <span class="genre">{{ genre }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          @if (request.bio) {
+            <div class="block">
+              <span class="block-title">Biography</span>
+              <p class="long-text">{{ request.bio }}</p>
+            </div>
+          }
+
+          @if (request.tracklist) {
+            <div class="block">
+              <span class="block-title">Tracklist</span>
+              <ol class="tracklist">
+                @for (track of getTracks(request); track $index) {
+                  <li>{{ track }}</li>
+                }
+              </ol>
+            </div>
+          }
+
+          @if (request.lyrics) {
+            <div class="block">
+              <button class="toggle" (click)="toggleLyrics(request)">
+                <ion-icon [name]="request.showLyrics ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+                {{ request.showLyrics ? 'Hide lyrics' : 'Show lyrics' }}
+              </button>
+              @if (request.showLyrics) {
+                <p class="long-text lyrics">{{ request.lyrics }}</p>
+              }
+            </div>
+          }
+
+          <div class="card-footer">
+            <div class="requested-by">
+              <img class="avatar" [src]="getPhoto(request.foto_profilo)" (click)="goToProfile(request.username)" />
+              <span>
+                Requested by
+                <span class="username" (click)="goToProfile(request.username)">{{ '@' + request.username }}</span>
+                · {{ getDate(request.created_at) | date:'dd MMM yyyy, HH:mm' }}
+              </span>
+            </div>
+
+            <div class="card-actions">
+              <ion-button fill="outline" class="action-btn reject-btn" (click)="onReject(request)">
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Reject
+              </ion-button>
+              <ion-button class="action-btn" [disabled]="request.working" (click)="onAccept(request)">
+                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                Accept
+              </ion-button>
+            </div>
+          </div>
+
+          @if (request.error) {
+            <p class="error">{{ request.error }}</p>
+          }
+        </div>
+      } @empty {
+        <div class="empty">
+          <ion-icon name="file-tray-full-outline"></ion-icon>
+          <p>No requests to check.</p>
+        </div>
+      }
+    }
+  </div>
+</ion-content>

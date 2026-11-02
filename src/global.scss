@@ -106,3 +106,14 @@ ion-alert.dark-alert {
     color: var(--ion-color-primary);
   }
 }
+
+ion-toast.dark-toast {
+  --background: #1f1f1f;
+  --color: #f2f2f2;
+  --border-radius: 12px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+  &::part(icon) {
+    color: var(--ion-color-primary);
+  }
+}

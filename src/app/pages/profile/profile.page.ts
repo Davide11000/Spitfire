@@ -1,14 +1,17 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 
 import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline } from 'ionicons/icons';
+import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline } from 'ionicons/icons';
 import { Auth } from '../../services/auth';
 import { Follow } from '../../services/follow';
 import { User } from '../../services/user';
 import { Playlist } from '../../services/playlist';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { ChatComponent } from '../../components/chat/chat.component';
+import { MessagesComponent } from '../../components/messages/messages.component';
+import { NotificationsComponent } from '../../components/notifications/notifications.component';
 
 @Component({
   selector: 'app-profile',
@@ -16,7 +19,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, ChatComponent, MessagesComponent, NotificationsComponent]
 })
 export class ProfilePage implements OnInit {
 
@@ -56,9 +59,14 @@ export class ProfilePage implements OnInit {
   // Profilo da aprire appena la modal ha finito di chiudersi
   private profileToOpen: string | null = null;
 
+  public isChatOpen = false;
+  public isActive = true;
+
+  @ViewChild(MessagesComponent) messagesComponent!: MessagesComponent;
+
   constructor(private auth : Auth, private router : Router, private route : ActivatedRoute, private follow : Follow,
               private userService : User, private pl : Playlist) {
-    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline });
+    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline });
   }
 
   ngOnInit() {
@@ -86,9 +94,16 @@ export class ProfilePage implements OnInit {
   // Ionic chiama questa funzione ogni volta che si torna sulla pagina (ngOnInit invece parte solo la prima volta):
   // ricarico le playlist, così dopo averne eliminata una non resta nella lista
   ionViewWillEnter() {
+    this.isActive = true;
+
     if (this.targetUsername) {
       this.loadPlaylists(this.targetUsername);
     }
+  }
+
+  ionViewWillLeave() {
+    this.isActive = false;
+    this.isChatOpen = false;
   }
 
   loadPlaylists(username: string) {
@@ -191,6 +206,20 @@ export class ProfilePage implements OnInit {
         }
       });
     }
+  }
+
+  openChat() {
+    if (!this.auth.getUsernameFromToken()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.isChatOpen = true;
+  }
+
+  openChatFromNotification(username: string, messagesBox: HTMLElement) {
+    this.messagesComponent.openChat(username);
+    messagesBox.scrollIntoView({ behavior: 'smooth' });
   }
 
   openFollowers() {
