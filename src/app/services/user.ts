@@ -11,7 +11,11 @@ export class User {
     private auth = inject(Auth);
 
     getUser(username: string) : Observable<any> {
-        return this.http.get(`${this.baseUrl}/${username}`);
+        const token = this.auth.getToken();
+
+        return this.http.get(`${this.baseUrl}/${username}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
     }
 
     getUserRole(username: string) : Observable<any> {
@@ -29,6 +33,47 @@ export class User {
         formData.append('photo', file);
 
         return this.http.put(`${this.baseUrl}/me/photo`, formData, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    changeEmail(email: string, password: string) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.put(`${this.baseUrl}/me/email`, {email, password}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    changePassword(currentPassword: string, newPassword: string) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.put(`${this.baseUrl}/me/password`, {currentPassword, newPassword}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    updateBio(bio: string) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.put(`${this.baseUrl}/me/bio`, {bio}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    updateWhoCanMessage(whoCanMessage: string) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.put(`${this.baseUrl}/me/who-can-message`, {whoCanMessage}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
+    deleteAccount(password: string) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.delete(`${this.baseUrl}/me`, {
+            body: {password},
             headers: { Authorization: `Bearer ${token}` }
         });
     }

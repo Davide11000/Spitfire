@@ -1,0 +1,120 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg">
+  <div class="settings">
+    <button class="back" (click)="goToProfile()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+      Back to profile
+    </button>
+
+    <div class="page-title"><b>Settings</b></div>
+    <p class="page-subtitle">{{ '@' + username }}</p>
+
+    <section class="box">
+      <h2 class="box-title">Bio</h2>
+      <ion-textarea class="field-input" fill="outline" [autoGrow]="true" [rows]="3" [maxlength]="300" [counter]="true" placeholder="Tell something about you" [(ngModel)]="bio"></ion-textarea>
+      @if (bioError) {
+        <p class="error">{{ bioError }}</p>
+      }
+      <div class="box-actions">
+        <ion-button fill="outline" class="square-btn" (click)="saveBio()">Save</ion-button>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2 class="box-title">Email</h2>
+      <p class="box-text">Current email: <b>{{ currentEmail }}</b></p>
+      <div class="fields">
+        <ion-input class="field-input" fill="outline" label="New email" label-placement="stacked" type="email" [(ngModel)]="newEmail"></ion-input>
+        <ion-input class="field-input" fill="outline" label="Password" label-placement="stacked" type="password" [(ngModel)]="emailPassword">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+      </div>
+      @if (emailError) {
+        <p class="error">{{ emailError }}</p>
+      }
+      <div class="box-actions">
+        <ion-button fill="outline" class="square-btn" (click)="saveEmail()">Change email</ion-button>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2 class="box-title">Password</h2>
+      <div class="fields">
+        <ion-input class="field-input" fill="outline" label="Current password" label-placement="stacked" type="password" [(ngModel)]="currentPassword">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-input class="field-input" fill="outline" label="New password" label-placement="stacked" type="password" [(ngModel)]="newPassword">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        <ion-input class="field-input" fill="outline" label="Confirm new password" label-placement="stacked" type="password" [(ngModel)]="confirmPassword">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+      </div>
+      @if (passwordError) {
+        <p class="error">{{ passwordError }}</p>
+      }
+      <div class="box-actions">
+        <ion-button fill="outline" class="square-btn" (click)="savePassword()">Change password</ion-button>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2 class="box-title">Who can message me</h2>
+      <div class="options">
+        <button class="option" [class.selected]="whoCanMessage === 'everyone'" (click)="chooseWhoCanMessage('everyone')">
+          <ion-icon name="earth-outline"></ion-icon>
+          <span><b>Everyone</b><br />Any user can write to you</span>
+        </button>
+        <button class="option" [class.selected]="whoCanMessage === 'following'" (click)="chooseWhoCanMessage('following')">
+          <ion-icon name="people-outline"></ion-icon>
+          <span><b>People I follow</b><br />Only the users you follow</span>
+        </button>
+        <button class="option" [class.selected]="whoCanMessage === 'nobody'" (click)="chooseWhoCanMessage('nobody')">
+          <ion-icon name="ban-outline"></ion-icon>
+          <span><b>Nobody</b><br />No one can write to you</span>
+        </button>
+      </div>
+      @if (privacyError) {
+        <p class="error">{{ privacyError }}</p>
+      }
+    </section>
+
+    <section class="box danger">
+      <h2 class="box-title">Delete account</h2>
+      <p class="box-text">
+        Your playlists, messages, follows and favourites will be deleted. Your comments stay, shown as "Deleted user". This cannot be undone.
+      </p>
+      <div class="box-actions">
+        <ion-button fill="outline" class="square-btn danger-btn" (click)="openDelete()">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Delete account
+        </ion-button>
+      </div>
+    </section>
+  </div>
+
+  <ion-modal class="delete-modal" [isOpen]="isDeleteOpen" (didDismiss)="onDeleteClosed()">
+    <ng-template>
+      <div class="delete-box">
+        <div class="delete-header">
+          <b>Delete your account?</b>
+          <ion-button fill="clear" class="close-btn" (click)="isDeleteOpen = false">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+        </div>
+        <p class="box-text">Write your password to confirm. This cannot be undone.</p>
+        <ion-input class="field-input" fill="outline" label="Password" label-placement="stacked" type="password" [(ngModel)]="deletePassword">
+          <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+        </ion-input>
+        @if (deleteError) {
+          <p class="error">{{ deleteError }}</p>
+        }
+        <div class="box-actions">
+          <ion-button fill="clear" class="cancel-btn" (click)="isDeleteOpen = false">Cancel</ion-button>
+          <ion-button fill="outline" class="square-btn danger-btn" (click)="deleteAccount()">Delete</ion-button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+</ion-content>

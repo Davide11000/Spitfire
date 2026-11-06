@@ -11,8 +11,15 @@
           <b class="playlist-name">{{ playlist.name }}</b>
         </div>
         <div class="playlist-creator">
-          Created by: <b>{{ playlist.username }}</b>
+          Created by: <b class="creator-link" (click)="goToCreator()">{{ playlist.username }}</b>
         </div>
+        @if (playlist.description) {
+          <p class="playlist-description">{{ playlist.description }}</p>
+        }
+        <button class="like-btn" [class.liked]="playlist.liked" [class.disabled]="isOwner" (click)="toggleLike()">
+          <ion-icon [name]="playlist.liked ? 'heart' : 'heart-outline'"></ion-icon>
+          {{ playlist.likes }}
+        </button>
         <div class="playlist-meta-row">
           <div class="songs-count">
             <b>{{ songs.length }} songs</b> saved

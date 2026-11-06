@@ -31,6 +31,70 @@ const User = {
     });
   },
 
+  updateEmail: (username, email) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET email = ? WHERE username = ?`;
+      db.run(query, [email, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, email });
+      });
+    });
+  },
+
+  updatePassword: (username, password) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET password = ? WHERE username = ?`;
+      db.run(query, [password, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username });
+      });
+    });
+  },
+
+  updateBio: (username, bio) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET bio = ? WHERE username = ?`;
+      db.run(query, [bio, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, bio });
+      });
+    });
+  },
+
+  updateWhoCanMessage: (username, whoCanMessage) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET who_can_message = ? WHERE username = ?`;
+      db.run(query, [whoCanMessage, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, who_can_message: whoCanMessage });
+      });
+    });
+  },
+
+  deleteAccount: async (username) => {
+    const run = (query, params) => {
+      return new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    };
+
+    await run(`DELETE FROM follows WHERE follower = ? OR following = ?`, [username, username]);
+    await run(`DELETE FROM playlist_likes WHERE username = ?`, [username]);
+    await run(`DELETE FROM favourite_artists WHERE username = ?`, [username]);
+    await run(`DELETE FROM favourite_records WHERE username = ?`, [username]);
+    await run(`DELETE FROM favourite_songs WHERE username = ?`, [username]);
+    await run(`DELETE FROM comment_likes WHERE username = ?`, [username]);
+    await run(`DELETE FROM comment_reports WHERE username = ?`, [username]);
+    await run(`DELETE FROM notifications WHERE username = ? OR from_user = ?`, [username, username]);
+    await run(`DELETE FROM messages WHERE sender = ? OR receiver = ?`, [username, username]);
+    await run(`DELETE FROM requests WHERE username = ?`, [username]);
+    await run(`UPDATE comments SET username = NULL WHERE username = ?`, [username]);
+    await run(`DELETE FROM users WHERE username = ?`, [username]);
+  },
+
   updatePhoto: (username, photo) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE users SET foto_profilo = ? WHERE username = ?`;

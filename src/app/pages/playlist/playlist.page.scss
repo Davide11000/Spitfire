@@ -47,6 +47,53 @@
   }
 }
 
+.creator-link {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.playlist-description {
+  margin: 0;
+  max-width: 600px;
+  color: #ccc;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.like-btn {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid #444;
+  border-radius: 20px;
+  background: transparent;
+  color: #f2f2f2;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  ion-icon {
+    font-size: 1.2rem;
+  }
+
+  &:hover,
+  &.liked {
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+  }
+
+  &.disabled {
+    cursor: default;
+    border-color: #444;
+    color: #ccc;
+  }
+}
+
 .playlist-meta-row {
   display: flex;
   align-items: center;

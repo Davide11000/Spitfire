@@ -6,7 +6,7 @@ const SECRET = process.env.JWT_SECRET;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
 function validatePassword(password) {
-    if (password.length < 6) {
+    if (password.length < 8) {
       return "Password must contain at least 8 characters";
     }
     if (!/[A-Z]/.test(password)) {
@@ -29,11 +29,6 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Username, email and password are required" });
     }
 
-    
-    console.log("Registering user:", username);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    
     const existingUser = await User.findByUsername(username);
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
@@ -63,12 +58,69 @@ exports.register = async (req, res) => {
   }
 };
 
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new password are required" });
+    }
+
+    const user = await User.findByUsername(req.user.username);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is wrong" });
+    }
+
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const result = await User.updatePassword(user.username, hashedPassword);
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.changeEmail = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "New email and password are required" });
+    }
+
+    if (!EMAIL.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    const user = await User.findByUsername(req.user.username);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Password is wrong" });
+    }
+
+    const existingEmail = await User.findByEmail(email);
+    if (existingEmail && existingEmail.username !== user.username) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    const result = await User.updateEmail(user.username, email);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.login = async (req, res) => {
   try {
     const { id, password } = req.body;
-
-    console.log("ID:", id)
-    console.log("Password:", password);
     let user;
     
     if (EMAIL.test(id)) {
@@ -81,10 +133,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid username or email" });
     }
 
-   console.log("Password type:", typeof(password), "User password type:", typeof(user.password));
-
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", password, user.password, isMatch);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid password" });
     }

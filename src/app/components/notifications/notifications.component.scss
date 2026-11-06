@@ -2,7 +2,7 @@
   max-height: 420px;
   overflow-y: auto;
   border: 1px solid #262626;
-  border-radius: 12px;
+  border-radius: 0;
   color: #f2f2f2;
 }
 
@@ -83,7 +83,8 @@
     background: #1e88e5;
   }
 
-  &.like {
+  &.like,
+  &.playlist_like {
     background: var(--ion-color-primary);
   }
 

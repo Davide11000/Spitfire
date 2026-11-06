@@ -36,7 +36,7 @@
             <img class="avatar" [src]="getPhoto(group.author_photo)" (click)="goToProfile(group.author)" />
             <div class="comment-content">
               <div class="comment-header">
-                <span class="username" (click)="goToProfile(group.author)">{{ '@' + group.author }}</span>
+                <span class="username" (click)="goToProfile(group.author)">{{ getName(group.author) }}</span>
                 <span class="date">{{ getDate(group.date) | date:'dd MMM yyyy, HH:mm' }}</span>
               </div>
               <p class="comment-text">{{ group.text }}</p>

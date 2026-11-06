@@ -1,10 +1,16 @@
 const Playlist = require("../models/playlistModel");
 const fs = require("fs");
+const Notification = require("../models/notificationModel");
+const Comment = require("../models/commentModel");
 
 exports.create = async (req, res) => {
     try {
         const username = req.user.username;
         const { name } = req.body;
+        let description = null;
+        if (req.body.description && req.body.description.trim()) {
+            description = req.body.description.trim();
+        }
 
         if (!name) {
             return res.status(400).json({ message: "Playlist name is required"});
@@ -23,7 +29,7 @@ exports.create = async (req, res) => {
             image = "/uploads/playlists/" + req.file.filename;
         }
 
-        const playlist = await Playlist.create(name, username, image, isPublic);
+        const playlist = await Playlist.create(name, username, image, isPublic, description);
 
         res.status(201).json(playlist);
     }   catch (err) {
@@ -55,6 +61,7 @@ exports.addSong = async (req, res) => {
     }
 
     const result = await Playlist.addSong(playlistId, songId);
+    await Playlist.setUpdated(playlistId);
     res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -84,6 +91,7 @@ exports.removeSong = async (req, res) => {
     }
 
     const result = await Playlist.removeSong(playlistId, songId);
+    await Playlist.setUpdated(playlistId);
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -134,6 +142,9 @@ exports.deletePlaylist = async (req, res) => {
 
     // Prima tolgo le canzoni (tabella playlist_songs), poi la playlist
     await Playlist.removeAllSongs(playlistId);
+    await Playlist.removeAllLikes(playlistId);
+    await Notification.removeByPlaylist(playlistId);
+    await Comment.removeByTarget("playlist", playlistId);
     const result = await Playlist.delete(playlistId);
 
     // Cancello dal disco la copertina, se c'era
@@ -191,7 +202,8 @@ exports.getUserPlaylists = async (req, res) => {
 exports.getPlaylistById = async (req, res) => {
   try {
     const playlistId = req.params.playlistId;
-    const playlist = await Playlist.findById(playlistId);
+    const username = req.user ? req.user.username : null;
+    const playlist = await Playlist.findDetails(playlistId, username);
 
     if (!playlist) {
       return res.status(404).json({ message: "Playlist not found" });
@@ -203,6 +215,87 @@ exports.getPlaylistById = async (req, res) => {
     }
 
     res.json(playlist);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getPopular = async (req, res) => {
+  try {
+    const playlists = await Playlist.findPopular(12);
+    res.json(playlists);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getRecent = async (req, res) => {
+  try {
+    const playlists = await Playlist.findRecent(12);
+    res.json(playlists);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.searchPublic = async (req, res) => {
+  try {
+    const text = req.query.q;
+
+    if (!text) {
+      return res.json([]);
+    }
+
+    const playlists = await Playlist.searchPublic(text);
+    res.json(playlists);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.addLike = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const playlistId = req.params.playlistId;
+    const playlist = await Playlist.findDetails(playlistId, username);
+
+    if (!playlist || (!playlist.is_public && playlist.username !== username)) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (playlist.username === username) {
+      return res.status(400).json({ message: "You cannot like your own playlist" });
+    }
+
+    if (playlist.liked) {
+      return res.status(400).json({ message: "You already liked this playlist" });
+    }
+
+    await Playlist.addLike(playlistId, username);
+    await Notification.createPlaylistLike(playlist.username, username, playlist.id);
+    res.status(201).json({ id: playlist.id, likes: playlist.likes + 1, liked: 1 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.removeLike = async (req, res) => {
+  try {
+    const username = req.user.username;
+    const playlistId = req.params.playlistId;
+    const playlist = await Playlist.findDetails(playlistId, username);
+
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (!playlist.liked) {
+      return res.status(400).json({ message: "You have not liked this playlist" });
+    }
+
+    await Playlist.removeLike(playlistId, username);
+    await Notification.removePlaylistLike(playlist.username, username, playlist.id);
+    res.json({ id: playlist.id, likes: playlist.likes - 1, liked: 0 });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

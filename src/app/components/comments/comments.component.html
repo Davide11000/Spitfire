@@ -38,7 +38,7 @@
 
         <div class="comment-content">
           <div class="comment-header">
-            <span class="username" (click)="goToProfile(comment.username)">{{ '@' + comment.username }}</span>
+            <span class="username" (click)="goToProfile(comment.username)">{{ getName(comment.username) }}</span>
             <span class="date">{{ getDate(comment.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>
           </div>
 
@@ -73,7 +73,7 @@
                 [autoGrow]="true"
                 [rows]="1"
                 [maxlength]="1000"
-                [placeholder]="'Reply to @' + comment.username + '...'"
+                [placeholder]="'Reply to ' + getName(comment.username) + '...'"
                 [value]="comment.replyText"
                 (ionInput)="onReplyInput(comment, $event)">
               </ion-textarea>
@@ -107,7 +107,7 @@
 
                   <div class="comment-content">
                     <div class="comment-header">
-                      <span class="username" (click)="goToProfile(reply.username)">{{ '@' + reply.username }}</span>
+                      <span class="username" (click)="goToProfile(reply.username)">{{ getName(reply.username) }}</span>
                       <span class="date">{{ getDate(reply.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>
                     </div>
 
@@ -173,7 +173,7 @@
         <div class="reported-comment">
           <img class="avatar small" [src]="getPhoto(reportedComment.foto_profilo)" />
           <div>
-            <span class="username">{{ '@' + reportedComment.username }}</span>
+            <span class="username">{{ getName(reportedComment.username) }}</span>
             <p class="reported-text">{{ reportedComment.text }}</p>
           </div>
         </div>

@@ -85,7 +85,13 @@ export class ReportsPage implements OnInit {
     return 'Playlist';
   }
 
-  goToProfile(username: string) {
+  getName(username: string | null): string {
+    if (!username) return 'Deleted user';
+    return '@' + username;
+  }
+
+  goToProfile(username: string | null) {
+    if (!username) return;
     this.router.navigate(['/profile', username]);
   }
 
@@ -109,7 +115,7 @@ export class ReportsPage implements OnInit {
   async onAccept(group: any) {
     const alert = await this.alertC.create({
       header: 'Delete comment?',
-      message: 'The comment by @' + group.author + ' and its replies will be deleted.',
+      message: 'The comment by ' + this.getName(group.author) + ' and its replies will be deleted.',
       cssClass: 'dark-alert',
       buttons: [
         { text: 'Cancel', role: 'cancel' },

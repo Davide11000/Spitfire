@@ -39,6 +39,14 @@
   margin-top: 10px;
 }
 
+.bio {
+  margin: 0;
+  max-width: 600px;
+  color: #ccc;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .stats {
   display: flex;
   gap: 16px;
@@ -92,7 +100,7 @@
 
 .column {
   background: #1a1a1a;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 20px;
 }
 
@@ -363,6 +371,11 @@
 .create-label {
   font-weight: bold;
   margin-top: 4px;
+}
+
+.optional {
+  color: #888;
+  font-weight: normal;
 }
 
 .create-input {

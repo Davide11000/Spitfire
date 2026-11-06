@@ -14,7 +14,7 @@
   width: 100%;
   max-width: 600px;
   background: #141414;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 32px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
@@ -72,7 +72,7 @@
 .field-input {
   --color: #f2f2f2;
   --placeholder-color: #999;
-  --border-radius: 8px;
+  --border-radius: 0;
   /* Bordo rosso quando il campo è selezionato (vale per input, textarea e select).
      Ionic altrimenti usa il verde per i campi già compilati ("valid") */
   --highlight-color-focused: var(--ion-color-primary);
@@ -88,7 +88,7 @@
   --background: #1f1f1f;
   --color: #f2f2f2;
   margin-bottom: 4px;
-  border-radius: 8px;
+  border-radius: 0;
 
   p {
     color: #999;
@@ -133,7 +133,7 @@
 }
 
 .small-btn {
-  --border-radius: 8px;
+  --border-radius: 0;
   text-transform: none;
 }
 
@@ -143,7 +143,7 @@
 }
 
 .send-btn {
-  --border-radius: 8px;
+  --border-radius: 0;
   text-transform: none;
   margin-top: 8px;
 }
@@ -156,7 +156,7 @@
   height: 56px;
   padding: 0 16px;
   border: 1px solid #8c8c8c;
-  border-radius: 8px;
+  border-radius: 0;
   background: transparent;
   color: #f2f2f2;
   font-size: 1rem;

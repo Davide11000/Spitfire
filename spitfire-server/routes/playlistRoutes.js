@@ -13,6 +13,13 @@ router.patch("/:playlistId/visibility", authMiddleware, playlistController.setVi
 router.delete("/:playlistId", authMiddleware, playlistController.deletePlaylist);
 
 // optionalAuth: il proprietario vede anche le playlist private
+router.get("/public/popular", playlistController.getPopular);
+router.get("/public/recent", playlistController.getRecent);
+router.get("/public/search", playlistController.searchPublic);
+
+router.post("/:playlistId/like", authMiddleware, playlistController.addLike);
+router.delete("/:playlistId/like", authMiddleware, playlistController.removeLike);
+
 router.get("/:playlistId/songs", optionalAuthMiddleware, playlistController.getSongs);
 router.get("/user/:username", optionalAuthMiddleware, playlistController.getUserPlaylists);
 router.get("/:playlistId", optionalAuthMiddleware, playlistController.getPlaylistById);

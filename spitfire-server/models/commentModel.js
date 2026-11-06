@@ -93,6 +93,23 @@ const Comment = {
         });
     },
 
+    removeByTarget : async (targetType, targetId) => {
+        const run = (query) => {
+            return new Promise((resolve, reject) => {
+                db.run(query, [targetType, targetId], function (err) {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        };
+        const ids = `SELECT id FROM comments WHERE target_type = ? AND target_id = ?`;
+
+        await run(`DELETE FROM comment_likes WHERE comment_id IN (${ids})`);
+        await run(`DELETE FROM comment_reports WHERE comment_id IN (${ids})`);
+        await run(`DELETE FROM notifications WHERE comment_id IN (${ids})`);
+        await run(`DELETE FROM comments WHERE target_type = ? AND target_id = ?`);
+    },
+
     addLike : (id, username) => {
         return new Promise((resolve, reject) => {
             const query = `INSERT INTO comment_likes (comment_id, username) VALUES (?, ?)`;

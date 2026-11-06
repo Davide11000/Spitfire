@@ -78,7 +78,7 @@
   padding: 30px;
   align-items: center;
   gap: 30px;
-  border-radius: 8px;
+  border-radius: 0;
 
   @media (max-width: 768px) {
     text-align: center;
@@ -137,7 +137,7 @@
   flex-direction: column;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
+  border-radius: 0;
 
   .rows-list-item {
     display: flex;
@@ -217,7 +217,7 @@
 .custom-grid-box {
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
+  border-radius: 0;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
   padding: 12px;

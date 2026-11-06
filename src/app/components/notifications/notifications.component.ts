@@ -73,7 +73,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   getIcon(type: string): string {
     if (type === 'follow') return 'person-add';
-    if (type === 'like') return 'heart';
+    if (type === 'like' || type === 'playlist_like') return 'heart';
     if (type === 'reply') return 'chatbubble';
     return 'mail';
   }
@@ -81,12 +81,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   getMessage(type: string): string {
     if (type === 'follow') return 'started following you';
     if (type === 'like') return 'liked your comment';
+    if (type === 'playlist_like') return 'liked your playlist';
     if (type === 'reply') return 'replied to your comment';
     return 'sent you a message';
   }
 
   getPreview(notification: any): string {
     if (notification.type === 'message') return notification.text;
+    if (notification.type === 'playlist_like') return notification.playlist_name || '';
     return notification.comment_text || '';
   }
 
@@ -112,6 +114,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     if (notification.type === 'message') {
       this.openChat.emit(notification.from_user);
+    }
+
+    if (notification.type === 'playlist_like') {
+      this.router.navigate(['/playlist', notification.playlist_id]);
     }
 
     if ((notification.type === 'like' || notification.type === 'reply') && notification.target_type === 'playlist') {

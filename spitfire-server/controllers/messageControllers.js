@@ -1,6 +1,7 @@
 const Message = require("../models/messageModel");
 const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
+const Follow = require("../models/followModel");
 
 exports.send = async (req, res) => {
     try {
@@ -19,6 +20,17 @@ exports.send = async (req, res) => {
         const user = await User.findByUsername(receiver);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.who_can_message === "nobody") {
+            return res.status(403).json({ message: "This user does not accept messages" });
+        }
+
+        if (user.who_can_message === "following") {
+            const following = await Follow.findFollowing(receiver);
+            if (!following.some(f => f.following === sender)) {
+                return res.status(403).json({ message: "This user only accepts messages from people they follow" });
+            }
         }
 
         const result = await Message.create(sender, receiver, text.trim());
