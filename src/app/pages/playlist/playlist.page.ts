@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { IonContent, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonSearchbar, IonSpinner, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline } from 'ionicons/icons';
+import { addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline, heart, heartOutline } from 'ionicons/icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Playlist } from '../../services/playlist';
 import { Song } from '../../services/song';
@@ -33,7 +33,7 @@ export class PlaylistPage implements OnInit {
 
   constructor(private pl : Playlist, private songService : Song, private auth : Auth, private route : ActivatedRoute,
               private router : Router, private alertC : AlertController) {
-    addIcons({ addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline });
+    addIcons({ addOutline, trashOutline, lockClosedOutline, globeOutline, checkmarkOutline, closeOutline, heart, heartOutline });
   }
 
   ngOnInit() {
@@ -62,6 +62,37 @@ export class PlaylistPage implements OnInit {
   getSongImage(song: any): string {
     if (song.image) return this.getImage(song.image);
     return this.getImage(song.recordimage);
+  }
+
+  goToCreator() {
+    this.router.navigate(['/profile', this.playlist.username]);
+  }
+
+  toggleLike() {
+    if (this.isOwner) return;
+
+    if (!this.auth.getUsernameFromToken()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.playlist.liked) {
+      this.pl.unlikePlaylist(this.playlist.id).subscribe({
+        next: (res) => {
+          this.playlist.liked = 0;
+          this.playlist.likes = res.likes;
+        },
+        error: (err) => { console.error("Error removing like", err); }
+      });
+    } else {
+      this.pl.likePlaylist(this.playlist.id).subscribe({
+        next: (res) => {
+          this.playlist.liked = 1;
+          this.playlist.likes = res.likes;
+        },
+        error: (err) => { console.error("Error adding like", err); }
+      });
+    }
   }
 
   loadSongs() {

@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 
-import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput } from '@ionic/angular';
+import { IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, IonInput, IonTextarea } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline } from 'ionicons/icons';
+import { addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline, settingsOutline } from 'ionicons/icons';
 import { Auth } from '../../services/auth';
 import { Follow } from '../../services/follow';
 import { User } from '../../services/user';
@@ -19,7 +19,7 @@ import { NotificationsComponent } from '../../components/notifications/notificat
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, ChatComponent, MessagesComponent, NotificationsComponent]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, IonTextarea, ChatComponent, MessagesComponent, NotificationsComponent]
 })
 export class ProfilePage implements OnInit {
 
@@ -40,6 +40,7 @@ export class ProfilePage implements OnInit {
   public isCreateOpen = false;
   public newPlaylistName = '';
   public newPlaylistPublic = true;
+  public newPlaylistDescription = '';
   public newPlaylistImage: File | null = null;
   public newPlaylistPreview = '';
   public createError = '';
@@ -66,7 +67,7 @@ export class ProfilePage implements OnInit {
 
   constructor(private auth : Auth, private router : Router, private route : ActivatedRoute, private follow : Follow,
               private userService : User, private pl : Playlist) {
-    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline });
+    addIcons({ addOutline, lockClosedOutline, closeOutline, logOutOutline, imageOutline, trashOutline, globeOutline, cameraOutline, chatbubbleOutline, settingsOutline });
   }
 
   ngOnInit() {
@@ -98,6 +99,11 @@ export class ProfilePage implements OnInit {
 
     if (this.targetUsername) {
       this.loadPlaylists(this.targetUsername);
+
+      this.userService.getUser(this.targetUsername).subscribe({
+        next: (res) => { this.user = res; },
+        error: (err) => { console.error('Error fetching user', err); }
+      });
     }
   }
 
@@ -208,6 +214,18 @@ export class ProfilePage implements OnInit {
     }
   }
 
+  goToSettings() {
+    this.router.navigate(['/settings']);
+  }
+
+  canMessage(): boolean {
+    if (this.user.who_can_message === 'nobody') return false;
+    if (this.user.who_can_message === 'everyone') return true;
+
+    const myUsername = this.auth.getUsernameFromToken();
+    return this.following.some(f => f.following === myUsername);
+  }
+
   openChat() {
     if (!this.auth.getUsernameFromToken()) {
       this.router.navigate(['/login']);
@@ -271,6 +289,7 @@ export class ProfilePage implements OnInit {
   onCreatePlaylist() {
     this.newPlaylistName = '';
     this.newPlaylistPublic = true;
+    this.newPlaylistDescription = '';
     this.newPlaylistImage = null;
     this.newPlaylistPreview = '';
     this.createError = '';
@@ -309,6 +328,10 @@ export class ProfilePage implements OnInit {
     this.newPlaylistPreview = '';
   }
 
+  onDescriptionInput(event: any) {
+    this.newPlaylistDescription = event.detail.value;
+  }
+
   onNameInput(event: any) {
     this.newPlaylistName = event.detail.value;
     this.createError = '';
@@ -323,7 +346,7 @@ export class ProfilePage implements OnInit {
     }
 
     this.creating = true;
-    this.pl.createPlaylist(this.newPlaylistName, this.newPlaylistPublic, this.newPlaylistImage).subscribe({
+    this.pl.createPlaylist(this.newPlaylistName, this.newPlaylistPublic, this.newPlaylistImage, this.newPlaylistDescription).subscribe({
       next: (res) => {
         this.creating = false;
         this.playlists.push(res);

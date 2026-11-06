@@ -11,11 +11,12 @@ export class Playlist {
   private auth = inject(Auth);
 
   // I dati vanno mandati come FormData perché insieme può esserci la copertina (facoltativa)
-  createPlaylist(name : string, isPublic : boolean = true, image : File | null = null): Observable<any> {
+  createPlaylist(name : string, isPublic : boolean = true, image : File | null = null, description : string = ''): Observable<any> {
     const token = this.auth.getToken();
     const formData = new FormData();
     formData.append('name', name);
     formData.append('isPublic', String(isPublic));
+    formData.append('description', description);
 
     if (image) {
       formData.append('image', image);
@@ -84,6 +85,34 @@ export class Playlist {
     const token = this.auth.getToken();
 
     return this.http.get(`${this.baseUrl}/${playlistId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  getPopularPlaylists(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/public/popular`);
+  }
+
+  getRecentPlaylists(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/public/recent`);
+  }
+
+  searchPlaylists(text : string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/public/search?q=${text}`);
+  }
+
+  likePlaylist(playlistId : number): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.post(`${this.baseUrl}/${playlistId}/like`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  unlikePlaylist(playlistId : number): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.delete(`${this.baseUrl}/${playlistId}/like`, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }

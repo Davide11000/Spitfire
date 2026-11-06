@@ -43,6 +43,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/discover/discover.page').then(m => m.DiscoverPage)
   },
   {
+    path: 'settings',
+    loadComponent: () => import('./pages/settings/settings.page').then(m => m.SettingsPage),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lists',
+    loadComponent: () => import('./pages/lists/lists.page').then(m => m.ListsPage)
+  },
+  {
     path: 'reports',
     loadComponent: () => import('./pages/reports/reports.page').then(m => m.ReportsPage),
     canActivate: [roleGuard],

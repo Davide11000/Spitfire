@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/userModel");
 
 const SECRET = process.env.JWT_SECRET;
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
 
 
     const authHeader = req.headers["authorization"];
@@ -15,10 +16,12 @@ module.exports = (req, res, next) => {
 
     try {
 
-        console.log("Token received:", token);
-        console.log("SECRET used for verification:", SECRET);
-
         const verified = jwt.verify(token, SECRET);
+
+        const user = await User.findByUsername(verified.username);
+        if (!user) {
+            return res.status(401).json({ message: "This account no longer exists" });
+        }
 
         req.user = verified;
         next();

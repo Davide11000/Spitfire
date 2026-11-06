@@ -99,7 +99,13 @@ export class CommentsComponent implements OnChanges {
     return new Date(date.replace(' ', 'T') + 'Z');
   }
 
-  goToProfile(username: string) {
+  getName(username: string | null): string {
+    if (!username) return 'Deleted user';
+    return '@' + username;
+  }
+
+  goToProfile(username: string | null) {
+    if (!username) return;
     this.router.navigate(['/profile', username]);
   }
 

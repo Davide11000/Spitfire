@@ -14,16 +14,48 @@ const Notification = {
     findByUsername : (username) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT notifications.*, users.foto_profilo,
-                             comments.text AS comment_text, comments.target_type, comments.target_id
+                             comments.text AS comment_text, comments.target_type, comments.target_id,
+                             playlists.name AS playlist_name
                            FROM notifications
                            LEFT JOIN users ON users.username = notifications.from_user
                            LEFT JOIN comments ON comments.id = notifications.comment_id
+                           LEFT JOIN playlists ON playlists.id = notifications.playlist_id
                            WHERE notifications.username = ?
                            ORDER BY notifications.id DESC
                            LIMIT 50`;
             db.all(query, [username], (err, rows) => {
                 if (err) reject(err);
                 else resolve(rows);
+            });
+        });
+    },
+
+    createPlaylistLike : (username, fromUser, playlistId) => {
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO notifications (username, type, from_user, playlist_id) VALUES (?, 'playlist_like', ?, ?)`;
+            db.run(query, [username, fromUser, playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    removePlaylistLike : (username, fromUser, playlistId) => {
+        return new Promise((resolve, reject) => {
+            const query = `DELETE FROM notifications WHERE username = ? AND from_user = ? AND type = 'playlist_like' AND playlist_id = ?`;
+            db.run(query, [username, fromUser, playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ username, fromUser, playlistId });
+            });
+        });
+    },
+
+    removeByPlaylist : (playlistId) => {
+        return new Promise((resolve, reject) => {
+            const query = `DELETE FROM notifications WHERE playlist_id = ?`;
+            db.run(query, [playlistId], function (err) {
+                if (err) reject(err);
+                else resolve({ playlistId });
             });
         });
     },

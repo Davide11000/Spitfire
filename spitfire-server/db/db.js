@@ -15,7 +15,9 @@ db.exec(`
     email TEXT UNIQUE,
     password TEXT,
     ruolo TEXT DEFAULT 'utente',
-    foto_profilo TEXT
+    foto_profilo TEXT,
+    bio TEXT,
+    who_can_message TEXT NOT NULL DEFAULT 'everyone'
   );
 
   CREATE TABLE IF NOT EXISTS artists (
@@ -95,7 +97,18 @@ db.exec(`
     name TEXT NOT NULL,
     username TEXT NOT NULL,
     image TEXT,
+    description TEXT,
     is_public INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS playlist_likes (
+    playlist_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    PRIMARY KEY (playlist_id, username),
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id),
     FOREIGN KEY (username) REFERENCES users(username)
   );
 
@@ -178,7 +191,7 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS comments (
     id INTEGER PRIMARY KEY,
-    username TEXT NOT NULL,
+    username TEXT,
     target_type TEXT NOT NULL,
     target_id INTEGER NOT NULL,
     parent_id INTEGER,
@@ -224,12 +237,14 @@ db.exec(`
     type TEXT NOT NULL,
     from_user TEXT NOT NULL,
     comment_id INTEGER,
+    playlist_id INTEGER,
     text TEXT,
     is_read INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users(username),
     FOREIGN KEY (from_user) REFERENCES users(username),
-    FOREIGN KEY (comment_id) REFERENCES comments(id)
+    FOREIGN KEY (comment_id) REFERENCES comments(id),
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id)
   );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);

@@ -1,0 +1,100 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg">
+  <div class="lists-page">
+    <div class="page-header">
+      <div class="page-title"><b>Playlists</b></div>
+      <p class="page-subtitle">Discover the playlists made by the community.</p>
+    </div>
+
+    <div class="tab-bar">
+      <div class="dropdown">
+        <button class="dropdown-btn" (click)="isMenuOpen = !isMenuOpen">
+          {{ tab === 'popular' ? 'Popular' : 'Recently updated' }}
+          <ion-icon [name]="isMenuOpen ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </button>
+        @if (isMenuOpen) {
+          <div class="dropdown-backdrop" (click)="isMenuOpen = false"></div>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" [class.active]="tab === 'recent'" (click)="selectTab('recent')">
+              <ion-icon name="time-outline"></ion-icon>
+              Recently updated
+            </button>
+            <button class="dropdown-item" [class.active]="tab === 'popular'" (click)="selectTab('popular')">
+              <ion-icon name="flame-outline"></ion-icon>
+              Popular
+            </button>
+          </div>
+        }
+      </div>
+      <ion-searchbar
+        class="search"
+        placeholder="Search playlists by name"
+        [value]="searchText"
+        [debounce]="300"
+        (ionInput)="onSearch($event)"
+        (ionClear)="clearSearch()">
+      </ion-searchbar>
+    </div>
+
+    @if (searchText) {
+      <p class="results-label">Results for "{{ searchText }}"</p>
+      @if (searching) {
+        <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+      } @else {
+        <div class="grid">
+          @for (playlist of results; track playlist.id) {
+            <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: playlist }"></ng-container>
+          } @empty {
+            <p class="empty">No playlists found.</p>
+          }
+        </div>
+      }
+    } @else if (loading) {
+      <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else {
+      <div class="grid">
+        @for (playlist of (tab === 'popular' ? popular : recent); track playlist.id) {
+          <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: playlist }"></ng-container>
+        } @empty {
+          <p class="empty">There are no public playlists yet.</p>
+        }
+      </div>
+    }
+  </div>
+</ion-content>
+
+<ng-template #card let-playlist>
+  <div class="card" (click)="openPlaylist(playlist)">
+    <div class="cover">
+      <img [src]="getCover(playlist.image)" />
+    </div>
+
+    <div class="card-body">
+      <div class="card-top">
+        <div class="name">{{ playlist.name }}</div>
+        <span class="time">{{ getTimeAgo(playlist.updated_at) }}</span>
+      </div>
+
+      <div class="creator">
+        <img class="avatar" [src]="getPhoto(playlist.foto_profilo)" (click)="goToProfile($event, playlist.username)" />
+        <span class="creator-name" (click)="goToProfile($event, playlist.username)">{{ '@' + playlist.username }}</span>
+      </div>
+
+      @if (playlist.description) {
+        <p class="description">{{ playlist.description }}</p>
+      }
+
+      <div class="card-bottom">
+        <span class="stat">
+          <ion-icon name="musical-notes-outline"></ion-icon>
+          {{ playlist.songs }} {{ playlist.songs === 1 ? 'song' : 'songs' }}
+        </span>
+        <span class="stat">
+          <ion-icon class="heart" name="heart"></ion-icon>
+          {{ playlist.likes }}
+        </span>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -45,11 +45,17 @@
   --ion-color-primary-tint: #e84d49;
 }
 
+ion-searchbar.md,
+ion-searchbar.ios {
+  --border-radius: 0;
+}
+
 ion-popover.dark-select {
   --background: #1f1f1f;
   --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 
   &::part(content) {
+    border-radius: 0;
     color-scheme: dark;
     scrollbar-color: #444 #1f1f1f;
   }
@@ -115,5 +121,39 @@ ion-toast.dark-toast {
 
   &::part(icon) {
     color: var(--ion-color-primary);
+  }
+}
+
+ion-button.square-btn {
+  --border-radius: 0;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color: #f2f2f2;
+  --color: #f2f2f2;
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
+  --padding-start: 18px;
+  --padding-end: 18px;
+  height: 44px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  &:hover {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
+
+  &.filled {
+    --background: #f2f2f2;
+    --color: #0d0d0d;
+
+    &:hover {
+      --background: var(--ion-color-primary);
+      --border-color: var(--ion-color-primary);
+      --color: #fff;
+    }
   }
 }

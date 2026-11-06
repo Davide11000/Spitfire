@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
 
         const result = await Comment.create(username, type, targetId, parentId || null, text.trim());
 
-        if (parent && parent.username !== username) {
+        if (parent && parent.username && parent.username !== username) {
             await Notification.create(parent.username, "reply", username, result.id, null);
         }
 
@@ -126,7 +126,7 @@ exports.addLike = async (req, res) => {
 
         await Comment.addLike(comment.id, username);
 
-        if (comment.username !== username) {
+        if (comment.username && comment.username !== username) {
             await Notification.create(comment.username, "like", username, comment.id, null);
         }
         res.status(201).json({ id: comment.id, likes: comment.likes + 1, liked: 1 });

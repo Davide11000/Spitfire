@@ -1,0 +1,168 @@
+.globalbg {
+  --background: #0d0d0d;
+}
+
+.settings {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 16px 60px;
+  color: #f2f2f2;
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #999;
+  cursor: pointer;
+
+  &:hover {
+    color: #f2f2f2;
+  }
+}
+
+.page-title {
+  font-size: xx-large;
+}
+
+.page-subtitle {
+  color: #999;
+  margin: 4px 0 24px;
+}
+
+.box {
+  background: #1a1a1a;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  &.danger {
+    border: 1px solid var(--ion-color-primary);
+  }
+}
+
+.box-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 14px;
+}
+
+.box-text {
+  color: #bbb;
+  margin: 0 0 14px;
+  overflow-wrap: anywhere;
+
+  b {
+    color: #f2f2f2;
+  }
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-input {
+  --color: #f2f2f2;
+  --placeholder-color: #888;
+  --border-radius: 0;
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary);
+}
+
+.error {
+  color: var(--ion-color-primary);
+  margin: 12px 0 0;
+}
+
+.box-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid #444;
+  background: transparent;
+  color: #999;
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  ion-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  b {
+    color: #f2f2f2;
+    font-size: 0.95rem;
+  }
+
+  &:hover {
+    border-color: #888;
+  }
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+
+    ion-icon {
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+ion-button.danger-btn {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+
+  &:hover {
+    --background: var(--ion-color-primary);
+    --color: #fff;
+  }
+}
+
+.delete-modal {
+  --width: 440px;
+  --height: auto;
+  --border-radius: 16px;
+  --background: #1f1f1f;
+}
+
+.delete-box {
+  padding: 20px 24px 24px;
+  color: #f2f2f2;
+}
+
+.delete-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: x-large;
+  margin-bottom: 12px;
+}
+
+.close-btn {
+  --color: #999;
+}
+
+.cancel-btn {
+  --color: #ccc;
+  text-transform: none;
+}
