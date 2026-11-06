@@ -6,6 +6,8 @@ const db = new sqlite3.Database("./database.sqlite",
   else console.log("Connected to SQLite DB");
 });
 
+console.log("db.js");
+
 // Creazione tabelle se non esistono
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -30,15 +32,18 @@ db.exec(`
     recordname TEXT,
     artid INTEGER,
     image TEXT,
-    release_date TEXT,
+    release_date DATE,
     language TEXT,
     rating NUMERIC DEFAULT 0,
     FOREIGN KEY (artid) REFERENCES artists(id)
   );
 
+  INSERT OR IGNORE INTO records VALUES (0, 'Pink Moon', 0, '', '1972-02-25', 'English', 0);
+
   CREATE TABLE IF NOT EXISTS songs (
     id INTEGER PRIMARY KEY,
     songname TEXT,
+    duration TIME,
     recordid INTEGER,
     image TEXT,
     release_date TEXT,
@@ -47,6 +52,9 @@ db.exec(`
     rating NUMERIC DEFAULT 0,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
+
+  INSERT OR IGNORE INTO songs VALUES (0, 'test', '00-00-00', 0, '', '1972-02-25', 'English', '');
+  INSERT OR IGNORE INTO songs VALUES (1, 'test2', '00-00-00', 0, '', '1972-02-25', 'English', '');
 
   CREATE TABLE IF NOT EXISTS genres (
     id INTEGER PRIMARY KEY,

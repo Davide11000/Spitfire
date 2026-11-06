@@ -53,5 +53,13 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/requests/requests.page').then(m => m.RequestsPage),
     canActivate: [roleGuard],
     data: { roles: ['admin'] }
+  },
+  {
+    path: 'records/:id',
+    loadComponent: () => import('./pages/albumtemplate/albumtemplate.page').then(m => m.AlbumtemplatePage),
+  },
+  {
+    path: 'artists/:id',
+    loadComponent: () => import('./pages/artisttemplate/artisttemplate.page').then(m => m.ArtisttemplatePage),
   }
 ];
