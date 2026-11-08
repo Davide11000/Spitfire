@@ -177,6 +177,32 @@
         </ion-button>
       </div>
     </div>
+
+    <div class="card">
+      <div class="requests-title"><b>My requests</b></div>
+
+      @for (request of myRequests; track request.id) {
+        <div class="request-row">
+          <img class="request-image" [class.round]="request.type === 'artist'" [src]="getRequestImage(request.image)" />
+          <div class="request-info">
+            <span class="request-name">{{ request.name }}</span>
+            <span class="request-sub">
+              {{ getTypeLabel(request.type) }}
+              @if (request.artist_name) {
+                · {{ request.artist_name }}
+              }
+              @if (request.album_name) {
+                · {{ request.album_name }}
+              }
+            </span>
+            <span class="request-date">{{ getRequestDate(request.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>
+          </div>
+          <span [class]="'request-status ' + request.status">{{ getStatusLabel(request.status) }}</span>
+        </div>
+      } @empty {
+        <p class="no-requests">You haven't sent any requests yet.</p>
+      }
+    </div>
   </div>
 
   <!-- Finestra con le liste di giorno, mese e anno -->

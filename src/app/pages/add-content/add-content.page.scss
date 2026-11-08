@@ -5,7 +5,9 @@
 /* Contenitore centrato */
 .add-content {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
   padding: 40px 16px;
   color: #f2f2f2;
 }
@@ -194,6 +196,80 @@
 
 .add-track-btn {
   align-self: flex-start;
+}
+
+.requests-title {
+  font-size: x-large;
+  margin-bottom: 12px;
+}
+
+.request-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid #262626;
+}
+
+.request-image {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 8px;
+
+  &.round {
+    border-radius: 50%;
+  }
+}
+
+.request-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.request-name {
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.request-sub {
+  color: #bbb;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.request-date {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.request-status {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid #888;
+  color: #ccc;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+
+  &.accepted {
+    border-color: #43a047;
+    color: #66bb6a;
+  }
+
+  &.rejected {
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+  }
+}
+
+.no-requests {
+  color: #999;
+  margin: 0;
 }
 
 /* Finestra piccola per le liste di giorno, mese e anno */

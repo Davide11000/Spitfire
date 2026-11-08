@@ -3,6 +3,7 @@ const Artist = require("../models/artistModel");
 const Record = require("../models/recordModel");
 const Song = require("../models/songModel");
 const Genre = require("../models/genreModel");
+const Notification = require("../models/notificationModel");
 
 exports.create = async (req, res) => {
   try {
@@ -62,6 +63,12 @@ exports.getPendingRequests = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+async function notifyRequester(request, type, admin) {
+  if (request.username !== admin) {
+    await Notification.create(request.username, type, admin, null, request.name);
+  }
+}
 
 async function getGenreIds(genres) {
   const ids = [];
@@ -173,6 +180,7 @@ exports.accept = async (req, res) => {
     }
 
     await Request.setStatus(request.id, "accepted");
+    await notifyRequester(request, "request_accepted", req.user.username);
     res.json({ id: request.id, status: "accepted", type: request.type, created });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -188,6 +196,7 @@ exports.reject = async (req, res) => {
     }
 
     const result = await Request.setStatus(request.id, "rejected");
+    await notifyRequester(request, "request_rejected", req.user.username);
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });

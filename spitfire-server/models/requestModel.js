@@ -70,7 +70,7 @@ const Request = {
 
   findByUsername: (username) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM requests WHERE username = ?`;
+      const query = `SELECT * FROM requests WHERE username = ? ORDER BY id DESC`;
       db.all(query, [username], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);

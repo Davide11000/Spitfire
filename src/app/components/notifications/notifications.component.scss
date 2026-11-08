@@ -88,8 +88,13 @@
     background: var(--ion-color-primary);
   }
 
-  &.reply {
+  &.reply,
+  &.request_accepted {
     background: #43a047;
+  }
+
+  &.request_rejected {
+    background: var(--ion-color-primary);
   }
 
   &.message {

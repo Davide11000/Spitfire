@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { closeOutline, sendOutline, imageOutline, addOutline, calendarOutline } from 'ionicons/icons';
@@ -15,7 +16,7 @@ import { Genre } from '../../services/genre';
   styleUrls: ['./add-content.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, FormsModule, NavbarComponent]
+  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, FormsModule, DatePipe, NavbarComponent]
 })
 export class AddContentPage implements OnInit {
 
@@ -60,6 +61,8 @@ export class AddContentPage implements OnInit {
   public successMessage = '';
   public sending = false;
 
+  public myRequests: any[] = [];
+
   constructor(private requestService : Request, private artistService : Artist, private recordService : Record, private genreService : Genre) {
     addIcons({ closeOutline, sendOutline, imageOutline, addOutline, calendarOutline });
   }
@@ -69,6 +72,38 @@ export class AddContentPage implements OnInit {
       next: (res) => { this.genreList = res; },
       error: (err) => { console.error('Error loading genres', err); }
     });
+  }
+
+  ionViewWillEnter() {
+    this.loadMyRequests();
+  }
+
+  loadMyRequests() {
+    this.requestService.getMyRequests().subscribe({
+      next: (res) => { this.myRequests = res; },
+      error: (err) => { console.error('Error loading requests', err); }
+    });
+  }
+
+  getRequestImage(image: string | null): string {
+    if (!image) return 'assets/default-cover.svg';
+    return 'http://localhost:3000' + image;
+  }
+
+  getRequestDate(date: string): Date {
+    return new Date(date.replace(' ', 'T') + 'Z');
+  }
+
+  getTypeLabel(type: string): string {
+    if (type === 'song') return 'Song';
+    if (type === 'record') return 'Album';
+    return 'Artist';
+  }
+
+  getStatusLabel(status: string): string {
+    if (status === 'accepted') return 'Accepted';
+    if (status === 'rejected') return 'Rejected';
+    return 'Pending';
   }
 
   onTypeChange(event: any) {
@@ -262,6 +297,7 @@ export class AddContentPage implements OnInit {
         this.sending = false;
         this.successMessage = 'Request sent! An admin will review it soon.';
         this.resetForm();
+        this.loadMyRequests();
       },
       error: (err) => {
         this.sending = false;
