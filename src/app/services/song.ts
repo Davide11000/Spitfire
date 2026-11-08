@@ -15,4 +15,8 @@ export class Song {
     getSongbyId(id: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
+
+    getSongsbyRecordID(id: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/record/${id}`);
+    }
 }

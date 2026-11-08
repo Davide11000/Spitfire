@@ -1,20 +1,20 @@
-<app-topmenu></app-topmenu>
+<app-navbar></app-navbar>
 
 @if (album) {
   <ion-content class="globalbg">
     <div [style.background]="stileSfondoCard" class="album-header-section">
-      <ion-img [src]="album.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover"></ion-img>
+      <img loading="lazy" [src]="album.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover"/>
       <div class="album-info-card">
         <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 12px;">
           <div style="font-size: xx-large;">
-            <b class="album-name">{{ album.titolo }}</b>
+            <b class="album-name">{{ album.recordname }}</b>
           </div>
-          <div class="artist-info" (click)="vaiAllArtista(album.artista)">
+          <div class="artist-info" (click)="vaiAllArtista(album.artId)">
             {{ album.artista }}
           </div>
-          @if (album.dataRilascio) {
+          @if (album.release_date) {
             <div style="font-size: 1rem;">
-              <b>Released:</b> {{ album.dataRilascio | date:'dd/MM/yyyy' }}
+              <b>Released:</b> {{ album.release_date | date:'d MMMM y' }}
             </div>
           }
           @if (albumId) {
@@ -28,16 +28,16 @@
               [isModerator]="isModerator">
             </app-genres>
           }
-          @if (album.lingua) {
+          @if (album.language) {
             <div class="song-meta">
-              <b>Language:</b> {{ album.lingua }}
+              <b>Language:</b> {{ album.language }}
             </div>
           }
-          @if (albumId) {
+          <!--@if (albumId) {
             <div>
               <app-rating-stars [id]="albumId" tipo="album"></app-rating-stars>
             </div>
-          }
+          }-->
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
                 <span style="color: #ffc409; margin-right: 10px; font-weight: bold;">
                   {{ $index + 1 }}.
                 </span>
-                {{ traccia.titolo }}
+                {{ traccia.songname }}
               </ion-label>
             </ion-item>
           }
@@ -73,7 +73,7 @@
       }
     </div>
     @if (albumId) {
-      <app-comments [id]="albumId" [nomeEntita]="album?.titolo" tipo="album"></app-comments>
+      <app-comments [id]="albumId" [type]="album"></app-comments>
     }
     <app-footer></app-footer>
   </ion-content>

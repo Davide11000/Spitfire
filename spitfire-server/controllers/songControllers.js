@@ -60,9 +60,13 @@ exports.getSongBySongname = async (req, res) => {
 exports.getSongByRecordID = async (req, res) => {
   try {
     const recordid = req.params.recordid;
-    const song = await Song.findByrecordid(recordid);
+    const songs = await Song.findByrecordid(recordid);
 
-    res.json(song);
+    if (!songs) {
+      return res.status(404).json({ message: "This record contains no songs" });
+    }
+
+    res.json(songs);
 
   } catch (err) {
     res.status(500).json({ error: err.message });

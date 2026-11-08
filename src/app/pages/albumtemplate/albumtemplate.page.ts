@@ -1,20 +1,20 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonImg, IonLabel, IonList, IonListHeader, IonItem, IonNote, IonIcon, IonButton } from '@ionic/angular';
+import { IonContent, IonImg, IonLabel, IonList, IonListHeader, IonItem, IonIcon, IonButton } from '@ionic/angular';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Auth } from '../../services/auth'
 import { User } from '../../services/user';
 import { addIcons } from 'ionicons';
 import { createOutline } from 'ionicons/icons';
-import { RatingStarsComponent } from '../../components/rating-stars/rating-stars.component';
 import { CommentsComponent } from "../../components/comments/comments.component";
 import { GenresComponent } from "../../components/genres/genres.component";
 import { Subscription } from 'rxjs';
 import { Record } from '../../services/record';
 import { Artist } from '../../services/artist';
+import { Song } from '../../services/song';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-albumtemplate',
@@ -22,9 +22,9 @@ import { Artist } from '../../services/artist';
   styleUrls: ['./albumtemplate.page.scss'],
   standalone: true,
   imports: [
-    IonContent, FooterComponent, TopmenuComponent, CommonModule,
+    IonContent, FooterComponent, CommonModule, NavbarComponent,
     FormsModule, IonImg, IonLabel, IonList, IonListHeader, IonItem,
-    RouterModule, RatingStarsComponent, CommentsComponent,
+    RouterModule, CommentsComponent,
     IonIcon, IonButton, GenresComponent
 ]
 })
@@ -36,6 +36,7 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private record = inject(Record);
   private artist = inject(Artist);
+  private song = inject(Song);
 
   albumId: string | null = null;
   album: any = null;
@@ -112,7 +113,11 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     this.record.getRecord(id).subscribe({
       next: (res) => {
         this.album = res;
-        this.tracklist = this.album.tracklist || this.album.canzoni || [];
+        this.song.getSongsbyRecordID(parseInt(id)).subscribe({
+          next: (res) => {console.log(res); this.tracklist.concat(res);},
+          error: (err) => console.error(err)
+        });
+        //this.tracklist = this.album.tracklist || this.album.canzoni || [];
         this.estraiColoriCopertina();
         this.cdr.detectChanges();
       },
@@ -142,8 +147,8 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     }
   }
 
-  async vaiAllArtista(nomeArtista: string) {
-    this.artist.getArtist(nomeArtista).subscribe({
+  async vaiAllArtista(id: number) {
+    this.artist.getArtist(id).subscribe({
       next: (res) => {
         this.router.navigate(['/artisttemplate', res.id]);
       },
@@ -172,12 +177,11 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
 
     const params: any = {
       tipo: 'album',
-      fotoBase64: this.album.fotoBase64 || '',
-      titolo: this.album.titolo || '',
-      artista: this.album.artista || '',
-      dataRilascio: this.album.dataRilascio || '',
-      generi: this.album.generi || '',
-      lingua: this.album.lingua || '',
+      fotoBase64: this.album.image || '',
+      titolo: this.album.recordname || '',
+      artista: this.album.artid || '',
+      dataRilascio: this.album.release_date || '',
+      lingua: this.album.language || '',
       tracklist: JSON.stringify(titoliTracce)
     };
 
