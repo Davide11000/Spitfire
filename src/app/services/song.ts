@@ -12,7 +12,7 @@ export class Song {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }
 
-    getSongbyId(id: string) : Observable<any> {
+    getSongbyId(id: number) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
 

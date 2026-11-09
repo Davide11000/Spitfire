@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonImg, IonButton, IonSpinner, IonIcon, ToastController } from '@ionic/angular';
 import { FooterComponent } from '../../components/footer/footer.component';
 //import { RatingStarsComponent } from "../../components/rating-stars/rating-stars.component";
-import { AnnotationsComponent } from '../../components/annotations/annotations.component';
+//import { AnnotationsComponent } from '../../components/annotations/annotations.component';
 import { addIcons } from 'ionicons';
 import { addOutline, closeOutline, musicalNotesOutline, createOutline, languageOutline, sendOutline, pencilOutline } from 'ionicons/icons';
 import { CommentsComponent } from "../../components/comments/comments.component";
@@ -23,7 +23,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   templateUrl: './songtemplate.page.html',
   styleUrls: ['./songtemplate.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonImg, IonButton, IonSpinner, FooterComponent, /*RatingStarsComponent,*/ IonIcon, CommentsComponent, AnnotationsComponent, GenresComponent, NavbarComponent]
+  imports: [CommonModule, FormsModule, IonContent, IonImg, IonButton, IonSpinner, FooterComponent, /*RatingStarsComponent,*/ IonIcon, CommentsComponent, /*AnnotationsComponent,*/ GenresComponent, NavbarComponent]
 })
 export class SongtemplatePage implements OnInit, OnDestroy {
 
@@ -71,6 +71,8 @@ export class SongtemplatePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.songId = this.route.snapshot.paramMap.get('id');
+    console.log(this.songId);
     this.isMobile = window.innerWidth < 768;
 
     const token = this.auth.getToken();
@@ -101,6 +103,10 @@ export class SongtemplatePage implements OnInit, OnDestroy {
           error: (err: any) => console.error(err)
         });
       }
+    }
+
+    if (this.songId) {
+      this.caricaDettagliCanzone(this.songId);
     }
 
     /*this.authService.user$.subscribe(user => {
@@ -144,7 +150,7 @@ export class SongtemplatePage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     try {
-      this.song.getSongbyId(id).subscribe({
+      this.song.getSongbyId(parseInt(id)).subscribe({
         next: (res) => this.canzone = res,
         error: (err) => console.error(err)
       });
@@ -161,12 +167,12 @@ export class SongtemplatePage implements OnInit, OnDestroy {
         this.caricaTraduzioni(id);
       }
       else {
+        alert("Song not found");
         this.router.navigate(['/home']);
       }
       this.caricamentoTesto = false;
       this.cdr.detectChanges();
     } catch (err) {
-      console.error("Errore nel recupero della canzone da Firestore:", err);
       this.testoFormattato = "Errore nel caricamento del testo.";
       this.testoMostrato = this.testoFormattato;
       this.caricamentoTesto = false;

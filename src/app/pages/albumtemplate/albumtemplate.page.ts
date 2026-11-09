@@ -23,7 +23,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   standalone: true,
   imports: [
     IonContent, FooterComponent, CommonModule, NavbarComponent,
-    FormsModule, IonImg, IonLabel, IonList, IonListHeader, IonItem,
+    FormsModule, IonLabel, IonList, IonListHeader, IonItem,
     RouterModule, CommentsComponent,
     IonIcon, IonButton, GenresComponent
 ]
@@ -114,7 +114,7 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
       next: (res) => {
         this.album = res;
         this.song.getSongsbyRecordID(parseInt(id)).subscribe({
-          next: (res) => {console.log(res); this.tracklist.concat(res);},
+          next: (res) => this.tracklist = res,
           error: (err) => console.error(err)
         });
         //this.tracklist = this.album.tracklist || this.album.canzoni || [];
@@ -141,16 +141,16 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     }*/
   }
 
-  vaiAllaCanzone(songId: string) {
+  vaiAllaCanzone(songId: number) {
     if (songId) {
-      this.router.navigate(['/songtemplate', songId]);
+      this.router.navigate(['/songs/', songId]);
     }
   }
 
   async vaiAllArtista(id: number) {
     this.artist.getArtist(id).subscribe({
       next: (res) => {
-        this.router.navigate(['/artisttemplate', res.id]);
+        this.router.navigate(['/artists/', res.id]);
       },
       error: (err) => console.error(err)
     });

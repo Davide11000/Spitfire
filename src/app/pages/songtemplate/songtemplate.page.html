@@ -4,20 +4,20 @@
 
   @if (canzone) {
     <div [style.background]="stileSfondoHeader" class="song-header-section">
-      <ion-img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
+      <ion-img [src]="canzone.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'"></ion-img>
 
       <div class="song-info-card">
         <div class="song-header-details">
           <div class="song-title">
-            <b>{{ canzone.titolo }}</b>
+            <b>{{ canzone.songname }}</b>
           </div>
           <div class="song-artist" (click)="vaiAllArtista(canzone.artId)">
-            {{ canzone.artista }}
+            {{ canzone.artid }}
           </div>
 
           @if (canzone.release_date) {
             <div class="song-meta">
-              <b>Release Date:</b> {{ canzone.dataRilascio | date:'d MMMM y' }}
+              <b>Release Date:</b> {{ canzone.release_date | date:'d MMMM y' }}
             </div>
           }
 
@@ -36,7 +36,7 @@
 
           @if (canzone.lingua) {
             <div class="song-meta">
-              <b>Language:</b> {{ canzone.lingua }}
+              <b>Language:</b> {{ canzone.language }}
             </div>
           }
 
@@ -111,7 +111,7 @@
       </div>
     }
 
-    @if (vistaAttiva === 'analysis') {
+    <!--@if (vistaAttiva === 'analysis') {
       <app-annotations
         [songId]="songId"
         [canzone]="canzone"
@@ -123,7 +123,7 @@
         [isModerator]="isModerator"
         [isMobile]="isMobile">
       </app-annotations>
-    }
+    }-->
 
     @if (mioUid) {
       <div class="song-actions-wrapper">

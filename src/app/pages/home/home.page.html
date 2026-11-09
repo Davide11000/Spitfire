@@ -40,7 +40,7 @@
         } @else {
           <div class="custom-rows-list">
             @for (record of recentRecords; track record.id; let idx = $index) {
-              <div class="rows-list-item" [routerLink]="['/albumtemplate', record.id]">
+              <div class="rows-list-item" [routerLink]="['/records', record.id]">
                 <div class="item-index">{{ idx + 1 }}</div>
                 
                 <div class="item-mini-cover">
@@ -48,8 +48,8 @@
                 </div>
 
                 <div class="item-info">
-                  <div class="item-title">{{ record.titolo }}</div>
-                  <div class="item-artist">{{ record.artista }}</div>
+                  <div class="item-title">{{ record.recordname }}</div>
+                  <div class="item-artist">{{ record.artid }}</div>
                 </div>
                 <div class="item-arrow">
                   <ion-icon name="chevron-forward-outline"></ion-icon>
@@ -97,12 +97,12 @@
                   <div class="custom-grid-box" [routerLink]="['/songtemplate', song.id]">
                     
                     <div class="box-cover-container">
-                      <img [src]="song.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
+                      <img [src]="song.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
                     </div>
 
                     <div class="box-meta-content">
-                      <div class="box-song-title">{{ song.titolo }}</div>
-                      <div class="box-song-artist">{{ song.artista }}</div>
+                      <div class="box-song-title">{{ song.songname }}</div>
+                      <div class="box-song-artist">{{ song.artid }}</div>
                     </div>
                   </div>
                 </ion-col>
