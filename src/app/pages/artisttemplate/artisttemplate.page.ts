@@ -57,8 +57,8 @@ export class ArtisttemplatePage implements OnInit {
     const token = this.auth.getToken();
 
     this.recordService.getAllRecordsByArtist(this.artistaId || '').subscribe({
-      next: (res) => {this.tuttiGliAlbum = res;},
-      error: (err) => {console.error("Records not found", err)}
+      next: (res) => this.tuttiGliAlbum = res,
+      error: (err) => console.error("Records not found", err)
     });
 
     if (token) {
@@ -105,24 +105,27 @@ export class ArtisttemplatePage implements OnInit {
   async caricaDettagliArtista(id: string) {
     try {
       this.artistService.getArtist(parseInt(id)).subscribe({
-        next: (res) => this.artista = res,
-        error: (err) => console.error(err)
-      });
+          next: (res) => 
+            {
+              this.artista = res;
+              if (this.artista) {
+                this.caricaAlbumArtista(this.artista.artname);
+                this.calcolaBraniPopolari(this.artista.artname);
+              }
+              
+              if (this.utenteLoggatoUid) {
+                this.controllaSeIsFavourite();
+              }
+              this.cdr.detectChanges();
+            },
+          error: (err) => console.error(err)
+        });
       
-      if (this.artista) {
-        await this.caricaAlbumArtista(this.artista.artname);
-        await this.calcolaBraniPopolari(this.artista.artname);
-      }
-      
-      if (this.utenteLoggatoUid) {
-        await this.controllaSeIsFavourite();
-      }
     } catch (error) {
       console.error(error);
       alert("Artist not found.");
       this.router.navigate(['/home']);
     }
-    this.cdr.detectChanges();
     /*try {
       const docRef = doc(this.firestore, 'artists', id);
       const docSnap = await getDoc(docRef);
@@ -194,8 +197,8 @@ export class ArtisttemplatePage implements OnInit {
       } else {
         favs.push({
           id: this.artistaId,
-          nome: this.artista.nome,
-          fotoBase64: this.artista.fotoBase64 || ''
+          artname: this.artista.artname,
+          image: this.artista.image || ''
         });
       }
 

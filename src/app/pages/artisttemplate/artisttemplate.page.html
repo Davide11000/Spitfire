@@ -4,7 +4,7 @@
   <ion-content class="globalbg artist-content">
     <div class="artist-hero">
       <div class="image-container">
-        <ion-img class="artist-main-img" [src]="artista.image || 'assets/shapes.svg'"></ion-img>
+        <img class="artist-main-img" [src]="artista.image || 'assets/shapes.svg'">
       </div>
       <div class="artist-info-card-overlay">
         <h1 class="artist-title">{{ artista.artname }}</h1>
@@ -62,7 +62,7 @@
                     <img [src]="album.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover">
                   </div>
                   <div class="album-meta">
-                    <h3 class="album-title">{{ album.titolo }}</h3>
+                    <h3 class="album-title">{{ album.recordname }}</h3>
                     @if (album.release_date)
                       {
                       <p class="album-year">{{ album.release_date | date:'yyyy' }}</p>
