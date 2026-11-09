@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectionStra
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray } from 'ionicons/icons';
+import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language } from 'ionicons/icons';
 import { Notification } from '../../services/notification';
 
 @Component({
@@ -22,19 +22,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private timer: any = null;
 
   constructor(private notificationService : Notification, private router : Router) {
-    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray });
+    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language });
   }
 
   ngOnInit() {
-    this.loadNotifications();
-    this.timer = setInterval(() => { this.loadNotifications(); }, 10000);
+    this.loadNotifications(true);
+    this.timer = setInterval(() => { this.loadNotifications(false); }, 10000);
   }
 
   ngOnDestroy() {
     clearInterval(this.timer);
   }
 
-  loadNotifications() {
+  loadNotifications(markAsRead: boolean) {
     this.notificationService.getNotifications().subscribe({
       next: (res) => {
         this.notifications = res;
@@ -48,7 +48,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (hasUnread) {
+        if (hasUnread && markAsRead) {
           this.notificationService.markAllAsRead().subscribe({
             next: () => { this.notificationService.unread = 0; },
             error: (err) => { console.error('Error marking notifications', err); }
@@ -78,6 +78,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'request_accepted') return 'checkmark';
     if (type === 'request_rejected') return 'close';
     if (type === 'new_request') return 'file-tray';
+    if (type === 'new_correction') return 'create';
+    if (type === 'new_translation') return 'language';
+    if (type.startsWith('annotation') || type.startsWith('new_annotation')) return 'chatbox-ellipses';
     return 'mail';
   }
 
@@ -89,11 +92,19 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'request_accepted') return 'accepted your request';
     if (type === 'request_rejected') return 'rejected your request';
     if (type === 'new_request') return 'sent a new request';
+    if (type === 'new_correction') return 'suggested a correction';
+    if (type === 'new_translation') return 'sent a translation';
+    if (type === 'new_annotation') return 'wrote an annotation to review';
+    if (type === 'new_annotation_edit') return 'proposed an edit to an annotation';
+    if (type === 'annotation_approved') return 'approved your annotation';
+    if (type === 'annotation_rejected') return 'rejected your annotation';
+    if (type === 'annotation_edit_approved') return 'approved your edit to an annotation';
+    if (type === 'annotation_edit_rejected') return 'rejected your edit to an annotation';
     return 'sent you a message';
   }
 
   getPreview(notification: any): string {
-    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request') {
+    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.annotation_id) {
       return notification.text;
     }
     if (notification.type === 'playlist_like') return notification.playlist_name || '';
@@ -128,16 +139,40 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.router.navigate(['/playlist', notification.playlist_id]);
     }
 
-    if (notification.type === 'request_accepted' || notification.type === 'request_rejected') {
+    if (notification.type === 'request_accepted' && notification.content_type) {
+      this.goToContent(notification.content_type, notification.content_id);
+    } else if (notification.type === 'request_accepted' || notification.type === 'request_rejected') {
       this.router.navigate(['/add-content']);
     }
 
-    if (notification.type === 'new_request') {
+    if (notification.annotation_id && notification.annotation_song_id !== null) {
+      this.router.navigate(['/songs', notification.annotation_song_id], { queryParams: { annotation: notification.annotation_id } });
+    }
+
+    if (notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation') {
       this.router.navigate(['/requests']);
     }
 
-    if ((notification.type === 'like' || notification.type === 'reply') && notification.target_type === 'playlist') {
-      this.router.navigate(['/playlist', notification.target_id]);
+    if (notification.type === 'like' || notification.type === 'reply') {
+      this.goToComment(notification);
+    }
+  }
+
+  goToContent(type: string, id: number) {
+    if (type === 'song') this.router.navigate(['/songs', id]);
+    if (type === 'record') this.router.navigate(['/records', id]);
+    if (type === 'artist') this.router.navigate(['/artists', id]);
+  }
+
+  // Porta alla pagina dove si trova il commento
+  goToComment(notification: any) {
+    if (notification.target_type === 'playlist') this.router.navigate(['/playlist', notification.target_id]);
+    if (notification.target_type === 'song') this.router.navigate(['/songs', notification.target_id]);
+    if (notification.target_type === 'record') this.router.navigate(['/records', notification.target_id]);
+    if (notification.target_type === 'artist') this.router.navigate(['/artists', notification.target_id]);
+
+    if (notification.target_type === 'annotation' && notification.comment_song_id !== null) {
+      this.router.navigate(['/songs', notification.comment_song_id], { queryParams: { annotation: notification.target_id } });
     }
   }
 

@@ -3,45 +3,44 @@
 @if (album) {
   <ion-content class="globalbg">
     <div [style.background]="stileSfondoCard" class="album-header-section">
-      <img loading="lazy" [src]="album.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover"/>
+      <img loading="lazy" [src]="getCover()" class="album-cover"/>
       <div class="album-info-card">
-        <div style="padding: 10px 16px; display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-size: xx-large;">
+        <div style="padding: 4px 0; display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-size: xx-large; line-height: 1.2;">
             <b class="album-name">{{ album.recordname }}</b>
           </div>
-          <div class="artist-info" [routerLink]="[`/artists/${album.artId}`]">
-            {{ album.artId }}
-          </div>
+          @if (album.artname) {
+            <div class="artist-info" [routerLink]="['/artists', album.artid]">
+              {{ album.artname }}
+            </div>
+          }
           @if (album.release_date) {
             <div style="font-size: 1rem;">
               <b>Released:</b> {{ album.release_date | date:'d MMMM y' }}
             </div>
           }
-          @if (albumId) {
-            <app-genres
-              [entityId]="albumId"
-              tipo="album"
-              [generiAttuali]="album.generi || []"
-              [mioUid]="utenteLoggatoUid"
-              [mioNome]="mioNome"
-              [isAdmin]="isAdmin"
-              [isModerator]="isModerator">
-            </app-genres>
+          @if (generi.length > 0) {
+            <div class="song-meta">
+              <b>Genres:</b>
+              @for (g of generi; track g.id) {
+                {{ g.name }}{{ $last ? '' : ', ' }}
+              }
+            </div>
           }
           @if (album.language) {
             <div class="song-meta">
               <b>Language:</b> {{ album.language }}
             </div>
           }
-          <!--@if (albumId) {
-            <div>
-              <app-rating-stars [id]="albumId" tipo="album"></app-rating-stars>
-            </div>
-          }-->
+          <ion-button fill="outline" size="small" class="favourite-btn white-btn" [class.active]="isPreferito" (click)="togglePreferito()">
+            <ion-icon slot="start" [name]="isPreferito ? 'heart' : 'heart-outline'"></ion-icon>
+            {{ isPreferito ? 'In favourites' : 'Add to favourites' }}
+          </ion-button>
+          <app-rating-stars type="record" [id]="album.id"></app-rating-stars>
         </div>
       </div>
     </div>
-    <div style="padding: 2%; background-color: rgb(30, 30, 30);">
+    <div class="album-body">
       <div class="tracklist-wrapper" [style.background]="stileSfondoCard">
         <ion-list style="border-radius: 15px; background: transparent;" class="tracklist">
           <ion-list-header style="font-size: larger; color: white;">
@@ -59,22 +58,26 @@
                 </span>
                 {{ traccia.songname }}
               </ion-label>
+              @if (traccia.duration) {
+                <span slot="end" class="track-duration">{{ traccia.duration }}</span>
+              }
             </ion-item>
           }
         </ion-list>
       </div>
-      @if (utenteLoggatoUid) {
-        <div class="album-actions-wrapper">
-          <ion-button fill="outline" color="medium" size="small" class="album-action-btn" (click)="vaiACorrectEntry()">
-            <ion-icon slot="start" name="create-outline"></ion-icon>
-            Correct entry
-          </ion-button>
-        </div>
-      }
     </div>
     @if (albumId) {
-      <app-comments [id]="albumId" [type]="album"></app-comments>
+      <app-comments [id]="albumId" type="record"></app-comments>
     }
+    <div class="album-actions-wrapper">
+      @if (album) {
+        <app-contributors type="record" [id]="album.id"></app-contributors>
+      }
+      <ion-button fill="outline" color="medium" size="small" class="album-action-btn" (click)="vaiACorrectEntry()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Correct entry
+      </ion-button>
+    </div>
     <app-footer></app-footer>
   </ion-content>
 }

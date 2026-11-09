@@ -15,11 +15,15 @@ const Notification = {
         return new Promise((resolve, reject) => {
             const query = `SELECT notifications.*, users.foto_profilo,
                              comments.text AS comment_text, comments.target_type, comments.target_id,
-                             playlists.name AS playlist_name
+                             playlists.name AS playlist_name, annotations.song_id AS annotation_song_id,
+                             comment_annotations.song_id AS comment_song_id
                            FROM notifications
                            LEFT JOIN users ON users.username = notifications.from_user
                            LEFT JOIN comments ON comments.id = notifications.comment_id
                            LEFT JOIN playlists ON playlists.id = notifications.playlist_id
+                           LEFT JOIN annotations ON annotations.id = notifications.annotation_id
+                           LEFT JOIN annotations AS comment_annotations
+                             ON comments.target_type = 'annotation' AND comment_annotations.id = comments.target_id
                            WHERE notifications.username = ?
                            ORDER BY notifications.id DESC
                            LIMIT 50`;
@@ -56,6 +60,27 @@ const Notification = {
             db.run(query, [playlistId], function (err) {
                 if (err) reject(err);
                 else resolve({ playlistId });
+            });
+        });
+    },
+
+    createForAnnotation : (username, type, fromUser, annotationId, text) => {
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO notifications (username, type, from_user, annotation_id, text) VALUES (?, ?, ?, ?, ?)`;
+            db.run(query, [username, type, fromUser, annotationId, text], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
+            });
+        });
+    },
+
+    // Notifica collegata a una canzone, un album o un artista (es. richiesta accettata)
+    createForContent : (username, type, fromUser, contentType, contentId, text) => {
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO notifications (username, type, from_user, content_type, content_id, text) VALUES (?, ?, ?, ?, ?, ?)`;
+            db.run(query, [username, type, fromUser, contentType, contentId, text], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID });
             });
         });
     },

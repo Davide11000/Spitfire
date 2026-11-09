@@ -451,3 +451,11 @@
   --height: 640px;
   --border-radius: 16px;
 }
+
+.song-row.clickable {
+  cursor: pointer;
+
+  &:hover .song-name {
+    text-decoration: underline;
+  }
+}

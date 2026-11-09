@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
 
 import { AnnotationsComponent } from './annotations.component';
 
@@ -9,8 +8,7 @@ describe('AnnotationsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AnnotationsComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [AnnotationsComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AnnotationsComponent);

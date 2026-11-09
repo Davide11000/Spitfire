@@ -1,35 +1,16 @@
 const db = require("../db/db");
 
 const Request = {
-  createSong: (username, name, artistName, albumName, releaseDate, genres, language, lyrics, image) => {
+  create: (username, type, targetId, data) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO requests (username, type, name, artist_name, album_name, release_date, genres, language, lyrics, image)
-                     VALUES (?, 'song', ?, ?, ?, ?, ?, ?, ?, ?)`;
-      db.run(query, [username, name, artistName, albumName, releaseDate, genres, language, lyrics, image], function (err) {
+      const query = `INSERT INTO requests (username, type, target_id, name, artist_name, album_name, release_date, genres, language,
+                       lyrics, birth_date, country, bio, tracklist, duration, image)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const params = [username, type, targetId, data.name, data.artistName, data.albumName, data.releaseDate, data.genres, data.language,
+                      data.lyrics, data.birthDate, data.country, data.bio, data.tracklist, data.duration, data.image];
+      db.run(query, params, function (err) {
         if (err) reject(err);
-        else resolve({ id: this.lastID, username, type: "song", name, artistName, albumName, releaseDate, genres, language, lyrics, image, status: "pending" });
-      });
-    });
-  },
-
-  createRecord: (username, name, artistName, releaseDate, genres, language, tracklist, image) => {
-    return new Promise((resolve, reject) => {
-      const query = `INSERT INTO requests (username, type, name, artist_name, release_date, genres, language, tracklist, image)
-                     VALUES (?, 'record', ?, ?, ?, ?, ?, ?, ?)`;
-      db.run(query, [username, name, artistName, releaseDate, genres, language, tracklist, image], function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, username, type: "record", name, artistName, releaseDate, genres, language, tracklist, image, status: "pending" });
-      });
-    });
-  },
-
-  createArtist: (username, name, birthDate, country, bio, image) => {
-    return new Promise((resolve, reject) => {
-      const query = `INSERT INTO requests (username, type, name, birth_date, country, bio, image)
-                     VALUES (?, 'artist', ?, ?, ?, ?, ?)`;
-      db.run(query, [username, name, birthDate, country, bio, image], function (err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, username, type: "artist", name, birthDate, country, bio, image, status: "pending" });
+        else resolve({ id: this.lastID, username, type, target_id: targetId, status: "pending", ...data });
       });
     });
   },
@@ -46,7 +27,13 @@ const Request = {
 
   findPending: () => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT requests.*, users.foto_profilo
+      const query = `SELECT requests.*, users.foto_profilo,
+                       CASE requests.type
+                         WHEN 'song' THEN (SELECT songname FROM songs WHERE songs.id = requests.target_id)
+                         WHEN 'translation' THEN (SELECT songname FROM songs WHERE songs.id = requests.target_id)
+                         WHEN 'record' THEN (SELECT recordname FROM records WHERE records.id = requests.target_id)
+                         WHEN 'artist' THEN (SELECT artname FROM artists WHERE artists.id = requests.target_id)
+                       END AS target_name
                      FROM requests
                      LEFT JOIN users ON users.username = requests.username
                      WHERE requests.status = 'pending'

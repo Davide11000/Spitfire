@@ -10,7 +10,6 @@ router.get("/:id/replies", optionalAuthMiddleware, commentController.getReplies)
 router.post("/", authMiddleware, commentController.create);
 router.delete("/:id", authMiddleware, commentController.deleteComment);
 
-router.post("/:id/like", authMiddleware, commentController.addLike);
-router.delete("/:id/like", authMiddleware, commentController.removeLike);
+router.post("/:id/vote", authMiddleware, commentController.vote);
 
 module.exports = router;

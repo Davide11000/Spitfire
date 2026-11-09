@@ -5,65 +5,117 @@ const Song = require("../models/songModel");
 const Genre = require("../models/genreModel");
 const Notification = require("../models/notificationModel");
 const User = require("../models/userModel");
+const Contribution = require("../models/contributionModel");
+const Lyrics = require("../models/lyricsModel");
 
-async function notifyAdmins(username, name) {
+async function notifyAdmins(username, name, type) {
   const admins = await User.findAdmins();
 
   for (const admin of admins) {
     if (admin.username !== username) {
-      await Notification.create(admin.username, "new_request", username, null, name);
+      await Notification.create(admin.username, type, username, null, name);
     }
   }
+}
+
+async function findEntity(type, id) {
+  if (type === "song") return await Song.findById(id);
+  if (type === "record") return await Record.findById(id);
+  if (type === "artist") return await Artist.findById(id);
+  return null;
+}
+
+function getEntityName(type, entity) {
+  if (type === "song") return entity.songname;
+  if (type === "record") return entity.recordname;
+  return entity.artname;
 }
 
 exports.create = async (req, res) => {
   try {
     const username = req.user.username;
-    const { type, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist } = req.body;
+    const { type, targetId, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist, duration } = req.body;
+    // È una correzione se c'è targetId (anche 0 è un id valido)
+    const isCorrection = targetId !== undefined && targetId !== "";
 
-    // L'immagine è obbligatoria: se c'è, multer l'ha già salvata in uploads/requests
-    if (!req.file) {
-      return res.status(400).json({ message: "Image is required" });
-    }
-
-    const image = "/uploads/requests/" + req.file.filename;
-
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
-    }
-
-    if (type === "song") {
-      if (!artistName || !albumName || !releaseDate || !genres || !language) {
-        return res.status(400).json({ message: "Artist, album, release date, genres and language are required" });
+    if (type === "translation") {
+      const song = await Song.findById(targetId);
+      if (!song) {
+        return res.status(404).json({ message: "Song not found" });
       }
 
-      // Il testo della canzone è facoltativo (es. brani strumentali)
-      const result = await Request.createSong(username, name, artistName, albumName, releaseDate, genres, language, lyrics, image);
-      await notifyAdmins(username, name);
+      if (!language || !lyrics || !lyrics.trim()) {
+        return res.status(400).json({ message: "Language and translated lyrics are required" });
+      }
+
+      if (language === song.language) {
+        return res.status(400).json({ message: "This is the original language of the song" });
+      }
+
+      const result = await Request.create(username, "translation", song.id, {
+        name: song.songname, language, lyrics: lyrics.trim()
+      });
+
+      await notifyAdmins(username, song.songname + " (" + language + ")", "new_translation");
       return res.status(201).json(result);
     }
 
-    if (type === "record") {
-      if (!artistName || !releaseDate || !genres || !language || !tracklist) {
-        return res.status(400).json({ message: "Artist, release date, genres, language and tracklist are required" });
-      }
-
-      const result = await Request.createRecord(username, name, artistName, releaseDate, genres, language, tracklist, image);
-      await notifyAdmins(username, name);
-      return res.status(201).json(result);
+    if (type !== "song" && type !== "record" && type !== "artist") {
+      return res.status(400).json({ message: "Type must be song, record or artist" });
     }
 
-    if (type === "artist") {
-      if (!birthDate || !country || !bio) {
-        return res.status(400).json({ message: "Birth date, country and biography are required" });
-      }
-
-      const result = await Request.createArtist(username, name, birthDate, country, bio, image);
-      await notifyAdmins(username, name);
-      return res.status(201).json(result);
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "The title is required" });
     }
 
-    res.status(400).json({ message: "Type must be song, record or artist" });
+    if (duration && !/^[0-9]{1,3}:[0-5][0-9]$/.test(duration)) {
+      return res.status(400).json({ message: "The duration must be written as m:ss, e.g. 6:53" });
+    }
+
+    let image = null;
+    if (req.file) {
+      image = "/uploads/requests/" + req.file.filename;
+    }
+
+    if (isCorrection) {
+      const entity = await findEntity(type, targetId);
+      if (!entity) {
+        return res.status(404).json({ message: "The page you want to correct does not exist" });
+      }
+
+      const changed = name.trim() !== getEntityName(type, entity) || image || releaseDate || genres || language ||
+                      lyrics || birthDate || country || bio || tracklist || duration;
+      if (!changed) {
+        return res.status(400).json({ message: "Change at least one field" });
+      }
+    } else {
+      if ((type === "song" || type === "record") && !artistName) {
+        return res.status(400).json({ message: "The artist is required" });
+      }
+
+      if (type === "song" && !albumName) {
+        return res.status(400).json({ message: "The album is required" });
+      }
+    }
+
+    const result = await Request.create(username, type, isCorrection ? targetId : null, {
+      name: name.trim(),
+      artistName: artistName || null,
+      albumName: albumName || null,
+      releaseDate: releaseDate || null,
+      genres: genres || null,
+      language: language || null,
+      lyrics: lyrics || null,
+      birthDate: birthDate || null,
+      country: country || null,
+      bio: bio || null,
+      tracklist: tracklist || null,
+      duration: duration || null,
+      image
+    });
+
+    await notifyAdmins(username, name.trim(), isCorrection ? "new_correction" : "new_request");
+    res.status(201).json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -86,6 +138,7 @@ async function notifyRequester(request, type, admin) {
 
 async function getGenreIds(genres) {
   const ids = [];
+  if (!genres) return ids;
 
   for (const name of genres.split(",")) {
     const genre = await Genre.findByName(name.trim());
@@ -127,6 +180,58 @@ async function addSongGenres(songId, genreIds) {
   }
 }
 
+async function replaceRecordGenres(recordId, genreIds) {
+  await Genre.removeAllFromRecord(recordId);
+  await addRecordGenres(recordId, genreIds);
+}
+
+async function replaceSongGenres(songId, genreIds) {
+  await Genre.removeAllFromSong(songId);
+  await addSongGenres(songId, genreIds);
+}
+
+async function addTracks(recordId, tracklist, language, genreIds, username) {
+  if (!tracklist) return;
+
+  const songs = await Song.findByrecordid(recordId);
+
+  for (const songname of tracklist.split("\n")) {
+    if (!songname.trim()) continue;
+    if (songs.some(s => s.songname.toLowerCase() === songname.trim().toLowerCase())) continue;
+
+    const song = await Song.create(songname.trim(), recordId, null, language, null);
+    await Contribution.add("song", song.id, username);
+    await addSongGenres(song.id, genreIds);
+  }
+}
+
+async function applyCorrection(request) {
+  const entity = await findEntity(request.type, request.target_id);
+  if (!entity) return null;
+
+  const genreIds = await getGenreIds(request.genres);
+
+  if (request.type === "artist") {
+    return await Artist.correct(entity.id, request.name, request.image || entity.image, request.birth_date || entity.birth_date,
+                                request.country || entity.country, request.bio || entity.bio);
+  }
+
+  if (request.type === "record") {
+    const record = await Record.correct(entity.id, request.name, request.image || entity.image,
+                                        request.release_date || entity.release_date, request.language || entity.language);
+    if (request.genres) await replaceRecordGenres(entity.id, genreIds);
+
+    const recordGenres = await Genre.findByRecord(entity.id);
+    await addTracks(entity.id, request.tracklist, record.language, recordGenres.map(g => g.id), request.username);
+    return record;
+  }
+
+  const song = await Song.correct(entity.id, request.name, request.image || entity.image,
+                                  request.language || entity.language, request.lyrics || entity.lyrics, request.duration || entity.duration);
+  if (request.genres) await replaceSongGenres(entity.id, genreIds);
+  return song;
+}
+
 exports.accept = async (req, res) => {
   try {
     const request = await Request.findById(req.params.id);
@@ -137,41 +242,51 @@ exports.accept = async (req, res) => {
 
     let created;
 
-    if (request.type === "artist") {
+    if (request.type === "translation") {
+      const translations = await Lyrics.findBySongId(request.target_id);
+
+      if (translations.some(t => t.language === request.language)) {
+        await Lyrics.update(request.target_id, request.language, request.lyrics);
+      } else {
+        await Lyrics.create(request.target_id, request.language, request.lyrics);
+      }
+      created = { id: request.target_id };
+    }
+
+    if (request.target_id !== null && request.type !== "translation") {
+      created = await applyCorrection(request);
+      if (!created) {
+        return res.status(404).json({ message: "The page to correct no longer exists" });
+      }
+    }
+
+    if (request.target_id === null && request.type === "artist") {
       const artists = await Artist.findByArtname(request.name);
 
       if (artists[0]) {
-        created = await Artist.update(artists[0].id, request.image, request.birth_date, request.country, request.bio);
+        const a = artists[0];
+        created = await Artist.update(a.id, request.image || a.image, request.birth_date || a.birth_date, request.country || a.country, request.bio || a.bio);
       } else {
         created = await Artist.create(request.name, request.image, request.birth_date, request.country, request.bio);
       }
     }
 
-    if (request.type === "record") {
+    if (request.target_id === null && request.type === "record") {
       const artist = await findOrCreateArtist(request.artist_name);
       const genreIds = await getGenreIds(request.genres);
 
       const existing = await findRecord(artist.id, request.name);
       if (existing) {
-        created = await Record.update(existing.id, request.image, request.release_date, request.language);
+        created = await Record.update(existing.id, request.image || existing.image, request.release_date || existing.release_date, request.language || existing.language);
       } else {
         created = await Record.create(request.name, artist.id, request.image, request.release_date, request.language);
       }
 
       await addRecordGenres(created.id, genreIds);
-
-      const songs = await Song.findByrecordid(created.id);
-
-      for (const songname of request.tracklist.split("\n")) {
-        if (!songname.trim()) continue;
-        if (songs.some(s => s.songname.toLowerCase() === songname.trim().toLowerCase())) continue;
-
-        const song = await Song.create(songname.trim(), created.id, null, request.release_date, request.language, null);
-        await addSongGenres(song.id, genreIds);
-      }
+      await addTracks(created.id, request.tracklist, request.language, genreIds, request.username);
     }
 
-    if (request.type === "song") {
+    if (request.target_id === null && request.type === "song") {
       const artist = await findOrCreateArtist(request.artist_name);
       const genreIds = await getGenreIds(request.genres);
 
@@ -179,22 +294,29 @@ exports.accept = async (req, res) => {
       if (!record) {
         record = await Record.create(request.album_name, artist.id, request.image, request.release_date, request.language);
         await addRecordGenres(record.id, genreIds);
+        await Contribution.add("record", record.id, request.username);
       }
 
       const songs = await Song.findByrecordid(record.id);
       const existing = songs.find(s => s.songname.toLowerCase() === request.name.toLowerCase());
 
       if (existing) {
-        created = await Song.update(existing.id, request.image, request.release_date, request.language, request.lyrics);
+        created = await Song.update(existing.id, request.image || existing.image,
+                                    request.language || existing.language, request.lyrics || existing.lyrics);
       } else {
-        created = await Song.create(request.name, record.id, request.image, request.release_date, request.language, request.lyrics);
+        created = await Song.create(request.name, record.id, request.image, request.language, request.lyrics);
       }
 
+      if (request.duration) await Song.setDuration(created.id, request.duration);
       await addSongGenres(created.id, genreIds);
     }
 
+    await Contribution.add(request.type === "translation" ? "song" : request.type, created.id, request.username);
     await Request.setStatus(request.id, "accepted");
-    await notifyRequester(request, "request_accepted", req.user.username);
+    if (request.username !== req.user.username) {
+      const contentType = request.type === "translation" ? "song" : request.type;
+      await Notification.createForContent(request.username, "request_accepted", req.user.username, contentType, created.id, request.name);
+    }
     res.json({ id: request.id, status: "accepted", type: request.type, created });
   } catch (err) {
     res.status(500).json({ error: err.message });

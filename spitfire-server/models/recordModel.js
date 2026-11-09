@@ -21,6 +21,16 @@ const Record = {
     });
   },
 
+  correct: (id, recordname, image, releaseDate, language) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE records SET recordname = ?, image = ?, release_date = ?, language = ? WHERE id = ?`;
+      db.run(query, [recordname, image, releaseDate, language, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, recordname, image, release_date: releaseDate, language });
+      });
+    });
+  },
+
   findByRecordname: (recordname) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM records WHERE recordname = ?`;
@@ -35,6 +45,19 @@ const Record = {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM records WHERE artid = ?`;
       db.all(query, [artid], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  },
+
+  findDetails: (id) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT records.*, artists.artname
+                     FROM records
+                     LEFT JOIN artists ON artists.id = records.artid
+                     WHERE records.id = ?`;
+      db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });

@@ -46,6 +46,7 @@ const Report = {
                                WHEN 'record' THEN (SELECT recordname FROM records WHERE records.id = comments.target_id)
                                WHEN 'artist' THEN (SELECT artname FROM artists WHERE artists.id = comments.target_id)
                                WHEN 'playlist' THEN (SELECT name FROM playlists WHERE playlists.id = comments.target_id)
+                               WHEN 'annotation' THEN (SELECT selected_text FROM annotations WHERE annotations.id = comments.target_id)
                              END AS target_name
                            FROM comment_reports
                            JOIN comments ON comments.id = comment_reports.comment_id
@@ -62,6 +63,66 @@ const Report = {
     setStatus : (id, status) => {
         return new Promise((resolve, reject) => {
             const query = `UPDATE comment_reports SET status = ? WHERE id = ?`;
+            db.run(query, [status, id], function (err) {
+                if (err) reject(err);
+                else resolve({ id, status });
+            });
+        });
+    },
+
+    createForAnnotation : (annotationId, username, reason) => {
+        return new Promise((resolve, reject) => {
+            const query = `INSERT INTO annotation_reports (annotation_id, username, reason) VALUES (?, ?, ?)`;
+            db.run(query, [annotationId, username, reason], function (err) {
+                if (err) reject(err);
+                else resolve({ id: this.lastID, annotation_id: annotationId, username, reason, status: "pending" });
+            });
+        });
+    },
+
+    findAnnotationReportById : (id) => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM annotation_reports WHERE id = ?`;
+            db.get(query, [id], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    findPendingAnnotationByUser : (annotationId, username) => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT * FROM annotation_reports WHERE annotation_id = ? AND username = ? AND status = 'pending'`;
+            db.get(query, [annotationId, username], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+    },
+
+    findPendingAnnotations : () => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT annotation_reports.*,
+                             annotations.selected_text, annotations.text AS annotation_text,
+                             annotations.username AS annotation_author, annotations.created_at AS annotation_date,
+                             annotations.song_id, songs.songname,
+                             users.foto_profilo AS author_photo
+                           FROM annotation_reports
+                           JOIN annotations ON annotations.id = annotation_reports.annotation_id
+                           LEFT JOIN songs ON songs.id = annotations.song_id
+                           LEFT JOIN users ON users.username = annotations.username
+                           WHERE annotation_reports.status = 'pending'
+                           ORDER BY annotation_reports.id ASC`;
+            db.all(query, [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
+    setAnnotationStatus : (id, status) => {
+        return new Promise((resolve, reject) => {
+            const query = `UPDATE annotation_reports SET status = ? WHERE id = ?`;
             db.run(query, [status, id], function (err) {
                 if (err) reject(err);
                 else resolve({ id, status });

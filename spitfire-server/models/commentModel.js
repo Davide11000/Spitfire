@@ -14,8 +14,8 @@ const Comment = {
     findById : (id, username) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT comments.*, users.foto_profilo,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id) AS likes,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS liked,
+                             (SELECT COALESCE(SUM(value), 0) FROM comment_likes WHERE comment_id = comments.id) AS score,
+                             (SELECT value FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS my_vote,
                              (SELECT COUNT(*) FROM comments AS replies WHERE replies.parent_id = comments.id) AS replies
                            FROM comments
                            LEFT JOIN users ON users.username = comments.username
@@ -30,8 +30,8 @@ const Comment = {
     findByTarget : (targetType, targetId, username, limit, offset) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT comments.*, users.foto_profilo,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id) AS likes,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS liked,
+                             (SELECT COALESCE(SUM(value), 0) FROM comment_likes WHERE comment_id = comments.id) AS score,
+                             (SELECT value FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS my_vote,
                              (SELECT COUNT(*) FROM comments AS replies WHERE replies.parent_id = comments.id) AS replies
                            FROM comments
                            LEFT JOIN users ON users.username = comments.username
@@ -59,8 +59,8 @@ const Comment = {
     findReplies : (parentId, username) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT comments.*, users.foto_profilo,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id) AS likes,
-                             (SELECT COUNT(*) FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS liked
+                             (SELECT COALESCE(SUM(value), 0) FROM comment_likes WHERE comment_id = comments.id) AS score,
+                             (SELECT value FROM comment_likes WHERE comment_id = comments.id AND username = ?) AS my_vote
                            FROM comments
                            LEFT JOIN users ON users.username = comments.username
                            WHERE comments.parent_id = ?
@@ -110,22 +110,27 @@ const Comment = {
         await run(`DELETE FROM comments WHERE target_type = ? AND target_id = ?`);
     },
 
-    addLike : (id, username) => {
+    // Tolgo il voto vecchio e, se il valore non è 0, salvo quello nuovo (1 = mi piace, -1 = non mi piace)
+    setVote : (id, username, value) => {
         return new Promise((resolve, reject) => {
-            const query = `INSERT INTO comment_likes (comment_id, username) VALUES (?, ?)`;
-            db.run(query, [id, username], function (err) {
-                if (err) reject(err);
-                else resolve({ id, username });
+            db.run(`DELETE FROM comment_likes WHERE comment_id = ? AND username = ?`, [id, username], function (err) {
+                if (err) return reject(err);
+                if (value === 0) return resolve({ id, username, value });
+
+                db.run(`INSERT INTO comment_likes (comment_id, username, value) VALUES (?, ?, ?)`, [id, username, value], function (err) {
+                    if (err) reject(err);
+                    else resolve({ id, username, value });
+                });
             });
         });
     },
 
-    removeLike : (id, username) => {
+    getScore : (id) => {
         return new Promise((resolve, reject) => {
-            const query = `DELETE FROM comment_likes WHERE comment_id = ? AND username = ?`;
-            db.run(query, [id, username], function (err) {
+            const query = `SELECT COALESCE(SUM(value), 0) AS score FROM comment_likes WHERE comment_id = ?`;
+            db.get(query, [id], (err, row) => {
                 if (err) reject(err);
-                else resolve({ id, username });
+                else resolve(row.score);
             });
         });
     }

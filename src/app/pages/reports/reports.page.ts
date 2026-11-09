@@ -19,6 +19,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 export class ReportsPage implements OnInit {
 
   public groups: any[] = [];
+  public annotationGroups: any[] = [];
   public loading = true;
   public errorMessage = '';
 
@@ -33,6 +34,7 @@ export class ReportsPage implements OnInit {
 
   loadReports() {
     this.loading = true;
+    this.loadAnnotationReports();
 
     this.reportService.getReports().subscribe({
       next: (res) => {
@@ -69,6 +71,81 @@ export class ReportsPage implements OnInit {
     });
   }
 
+  // Raggruppo le segnalazioni per annotazione
+  loadAnnotationReports() {
+    this.reportService.getAnnotationReports().subscribe({
+      next: (res) => {
+        this.annotationGroups = [];
+
+        for (const report of res) {
+          let group = this.annotationGroups.find(g => g.annotation_id === report.annotation_id);
+
+          if (!group) {
+            group = {
+              annotation_id: report.annotation_id,
+              selected_text: report.selected_text,
+              text: report.annotation_text,
+              author: report.annotation_author,
+              author_photo: report.author_photo,
+              date: report.annotation_date,
+              song_id: report.song_id,
+              songname: report.songname,
+              reports: []
+            };
+            this.annotationGroups.push(group);
+          }
+
+          group.reports.push(report);
+        }
+      },
+      error: (err) => { this.errorMessage = err.error.message || 'Error loading the reports'; }
+    });
+  }
+
+  goToAnnotation(group: any) {
+    this.router.navigate(['/songs', group.song_id], { queryParams: { annotation: group.annotation_id } });
+  }
+
+  async onAcceptAnnotation(group: any) {
+    const alert = await this.alertC.create({
+      header: 'Delete annotation?',
+      message: 'The annotation by ' + this.getName(group.author) + ', its votes and its suggestions will be deleted.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Delete', role: 'destructive', handler: () => { this.acceptAnnotationReport(group); } }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  acceptAnnotationReport(group: any) {
+    this.reportService.acceptAnnotationReport(group.reports[0].id).subscribe({
+      next: (res) => {
+        this.annotationGroups = this.annotationGroups.filter(g => g.annotation_id !== group.annotation_id);
+        this.loadReports();
+        this.showToast('Annotation deleted');
+      },
+      error: (err) => { group.error = err.error.message || 'Error deleting the annotation'; }
+    });
+  }
+
+  onRejectAnnotation(group: any) {
+    const requests = [];
+    for (const report of group.reports) {
+      requests.push(this.reportService.rejectAnnotationReport(report.id));
+    }
+
+    forkJoin(requests).subscribe({
+      next: (res) => {
+        this.annotationGroups = this.annotationGroups.filter(g => g.annotation_id !== group.annotation_id);
+        this.showToast('Report rejected, the annotation stays');
+      },
+      error: (err) => { group.error = err.error.message || 'Error rejecting the report'; }
+    });
+  }
+
   getPhoto(photo: string | null): string {
     if (!photo) return 'assets/default-avatar.svg';
     return 'http://localhost:3000' + photo;
@@ -82,6 +159,7 @@ export class ReportsPage implements OnInit {
     if (type === 'song') return 'Song';
     if (type === 'record') return 'Album';
     if (type === 'artist') return 'Artist';
+    if (type === 'annotation') return 'Annotation';
     return 'Playlist';
   }
 

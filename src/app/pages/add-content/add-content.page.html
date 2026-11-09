@@ -4,13 +4,19 @@
   <div class="add-content">
     <div class="card">
       <div class="page-title">
-        <b>Add content</b>
+        <b>{{ isCorrection() ? 'Correct entry' : 'Add content' }}</b>
       </div>
-      <p class="page-subtitle">
-        Can't find a song, an album or an artist? Send a request and an admin will add it.
-      </p>
+      @if (isCorrection()) {
+        <p class="page-subtitle">
+          Fix a wrong field or fill in a missing one. Only the fields you change will be updated, after an admin reviews them.
+        </p>
+      } @else {
+        <p class="page-subtitle">
+          Can't find a song, an album or an artist? Send a request and an admin will add it. Fields marked with * are required.
+        </p>
+      }
 
-      <ion-segment [value]="type" (ionChange)="onTypeChange($event)" class="type-segment">
+      <ion-segment [value]="type" [disabled]="isCorrection()" (ionChange)="onTypeChange($event)" class="type-segment">
         <ion-segment-button value="song">
           <ion-label>Song</ion-label>
         </ion-segment-button>
@@ -47,9 +53,9 @@
         <!-- Nome: c'è per tutti e tre i tipi -->
         <div class="field">
           <label class="field-label">
-            @if (type === 'song') { Song title }
-            @if (type === 'record') { Album title }
-            @if (type === 'artist') { Artist name }
+            @if (type === 'song') { Song title * }
+            @if (type === 'record') { Album title * }
+            @if (type === 'artist') { Artist name * }
           </label>
           <ion-input class="field-input" fill="outline" [(ngModel)]="name" placeholder="Write the name here"></ion-input>
         </div>
@@ -57,8 +63,8 @@
         <!-- Artista: per canzoni e album -->
         @if (type === 'song' || type === 'record') {
           <div class="field">
-            <label class="field-label">Artist</label>
-            <ion-input class="field-input" fill="outline" [value]="artistName" [debounce]="300" (ionInput)="onArtistInput($event)" placeholder="Artist name"></ion-input>
+            <label class="field-label">Artist {{ isCorrection() ? '' : '*' }}</label>
+            <ion-input class="field-input" fill="outline" [value]="artistName" [disabled]="isCorrection()" [debounce]="300" (ionInput)="onArtistInput($event)" placeholder="Artist name"></ion-input>
             @if (artistSuggestions.length > 0) {
               <ion-list class="suggestions">
                 @for (artist of artistSuggestions; track artist.id) {
@@ -74,8 +80,8 @@
         <!-- Album: solo per le canzoni -->
         @if (type === 'song') {
           <div class="field">
-            <label class="field-label">Album</label>
-            <ion-input class="field-input" fill="outline" [value]="albumName" [debounce]="300" (ionInput)="onAlbumInput($event)" placeholder="Album title"></ion-input>
+            <label class="field-label">Album {{ isCorrection() ? '' : '*' }}</label>
+            <ion-input class="field-input" fill="outline" [value]="albumName" [disabled]="isCorrection()" [debounce]="300" (ionInput)="onAlbumInput($event)" placeholder="Album title"></ion-input>
             @if (albumSuggestions.length > 0) {
               <ion-list class="suggestions">
                 @for (album of albumSuggestions; track album.id) {
@@ -91,14 +97,16 @@
           </div>
         }
 
-        <!-- Data: uscita per canzoni e album, nascita per l'artista -->
-        <div class="field">
-          <label class="field-label">{{ type === 'artist' ? 'Birth date' : 'Release date' }}</label>
-          <button class="date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true">
-            <ion-icon name="calendar-outline"></ion-icon>
-            {{ getDate() ? formatDate(getDate()) : 'Choose a date' }}
-          </button>
-        </div>
+        <!-- Data: uscita per gli album, nascita per l'artista -->
+        @if (type !== 'song') {
+          <div class="field">
+            <label class="field-label">{{ type === 'artist' ? 'Birth date' : 'Release date' }}</label>
+            <button class="date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true">
+              <ion-icon name="calendar-outline"></ion-icon>
+              {{ getDate() ? formatDate(getDate()) : 'Choose a date' }}
+            </button>
+          </div>
+        }
 
         <!-- Genere e lingua: per canzoni e album -->
         @if (type === 'song' || type === 'record') {
@@ -128,17 +136,21 @@
             <label class="field-label">Lyrics <span class="optional">(if the song has lyrics)</span></label>
             <ion-textarea class="field-input" fill="outline" [(ngModel)]="lyrics" [autoGrow]="true" rows="6" placeholder="Write the lyrics here"></ion-textarea>
           </div>
+          <div class="field">
+            <label class="field-label">Duration <span class="optional">(m:ss)</span></label>
+            <ion-input class="field-input" fill="outline" [(ngModel)]="duration" placeholder="e.g. 6:53"></ion-input>
+          </div>
         }
 
         <!-- Tracklist: solo per gli album, una canzone per campo -->
         @if (type === 'record') {
           <div class="field">
-            <label class="field-label">Tracklist</label>
+            <label class="field-label">Tracklist @if (isCorrection()) { <span class="optional">(you can add songs)</span> }</label>
             @for (track of tracks; track $index; let i = $index) {
               <div class="track-row">
                 <span class="track-number">{{ i + 1 }}</span>
-                <ion-input class="field-input" fill="outline" [value]="track" (ionInput)="onTrackInput(i, $event)" placeholder="Song title"></ion-input>
-                @if (tracks.length > 1) {
+                <ion-input class="field-input" fill="outline" [value]="track" [disabled]="isExistingTrack(i)" (ionInput)="onTrackInput(i, $event)" placeholder="Song title"></ion-input>
+                @if (tracks.length > 1 && !isExistingTrack(i)) {
                   <ion-button fill="clear" class="small-btn" (click)="removeTrack(i)">
                     <ion-icon slot="icon-only" name="close-outline"></ion-icon>
                   </ion-button>
@@ -173,8 +185,11 @@
 
         <ion-button class="send-btn" expand="block" [disabled]="sending" (click)="onSend()">
           <ion-icon slot="start" name="send-outline"></ion-icon>
-          Send request
+          {{ isCorrection() ? 'Send correction' : 'Send request' }}
         </ion-button>
+        @if (isCorrection()) {
+          <ion-button class="send-btn" expand="block" fill="clear" (click)="cancelCorrection()">Cancel</ion-button>
+        }
       </div>
     </div>
 
@@ -187,12 +202,18 @@
           <div class="request-info">
             <span class="request-name">{{ request.name }}</span>
             <span class="request-sub">
+              @if (request.target_id && request.type !== 'translation') {
+                Correction ·
+              }
               {{ getTypeLabel(request.type) }}
               @if (request.artist_name) {
                 · {{ request.artist_name }}
               }
               @if (request.album_name) {
                 · {{ request.album_name }}
+              }
+              @if (request.type === 'translation') {
+                · {{ request.language }}
               }
             </span>
             <span class="request-date">{{ getRequestDate(request.created_at) | date:'dd MMM yyyy, HH:mm' }}</span>

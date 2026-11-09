@@ -4,13 +4,13 @@ const Genre = require("../models/genreModel");
 
 exports.create = async (req, res) => {
   try {
-    const {songname, recordid, image, releaseDate, language, lyrics, genreIds} = req.body;
+    const {songname, recordid, image, language, lyrics, genreIds} = req.body;
     
     if (!songname || !recordid) {
       return res.status(400).json({ message: "Name and recordid required"});
     }
     
-    const song = await Song.create(songname, recordid, image, releaseDate, language, lyrics);
+    const song = await Song.create(songname, recordid, image, language, lyrics);
 
     // genreIds è un elenco di id dei generi, es. [2, 3]: per ognuno creo il collegamento
     if (genreIds) {
@@ -76,7 +76,7 @@ exports.getSongByRecordID = async (req, res) => {
 exports.getSongByID = async (req, res) => {
   try {
     const songid = req.params.id;
-    const song = await Song.findById(songid);
+    const song = await Song.findDetails(songid);
 
     if (!song) {
       return res.status(404).json({ message: "Song not found" });

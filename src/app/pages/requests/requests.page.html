@@ -28,6 +28,9 @@
       <ion-segment-button value="artist">
         <ion-label>Artists ({{ countType('artist') }})</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="translation">
+        <ion-label>Translations ({{ countType('translation') }})</ion-label>
+      </ion-segment-button>
     </ion-segment>
 
     @if (loading) {
@@ -42,7 +45,18 @@
 
             <div class="details">
               <span class="badge">{{ getTypeLabel(request.type) }}</span>
+              @if (request.target_id !== null && request.type !== 'translation') {
+                <span class="badge correction">Correction</span>
+              }
               <div class="name">{{ request.name }}</div>
+              @if (request.type === 'translation') {
+                <div class="sub">Translation of "{{ request.target_name || request.name }}" in {{ request.language }}</div>
+              }
+              @if (request.target_id !== null && request.type !== 'translation') {
+                <div class="sub">
+                  Correction of "{{ request.target_name || 'deleted page' }}": only the fields below will change
+                </div>
+              }
 
               @if (request.type === 'song') {
                 <div class="sub">{{ request.artist_name }} · {{ request.album_name }}</div>
@@ -63,6 +77,10 @@
                 @if (request.country) {
                   <span class="info-label">Country</span>
                   <span>{{ request.country }}</span>
+                }
+                @if (request.duration) {
+                  <span class="info-label">Duration</span>
+                  <span>{{ request.duration }}</span>
                 }
                 @if (request.language) {
                   <span class="info-label">Language</span>

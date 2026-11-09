@@ -18,6 +18,38 @@ export class Report {
     });
   }
 
+  reportAnnotation(annotationId: number, reason: string): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.post(`${this.baseUrl}/annotations`, {annotationId, reason}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  getAnnotationReports(): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.get(`${this.baseUrl}/annotations`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  acceptAnnotationReport(reportId: number): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.post(`${this.baseUrl}/annotations/${reportId}/accept`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  rejectAnnotationReport(reportId: number): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.post(`${this.baseUrl}/annotations/${reportId}/reject`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
   getReports(): Observable<any> {
     const token = this.auth.getToken();
 

@@ -51,15 +51,14 @@ db.exec(`
     recordid INTEGER,
     artid INTEGER,
     image TEXT,
-    release_date DATE,
     language TEXT,
     lyrics TEXT,
     rating NUMERIC DEFAULT 0,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
 
-  INSERT OR IGNORE INTO songs VALUES (0, 'test', '00-00-00', 0, 0, '', '1972-02-25', 'English', '', 0);
-  INSERT OR IGNORE INTO songs VALUES (1, 'test2', '00-00-00', 0, 0, '', '1972-02-25', 'English', '', 0);
+  INSERT OR IGNORE INTO songs VALUES (0, 'test', '00-00-00', 0, 0, '', 'English', '', 0);
+  INSERT OR IGNORE INTO songs VALUES (1, 'test2', '00-00-00', 0, 0, '', 'English', '', 0);
 
   CREATE TABLE IF NOT EXISTS genres (
     id INTEGER PRIMARY KEY,
@@ -162,7 +161,9 @@ db.exec(`
     country TEXT,
     bio TEXT,
     tracklist TEXT,
+    duration TEXT,
     image TEXT,
+    target_id INTEGER,
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users(username)
@@ -178,18 +179,20 @@ db.exec(`
 
   CREATE TABLE IF NOT EXISTS song_ratings (
     song_id INTEGER NOT NULL,
-    rating DECIMAL(1, 2),
-    total_ratings INTEGER,
-    PRIMARY KEY (song_id, rating),
-    FOREIGN KEY (song_id) REFERENCES songs(id)
+    username TEXT NOT NULL,
+    rating REAL NOT NULL,
+    PRIMARY KEY (song_id, username),
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (username) REFERENCES users(username)
   );
 
   CREATE TABLE IF NOT EXISTS record_ratings (
     record_id INTEGER NOT NULL,
-    rating DECIMAL(1, 2),
-    total_ratings INTEGER,
-    PRIMARY KEY (record_id, rating),
-    FOREIGN KEY (record_id) REFERENCES records(id)
+    username TEXT NOT NULL,
+    rating REAL NOT NULL,
+    PRIMARY KEY (record_id, username),
+    FOREIGN KEY (record_id) REFERENCES records(id),
+    FOREIGN KEY (username) REFERENCES users(username)
   );
 
   CREATE TABLE IF NOT EXISTS comments (
@@ -207,8 +210,20 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS comment_likes (
     comment_id INTEGER NOT NULL,
     username TEXT NOT NULL,
+    value INTEGER NOT NULL DEFAULT 1,
     PRIMARY KEY (comment_id, username),
     FOREIGN KEY (comment_id) REFERENCES comments(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS annotation_reports (
+    id INTEGER PRIMARY KEY,
+    annotation_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (annotation_id) REFERENCES annotations(id),
     FOREIGN KEY (username) REFERENCES users(username)
   );
 
@@ -241,13 +256,60 @@ db.exec(`
     from_user TEXT NOT NULL,
     comment_id INTEGER,
     playlist_id INTEGER,
+    annotation_id INTEGER,
+    content_type TEXT,
+    content_id INTEGER,
     text TEXT,
     is_read INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES users(username),
     FOREIGN KEY (from_user) REFERENCES users(username),
     FOREIGN KEY (comment_id) REFERENCES comments(id),
-    FOREIGN KEY (playlist_id) REFERENCES playlists(id)
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id),
+    FOREIGN KEY (annotation_id) REFERENCES annotations(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS annotations (
+    id INTEGER PRIMARY KEY,
+    song_id INTEGER NOT NULL,
+    username TEXT,
+    start_index INTEGER NOT NULL,
+    end_index INTEGER NOT NULL,
+    selected_text TEXT NOT NULL,
+    text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (song_id) REFERENCES songs(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS annotation_votes (
+    annotation_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    value INTEGER NOT NULL,
+    PRIMARY KEY (annotation_id, username),
+    FOREIGN KEY (annotation_id) REFERENCES annotations(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS contributions (
+    entity_type TEXT NOT NULL,
+    entity_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (entity_type, entity_id, username),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS annotation_edits (
+    id INTEGER PRIMARY KEY,
+    annotation_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (annotation_id) REFERENCES annotations(id),
+    FOREIGN KEY (username) REFERENCES users(username)
   );
 `, (err) => {
   if (err) console.error("Error creating tables:", err.message);

@@ -21,7 +21,7 @@ exports.addFavouriteArtist = async (req, res) => {
     const username = req.user.username;
     const { artistId } = req.body;
 
-    if (!artistId) {
+    if (artistId === undefined || artistId === null || artistId === "") {
       return res.status(400).json({ message: "Artist ID required" });
     }
 
@@ -77,7 +77,7 @@ exports.addFavouriteRecord = async (req, res) => {
     const username = req.user.username;
     const { recordId } = req.body;
 
-    if (!recordId) {
+    if (recordId === undefined || recordId === null || recordId === "") {
       return res.status(400).json({ message: "Record ID required" });
     }
 
@@ -133,7 +133,7 @@ exports.addFavouriteSong = async (req, res) => {
     const username = req.user.username;
     const { songId } = req.body;
 
-    if (!songId) {
+    if (songId === undefined || songId === null || songId === "") {
       return res.status(400).json({ message: "Song ID required" });
     }
 

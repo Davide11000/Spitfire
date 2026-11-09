@@ -109,7 +109,7 @@
             <b class="subsection-title">Songs</b>
             <div class="song-list">
               @for (song of favouriteSongs; track song.id) {
-                <div class="song-row">
+                <div class="song-row clickable" (click)="apriCanzone(song.id)">
                   <img class="song-cover" [src]="getSongCover(song)" />
                   <div class="song-info">
                     <span class="song-name">{{ song.songname }}</span>
@@ -126,7 +126,7 @@
             <b class="subsection-title">Albums</b>
             <div class="card-grid small">
               @for (record of favouriteRecords; track record.id) {
-                <div class="card">
+                <div class="card clickable" (click)="apriAlbum(record.id)">
                   <div class="card-cover">
                     <img [src]="getCover(record.image)" />
                   </div>
@@ -143,7 +143,7 @@
             <b class="subsection-title">Artists</b>
             <div class="card-grid small">
               @for (artist of favouriteArtists; track artist.id) {
-                <div class="card artist-card">
+                <div class="card artist-card clickable" (click)="apriArtista(artist.id)">
                   <div class="card-cover round">
                     <img [src]="getPhoto(artist.image)" />
                   </div>

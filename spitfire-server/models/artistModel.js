@@ -21,6 +21,16 @@ const Artist = {
     });
   },
 
+  correct: (id, artname, image, birthDate, country, bio) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE artists SET artname = ?, image = ?, birth_date = ?, country = ?, bio = ? WHERE id = ?`;
+      db.run(query, [artname, image, birthDate, country, bio, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, artname, image, birth_date: birthDate, country, bio });
+      });
+    });
+  },
+
   findByArtname: (artname) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM artists WHERE artname = ?`;

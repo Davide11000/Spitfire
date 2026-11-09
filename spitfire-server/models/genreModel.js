@@ -73,6 +73,16 @@ const Genre = {
     });
   },
 
+  removeAllFromRecord: (recordId) => {
+    return new Promise((resolve, reject) => {
+      const query = `DELETE FROM record_genres WHERE record_id = ?`;
+      db.run(query, [recordId], function (err) {
+        if (err) reject(err);
+        else resolve({ recordId });
+      });
+    });
+  },
+
   removeFromRecord: (recordId, genreId) => {
     return new Promise((resolve, reject) => {
       const query = `DELETE FROM record_genres WHERE record_id = ? AND genre_id = ?`;
@@ -121,6 +131,16 @@ const Genre = {
       db.run(query, [songId, genreId], function (err) {
         if (err) reject(err);
         else resolve({ songId, genreId });
+      });
+    });
+  },
+
+  removeAllFromSong: (songId) => {
+    return new Promise((resolve, reject) => {
+      const query = `DELETE FROM song_genres WHERE song_id = ?`;
+      db.run(query, [songId], function (err) {
+        if (err) reject(err);
+        else resolve({ songId });
       });
     });
   },

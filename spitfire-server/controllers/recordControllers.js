@@ -58,7 +58,7 @@ exports.getRecordByArtID = async (req, res) => {
 exports.getRecordByID = async (req, res) => {
   try {
     const recordid = req.params.id;
-    const record = await Record.findById(recordid);
+    const record = await Record.findDetails(recordid);
 
     if (!record) {
       return res.status(404).json({ message: "No records exist with this ID" });

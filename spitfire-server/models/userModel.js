@@ -41,6 +41,16 @@ const User = {
     });
   },
 
+  findModerators: () => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT username FROM users WHERE ruolo IN ('admin', 'moderatore')`;
+      db.all(query, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   updateEmail: (username, email) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE users SET email = ? WHERE username = ?`;
@@ -98,10 +108,19 @@ const User = {
     await run(`DELETE FROM favourite_songs WHERE username = ?`, [username]);
     await run(`DELETE FROM comment_likes WHERE username = ?`, [username]);
     await run(`DELETE FROM comment_reports WHERE username = ?`, [username]);
+    await run(`DELETE FROM annotation_reports WHERE username = ?`, [username]);
     await run(`DELETE FROM notifications WHERE username = ? OR from_user = ?`, [username, username]);
     await run(`DELETE FROM messages WHERE sender = ? OR receiver = ?`, [username, username]);
     await run(`DELETE FROM requests WHERE username = ?`, [username]);
     await run(`UPDATE comments SET username = NULL WHERE username = ?`, [username]);
+    await run(`DELETE FROM annotation_votes WHERE username = ?`, [username]);
+    await run(`DELETE FROM song_ratings WHERE username = ?`, [username]);
+    await run(`DELETE FROM record_ratings WHERE username = ?`, [username]);
+    await run(`UPDATE songs SET rating = COALESCE((SELECT ROUND(AVG(rating), 2) FROM song_ratings WHERE song_id = songs.id), 0)`, []);
+    await run(`UPDATE records SET rating = COALESCE((SELECT ROUND(AVG(rating), 2) FROM record_ratings WHERE record_id = records.id), 0)`, []);
+    await run(`DELETE FROM contributions WHERE username = ?`, [username]);
+    await run(`DELETE FROM annotation_edits WHERE username = ?`, [username]);
+    await run(`UPDATE annotations SET username = NULL WHERE username = ?`, [username]);
     await run(`DELETE FROM users WHERE username = ?`, [username]);
   },
 

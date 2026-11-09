@@ -42,18 +42,10 @@ export class Comment {
     });
   }
 
-  addLike(commentId: number): Observable<any> {
+  vote(commentId: number, value: number): Observable<any> {
     const token = this.auth.getToken();
 
-    return this.http.post(`${this.baseUrl}/${commentId}/like`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  }
-
-  removeLike(commentId: number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.delete(`${this.baseUrl}/${commentId}/like`, {
+    return this.http.post(`${this.baseUrl}/${commentId}/vote`, {value}, {
       headers: { Authorization: `Bearer ${token}` }
     });
   }

@@ -1,22 +1,42 @@
 const db = require("../db/db");
 
 const Song = {
-  create: (songname, recordid, image, releaseDate, language, lyrics) => {
+  create: (songname, recordid, image, language, lyrics) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO songs (songname, recordid, image, release_date, language, lyrics) VALUES (?, ?, ?, ?, ?, ?)`;
-      db.run(query, [songname, recordid, image, releaseDate, language, lyrics], function (err) {
+      const query = `INSERT INTO songs (songname, recordid, image, language, lyrics) VALUES (?, ?, ?, ?, ?)`;
+      db.run(query, [songname, recordid, image, language, lyrics], function (err) {
         if (err) reject(err);
-        else resolve({ id:this.lastID, songname, recordid, image, release_date: releaseDate, language, lyrics });
+        else resolve({ id:this.lastID, songname, recordid, image, language, lyrics });
       });
     });
   },
 
-  update: (id, image, releaseDate, language, lyrics) => {
+  update: (id, image, language, lyrics) => {
     return new Promise((resolve, reject) => {
-      const query = `UPDATE songs SET image = ?, release_date = ?, language = ?, lyrics = ? WHERE id = ?`;
-      db.run(query, [image, releaseDate, language, lyrics, id], function (err) {
+      const query = `UPDATE songs SET image = ?, language = ?, lyrics = ? WHERE id = ?`;
+      db.run(query, [image, language, lyrics, id], function (err) {
         if (err) reject(err);
-        else resolve({ id, image, release_date: releaseDate, language, lyrics });
+        else resolve({ id, image, language, lyrics });
+      });
+    });
+  },
+
+  correct: (id, songname, image, language, lyrics, duration) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE songs SET songname = ?, image = ?, language = ?, lyrics = ?, duration = ? WHERE id = ?`;
+      db.run(query, [songname, image, language, lyrics, duration, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, songname, image, language, lyrics, duration });
+      });
+    });
+  },
+
+  setDuration: (id, duration) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE songs SET duration = ? WHERE id = ?`;
+      db.run(query, [duration, id], function (err) {
+        if (err) reject(err);
+        else resolve({ id, duration });
       });
     });
   },
@@ -50,6 +70,21 @@ const Song = {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM songs WHERE recordid = ?`;
       db.all(query, [recordid], (err, row) => {
+        if (err) reject(err);
+        else resolve(row);
+      });
+    });
+  },
+
+  findDetails: (id) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT songs.*, records.recordname, records.image AS recordimage,
+                       artists.id AS artist_id, artists.artname
+                     FROM songs
+                     LEFT JOIN records ON records.id = songs.recordid
+                     LEFT JOIN artists ON artists.id = records.artid
+                     WHERE songs.id = ?`;
+      db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);
       });

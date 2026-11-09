@@ -1,10 +1,11 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonImg, IonLabel, IonGrid, IonCol, IonRow, IonList, IonItem, IonButton, IonIcon, IonAvatar } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { createOutline, star, heartOutline, heart } from 'ionicons/icons';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { ContributorsComponent } from '../../components/contributors/contributors.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { Auth } from '../../services/auth';
 import { Artist } from '../../services/artist';
@@ -16,10 +17,11 @@ import { Record } from '../../services/record';
   templateUrl: './artisttemplate.page.html',
   styleUrls: ['./artisttemplate.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule, IonContent, NavbarComponent, FooterComponent,
     IonGrid, IonCol, IonRow, IonImg, IonIcon, IonLabel,
-    IonButton, IonList, IonItem, IonAvatar
+    IonButton, IonList, IonItem, IonAvatar, ContributorsComponent
 ]
 })
 export class ArtisttemplatePage implements OnInit {
@@ -43,6 +45,15 @@ export class ArtisttemplatePage implements OnInit {
     addIcons({ star, createOutline, heartOutline, heart });
   }
 
+  ionViewWillEnter() {
+    this.utenteLoggatoUid = this.auth.getUsernameFromToken() || '';
+
+    if (this.artistaId) {
+      this.caricaDettagliArtista(this.artistaId);
+      this.controllaSeIsFavourite();
+    }
+  }
+
   ngOnInit() {
     /*this.route.paramMap.subscribe(params => {
       this.artistaId = params.get('id');
@@ -51,42 +62,11 @@ export class ArtisttemplatePage implements OnInit {
       }
     });*/
     this.artistaId = this.route.snapshot.paramMap.get("id");
-    if (this.artistaId) {
-      this.caricaDettagliArtista(this.artistaId);
-    }
-    const token = this.auth.getToken();
 
     this.recordService.getAllRecordsByArtist(this.artistaId || '').subscribe({
       next: (res) => this.tuttiGliAlbum = res,
       error: (err) => console.error("Records not found", err)
     });
-
-    if (token) {
-      this.auth.getProfile(token).subscribe({
-        next: (res) => {
-          this.utenteLoggatoUid = res.uid;
-          if (this.artistaId) {
-            this.controllaSeIsFavourite();
-          }
-        },
-        error: (err) => {
-          this.utenteLoggatoUid = '';
-          this.isFavourite = false;
-          console.error(err);
-        }
-      }/*(value) => {
-        if (value) {
-          this.utenteLoggatoUid = value.uid;
-          if (this.artistaId) {
-            this.controllaSeIsFavourite();
-          }
-        } else {
-          this.utenteLoggatoUid = '';
-          this.isFavourite = false;
-        }
-        this.cdr.detectChanges();
-      }*/);
-    }
 
     /*this.authService.user$.subscribe(user => {
       if (user) {
@@ -152,72 +132,29 @@ export class ArtisttemplatePage implements OnInit {
     }*/
   }
 
-  async controllaSeIsFavourite() {
+  controllaSeIsFavourite() {
+    this.isFavourite = false;
     if (!this.utenteLoggatoUid || !this.artistaId) return;
-    try {
-      this.userService.getUser(this.utenteLoggatoUid).subscribe((value) => {
-        const dati = value;
-        const favs: any[] = dati['artistiFavouriti'] || [];
-        this.isFavourite = favs.some((a: any) => a.id === this.artistaId);
-        this.cdr.detectChanges();
-      });
-    } catch (error) {
-      console.error(error);
-      alert("Couldn't ascertain if this artist is among user's favourites.");
-    }
-    /*try {
-      const docRef = doc(this.firestore, 'utenti', this.utenteLoggatoUid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const dati = docSnap.data();
-        const favs: any[] = dati['artistiFavouriti'] || [];
-        this.isFavourite = favs.some((a: any) => a.id === this.artistaId);
-        this.cdr.detectChanges();
-      }
-    } catch (error) {
-      console.error(error);
-    }*/
+
+    this.userService.getFavouriteArtists(this.utenteLoggatoUid).subscribe({
+      next: (res) => { this.isFavourite = res.some((a: any) => a.id === Number(this.artistaId)); },
+      error: (err) => console.error(err)
+    });
   }
 
-  async toggleFavourite() {
-    if (!this.utenteLoggatoUid || !this.artistaId || !this.artista) return;
-    try {
-      /*const docRef = doc(this.firestore, 'utenti', this.utenteLoggatoUid);
-      const docSnap = await getDoc(docRef);
-      let favs: any[] = docSnap.exists() ? (docSnap.data()['artistiFavouriti'] || []) : [];*/
-
-      let favs: any[] = [];
-      this.userService.getUser(this.utenteLoggatoUid).subscribe((value) => {
-        const dati = value;
-        favs = dati['artistiFavouriti'] || [];
-      });
-
-      if (this.isFavourite) {
-        favs = favs.filter((a: any) => a.id !== this.artistaId);
-      } else {
-        favs.push({
-          id: this.artistaId,
-          artname: this.artista.artname,
-          image: this.artista.image || ''
-        });
-      }
-
-      if (!this.isFavourite) {
-        this.userService.addFavouriteArtist(Number(this.artistaId)).subscribe(() => {
-          this.isFavourite = true;
-        })
-      }
-      else {
-        this.userService.removeFavouriteArtist(Number(this.artistaId)).subscribe(() => {
-          this.isFavourite = false;
-        })
-      }
-      /*await updateDoc(docRef, { artistiFavouriti: favs });
-      this.isFavourite = !this.isFavourite;*/
-      this.cdr.detectChanges();
-    } catch (error) {
-      console.error(error);
+  toggleFavourite() {
+    if (!this.utenteLoggatoUid) {
+      this.router.navigate(['/login']);
+      return;
     }
+
+    const id = Number(this.artistaId);
+    const richiesta = this.isFavourite ? this.userService.removeFavouriteArtist(id) : this.userService.addFavouriteArtist(id);
+
+    richiesta.subscribe({
+      next: () => { this.isFavourite = !this.isFavourite; },
+      error: (err) => console.error(err)
+    });
   }
 
   async caricaAlbumArtista(nomeArtista: string) { //il parametro va cambiato
@@ -301,21 +238,7 @@ export class ArtisttemplatePage implements OnInit {
   }
 
   vaiACorrectEntry() {
-    if (!this.artista || !this.artistaId) return;
-    const albumFattiString = this.artista.albumFatti
-      ? JSON.stringify(this.artista.albumFatti)
-      : '[]';
-
-    const params: any = {
-      tipo: 'artist',
-      idDoc: this.artistaId,
-      nome: this.artista.nome || '',
-      fotoBase64: this.artista.fotoBase64 || '',
-      generi: this.artista.generi || '',
-      dataNascita: this.artista.dataNascita || '',
-      albumFatti: albumFattiString
-    };
-
-    this.router.navigate(['/add-content'], { queryParams: params });
+    if (!this.artistaId) return;
+    this.router.navigate(['/add-content'], { queryParams: { correct: 'artist', id: this.artistaId } });
   }
 }

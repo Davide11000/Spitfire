@@ -5,12 +5,14 @@ const Song = require("../models/songModel");
 const Record = require("../models/recordModel");
 const Artist = require("../models/artistModel");
 const Playlist = require("../models/playlistModel");
+const Annotation = require("../models/annotationModel");
 
 async function findTarget(type, id) {
     if (type === "song") return await Song.findById(id);
     if (type === "record") return await Record.findById(id);
     if (type === "artist") return await Artist.findById(id);
     if (type === "playlist") return await Playlist.findById(id);
+    if (type === "annotation") return await Annotation.findById(id);
     return null;
 }
 
@@ -23,7 +25,7 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: "The comment cannot be empty" });
         }
 
-        if (type !== "song" && type !== "record" && type !== "artist" && type !== "playlist") {
+        if (type !== "song" && type !== "record" && type !== "artist" && type !== "playlist" && type !== "annotation") {
             return res.status(400).json({ message: "Invalid type" });
         }
 
@@ -111,46 +113,32 @@ exports.deleteComment = async (req, res) => {
     }
 };
 
-exports.addLike = async (req, res) => {
+exports.vote = async (req, res) => {
     try {
         const username = req.user.username;
-        const comment = await Comment.findById(req.params.id, username);
+        const value = Number(req.body.value);
 
+        if (value !== 1 && value !== -1 && value !== 0) {
+            return res.status(400).json({ message: "Invalid vote" });
+        }
+
+        const comment = await Comment.findById(req.params.id, username);
         if (!comment) {
             return res.status(404).json({ message: "Comment not found" });
         }
 
-        if (comment.liked) {
-            return res.status(400).json({ message: "You already liked this comment" });
-        }
+        await Comment.setVote(comment.id, username, value);
 
-        await Comment.addLike(comment.id, username);
-
+        // La notifica "liked your comment" c'è solo per i mi piace
         if (comment.username && comment.username !== username) {
-            await Notification.create(comment.username, "like", username, comment.id, null);
-        }
-        res.status(201).json({ id: comment.id, likes: comment.likes + 1, liked: 1 });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-exports.removeLike = async (req, res) => {
-    try {
-        const username = req.user.username;
-        const comment = await Comment.findById(req.params.id, username);
-
-        if (!comment) {
-            return res.status(404).json({ message: "Comment not found" });
+            await Notification.removeLike(comment.username, username, comment.id);
+            if (value === 1) {
+                await Notification.create(comment.username, "like", username, comment.id, null);
+            }
         }
 
-        if (!comment.liked) {
-            return res.status(400).json({ message: "You have not liked this comment" });
-        }
-
-        await Comment.removeLike(comment.id, username);
-        await Notification.removeLike(comment.username, username, comment.id);
-        res.json({ id: comment.id, likes: comment.likes - 1, liked: 0 });
+        const score = await Comment.getScore(comment.id);
+        res.json({ id: comment.id, score, my_vote: value || null });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

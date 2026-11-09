@@ -59,4 +59,13 @@ app.use('/messages', messageRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/notifications', notificationRoutes);
 
+const annotationRoutes = require('./routes/annotationRoutes');
+app.use('/annotations', annotationRoutes);
+
+const contributionRoutes = require('./routes/contributionRoutes');
+app.use('/contributors', contributionRoutes);
+
+const ratingRoutes = require('./routes/ratingRoutes');
+app.use('/ratings', ratingRoutes);
+
 module.exports = app;

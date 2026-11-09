@@ -56,6 +56,7 @@ export class RequestsPage implements OnInit {
   getTypeLabel(type: string): string {
     if (type === 'song') return 'Song';
     if (type === 'record') return 'Album';
+    if (type === 'translation') return 'Translation';
     return 'Artist';
   }
 
@@ -109,7 +110,7 @@ export class RequestsPage implements OnInit {
     this.requestService.acceptRequest(request.id).subscribe({
       next: (res) => {
         this.requests = this.requests.filter(r => r.id !== request.id);
-        this.showToast('"' + request.name + '" has been added');
+        this.showToast('"' + request.name + '" has been ' + (request.target_id !== null ? 'updated' : 'added'));
       },
       error: (err) => {
         request.working = false;

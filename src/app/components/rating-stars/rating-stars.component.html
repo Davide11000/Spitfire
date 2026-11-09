@@ -1,16 +1,20 @@
-<div class="rating-container">
-  <span class="average-score">
-    {{ votoMedio ? (votoMedio | number:'1.1-1') : '0.0' }}
-  </span>
-
-  <div class="stars-wrapper" (mouseleave)="resetHoverStella()">
-    @for (n of [1, 2, 3, 4, 5]; track n) {
-      <ion-icon
-        [name]="getIconaStella(n) === 'full' ? 'star' : (getIconaStella(n) === 'half' ? 'star-half' : 'star-outline')"
-        [class.active-star]="getIconaStella(n) !== 'empty'"
-        (mousemove)="gestisciHoverStella($event, n)"
-        (click)="inviaVotoStella($event, n)">
-      </ion-icon>
+<div class="rating">
+  <div class="stars" (mouseleave)="onLeave()">
+    @for (n of stars; track n) {
+      <ion-icon [name]="getIcon(n)" [class.on]="getIcon(n) !== 'star-outline'"
+                (mousemove)="onMove($event, n)" (click)="onClick($event, n)"></ion-icon>
     }
   </div>
+
+  <span class="info">
+    @if (hover) {
+      <b>{{ hover }}</b> / 5
+    } @else {
+      @if (count) {
+        <b>{{ average | number:'1.2-2' }}</b> / 5.0 from <b>{{ count | number }}</b> {{ count === 1 ? 'rating' : 'ratings' }}
+      } @else {
+        No ratings yet
+      }
+    }
+  </span>
 </div>

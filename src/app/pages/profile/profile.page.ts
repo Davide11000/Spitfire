@@ -99,6 +99,7 @@ export class ProfilePage implements OnInit {
 
     if (this.targetUsername) {
       this.loadPlaylists(this.targetUsername);
+      this.loadFavourites(this.targetUsername);
 
       this.userService.getUser(this.targetUsername).subscribe({
         next: (res) => { this.user = res; },
@@ -117,6 +118,35 @@ export class ProfilePage implements OnInit {
       next: (res) => { this.playlists = res; },
       error: (err) => { console.error('Error fetching playlists', err); }
     });
+  }
+
+  loadFavourites(username: string) {
+    this.userService.getFavouriteSongs(username).subscribe({
+      next: (res) => { this.favouriteSongs = res; },
+      error: (err) => { console.error('Error fetching favourite songs', err); }
+    });
+
+    this.userService.getFavouriteRecords(username).subscribe({
+      next: (res) => { this.favouriteRecords = res; },
+      error: (err) => { console.error('Error fetching favourite albums', err); }
+    });
+
+    this.userService.getFavouriteArtists(username).subscribe({
+      next: (res) => { this.favouriteArtists = res; },
+      error: (err) => { console.error('Error fetching favourite artists', err); }
+    });
+  }
+
+  apriCanzone(id: number) {
+    this.router.navigate(['/songs', id]);
+  }
+
+  apriAlbum(id: number) {
+    this.router.navigate(['/records', id]);
+  }
+
+  apriArtista(id: number) {
+    this.router.navigate(['/artists', id]);
   }
 
   loadProfile(username: string, myUsername: string | null) {
@@ -143,20 +173,7 @@ export class ProfilePage implements OnInit {
 
     this.loadPlaylists(username);
 
-    this.userService.getFavouriteSongs(username).subscribe({
-      next: (res) => { this.favouriteSongs = res; },
-      error: (err) => { console.error('Error fetching favourite songs', err); }
-    });
-
-    this.userService.getFavouriteRecords(username).subscribe({
-      next: (res) => { this.favouriteRecords = res; },
-      error: (err) => { console.error('Error fetching favourite albums', err); }
-    });
-
-    this.userService.getFavouriteArtists(username).subscribe({
-      next: (res) => { this.favouriteArtists = res; },
-      error: (err) => { console.error('Error fetching favourite artists', err); }
-    });
+    this.loadFavourites(username);
   }
 
   // Se l'immagine non c'è uso quella di default

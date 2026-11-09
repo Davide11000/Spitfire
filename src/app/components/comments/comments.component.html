@@ -1,5 +1,5 @@
 <div class="comments-section">
-  <h3 class="section-title">Comments <span class="count">{{ total }}</span></h3>
+  <h3 class="section-title">{{ title }} <span class="count">{{ total }}</span></h3>
 
   @if (myUsername) {
     <div class="write-box">
@@ -45,9 +45,14 @@
           <p class="comment-text">{{ comment.text }}</p>
 
           <div class="comment-actions">
-            <button class="action" [class.liked]="comment.liked" (click)="toggleLike(comment)">
-              <ion-icon [name]="comment.liked ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
-              {{ comment.likes }}
+            <button class="action" [class.liked]="comment.my_vote === 1" title="I like it" (click)="vote(comment, 1)">
+              <ion-icon [name]="comment.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+            </button>
+            @if (comment.score) {
+              <span class="score" [class.positive]="comment.score > 0" [class.negative]="comment.score < 0">{{ getScore(comment.score) }}</span>
+            }
+            <button class="action" [class.liked]="comment.my_vote === -1" title="I don't like it" (click)="vote(comment, -1)">
+              <ion-icon [name]="comment.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
             </button>
             <button class="action" (click)="toggleReplyBox(comment)">
               <ion-icon name="chatbubble-outline"></ion-icon>
@@ -114,9 +119,14 @@
                     <p class="comment-text">{{ reply.text }}</p>
 
                     <div class="comment-actions">
-                      <button class="action" [class.liked]="reply.liked" (click)="toggleLike(reply)">
-                        <ion-icon [name]="reply.liked ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
-                        {{ reply.likes }}
+                      <button class="action" [class.liked]="reply.my_vote === 1" title="I like it" (click)="vote(reply, 1)">
+                        <ion-icon [name]="reply.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+                      </button>
+                      @if (reply.score) {
+              <span class="score" [class.positive]="reply.score > 0" [class.negative]="reply.score < 0">{{ getScore(reply.score) }}</span>
+            }
+                      <button class="action" [class.liked]="reply.my_vote === -1" title="I don't like it" (click)="vote(reply, -1)">
+                        <ion-icon [name]="reply.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
                       </button>
                       @if (canReport(reply)) {
                         <button class="action report" title="Report" (click)="openReport(reply)">

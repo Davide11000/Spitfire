@@ -1,0 +1,140 @@
+.menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #222;
+  font-size: 1rem;
+  cursor: pointer;
+
+  span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .caret {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    color: #000;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 11;
+  min-width: 220px;
+  padding: 6px 0;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: #ddd;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: #2a2a2a;
+  }
+
+  &.active {
+    color: var(--ion-color-primary);
+  }
+
+  &.add {
+    justify-content: flex-start;
+    margin-top: 4px;
+    border-top: 1px solid #333;
+    color: var(--ion-color-primary);
+  }
+}
+
+.tr-modal {
+  --width: 520px;
+  --height: auto;
+  --border-radius: 16px;
+  --background: #1f1f1f;
+}
+
+.tr-box {
+  padding: 20px 24px 24px;
+  color: #f2f2f2;
+}
+
+.tr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: x-large;
+}
+
+.close-btn {
+  --color: #999;
+}
+
+.tr-song {
+  margin: 0 0 8px;
+  color: #999;
+}
+
+.tr-label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 8px;
+}
+
+.tr-input {
+  --color: #f2f2f2;
+  --placeholder-color: #888;
+  --border-radius: 8px;
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary);
+}
+
+.tr-error {
+  color: var(--ion-color-primary);
+  margin: 12px 0 0;
+}
+
+.tr-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.tr-btn {
+  --border-radius: 8px;
+  text-transform: none;
+}
+
+.tr-cancel {
+  --color: #ccc;
+}

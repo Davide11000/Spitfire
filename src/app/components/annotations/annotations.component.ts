@@ -1,358 +1,341 @@
-/*import { Component, OnChanges, SimpleChanges, inject, ChangeDetectorRef, ElementRef, ViewChild, Input } from '@angular/core';
-
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
-import { IonButton, IonSpinner, IonIcon, IonTextarea, ToastController } from '@ionic/angular';
-import { AnnotationService } from '../../services/annotation';
+import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Router } from '@angular/router';
+import { IonButton, IonIcon, IonTextarea, IonModal, AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { closeOutline, sendOutline, addCircleOutline, thumbsUpOutline, thumbsUpSharp, thumbsDownOutline, thumbsDownSharp, checkmarkOutline, trashOutline } from 'ionicons/icons';
+import { thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, closeOutline, createOutline, checkmarkOutline, trashOutline, flagOutline, checkmarkCircle } from 'ionicons/icons';
+import { Annotation } from '../../services/annotation';
+import { Auth } from '../../services/auth';
+import { Report } from '../../services/report';
+import { User } from '../../services/user';
+import { CommentsComponent } from '../comments/comments.component';
+import { ContributorsComponent } from '../contributors/contributors.component';
 
 @Component({
   selector: 'app-annotations',
-  standalone: true,
   templateUrl: './annotations.component.html',
   styleUrls: ['./annotations.component.scss'],
-  imports: [FormsModule, IonButton, IonSpinner, IonIcon]
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonButton, IonIcon, IonTextarea, IonModal, CommentsComponent, ContributorsComponent],
 })
 export class AnnotationsComponent implements OnChanges {
+  @Input() songId!: number;
+  @Input() lyrics: string | null = null;
+  @Input() openId: number | null = null;
 
-  @ViewChild('lyricsContainer') lyricsContainerRef!: ElementRef;
-
-  @Input() songId: string | null = null;
-  @Input() canzone: any = null;
-  @Input() testoFormattato: string = '';
-  @Input() caricamentoTesto: boolean = false;
-  @Input() mioUid: string | null = null;
-  @Input() mioNome: string = 'Utente';
-  @Input() isAdmin: boolean = false;
-  @Input() isModerator: boolean = false;
-  @Input() isMobile: boolean = false;
-
-  public testoConAnnotazioni: SafeHtml = '';
-
+  public testo = '';
   public annotazioni: any[] = [];
-  public annotazioneAperta: any = null;
-  public formAnnotazioneAperto: boolean = false;
-  public testoSelezioneCorrente: string = '';
-  public startIndexCorrente: number = -1;
-  public endIndexCorrente: number = -1;
-  public nuovaAnnotazioneTesto: string = '';
-  public nuovoImprovementTesto: string = '';
-  public selectionPopup: { visible: boolean; top: number; left: number } = { visible: false, top: 0, left: 0 };
+  public segmenti: any[] = [];
 
-  private cdr = inject(ChangeDetectorRef);
-  private sanitizer = inject(DomSanitizer);
-  private annotationService = inject(AnnotationService);
-  private toastController = inject(ToastController);
+  public mioNome: string | null = null;
+  public canModerate = false;
 
-  constructor() {
-    addIcons({ closeOutline, sendOutline, addCircleOutline, thumbsUpOutline, thumbsUpSharp, thumbsDownOutline, thumbsDownSharp, checkmarkOutline, trashOutline });
+  public selezione: any = null;
+  public aperta: any = null;
+  public nuovoTesto = '';
+  public modificaAperta = false;
+  public testoModifica = '';
+  public errore = '';
+  public messaggio = '';
+  public inviando = false;
+
+  public segnalazioneAperta = false;
+  public motivo = '';
+  public erroreSegnalazione = '';
+  public segnalando = false;
+  public motivi = ['Wrong meaning', 'Spam', 'Offensive language', 'Copied from elsewhere', 'Off topic'];
+
+  constructor(private annotationService : Annotation, private auth : Auth, private userService : User, private router : Router,
+              private alertC : AlertController, private reportService : Report, private toastC : ToastController) {
+    addIcons({ thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, closeOutline, createOutline, checkmarkOutline, trashOutline, flagOutline, checkmarkCircle });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['songId'] && this.songId) {
-      this.chiudiAnnotazione();
-      this.chiudiFormAnnotazione();
-      this.caricaAnnotazioni(this.songId);
-    } else if (changes['testoFormattato'] || changes['canzone']) {
-      this.aggiornaTestoConAnnotazioni();
+  ngOnChanges() {
+    this.testo = (this.lyrics || '').replace(/\r\n/g, '\n');
+    this.mioNome = this.auth.getUsernameFromToken();
+    this.canModerate = false;
+
+    if (this.mioNome) {
+      this.userService.getUserRole(this.mioNome).subscribe({
+        next: (res) => { this.canModerate = res.ruolo === 'admin' || res.ruolo === 'moderatore'; },
+        error: (err) => console.error(err)
+      });
+    }
+
+    this.caricaAnnotazioni();
+  }
+
+  caricaAnnotazioni() {
+    if (!this.songId) return;
+
+    this.annotationService.getBySong(this.songId).subscribe({
+      next: (res) => {
+        this.annotazioni = res;
+        this.costruisciSegmenti();
+
+        const daAprire = this.aperta ? this.aperta.id : this.openId;
+        if (daAprire) {
+          const a = this.annotazioni.find(x => x.id === Number(daAprire));
+          if (a) this.aperta = a;
+        }
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  costruisciSegmenti() {
+    this.segmenti = [];
+    let posizione = 0;
+
+    const valide = this.annotazioni
+      .filter(a => this.testo.substring(a.start_index, a.end_index) === a.selected_text)
+      .sort((a, b) => a.start_index - b.start_index);
+
+    for (const a of valide) {
+      if (a.start_index < posizione) continue;
+      if (a.start_index > posizione) {
+        this.segmenti.push({ testo: this.testo.substring(posizione, a.start_index), annotazione: null });
+      }
+      this.segmenti.push({ testo: a.selected_text, annotazione: a });
+      posizione = a.end_index;
+    }
+
+    if (posizione < this.testo.length) {
+      this.segmenti.push({ testo: this.testo.substring(posizione), annotazione: null });
     }
   }
 
-  async caricaAnnotazioni(songId: string) {
-    try {
-      this.annotazioni = await this.annotationService.getAnnotazioni(songId);
-      this.aggiornaTestoConAnnotazioni();
-      this.cdr.detectChanges();
-    } catch (err) {
-      console.error("Errore nel recupero delle annotazioni:", err);
-    }
+  onSelezione(box: HTMLElement) {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+
+    const range = sel.getRangeAt(0);
+    if (!box.contains(range.startContainer) || !box.contains(range.endContainer)) return;
+
+    const prima = document.createRange();
+    prima.selectNodeContents(box);
+    prima.setEnd(range.startContainer, range.startOffset);
+
+    let start = prima.toString().length;
+    let end = start + range.toString().length;
+
+    while (start < end && /\s/.test(this.testo[start])) start++;
+    while (end > start && /\s/.test(this.testo[end - 1])) end--;
+    if (start >= end) return;
+
+    this.selezione = { start, end, testo: this.testo.substring(start, end) };
+    this.aperta = null;
+    this.nuovoTesto = '';
+    this.errore = '';
+    this.messaggio = '';
   }
 
-  aggiornaTestoConAnnotazioni() {
-    console.log('=== AGGIORNA TESTO CON ANNOTAZIONI ===');
-    console.log('annotazioni:', this.annotazioni);
-    console.log('testo originale:', this.canzone?.testo?.slice(0, 100));
-    if (!this.canzone || !this.canzone.testo) {
-      this.testoConAnnotazioni = this.testoFormattato;
+  apriAnnotazione(a: any) {
+    this.aperta = a;
+    this.selezione = null;
+    this.modificaAperta = false;
+    this.errore = '';
+    this.messaggio = '';
+  }
+
+  chiudi() {
+    this.aperta = null;
+    this.selezione = null;
+    this.modificaAperta = false;
+    this.errore = '';
+    this.messaggio = '';
+    window.getSelection()?.removeAllRanges();
+  }
+
+  vaiAlLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  vaiAlProfilo(username: string | null) {
+    if (username) this.router.navigate(['/profile', username]);
+  }
+
+  getFoto(foto: string | null): string {
+    if (!foto) return 'assets/default-avatar.svg';
+    return 'http://localhost:3000' + foto;
+  }
+
+  onNuovoTesto(event: any) {
+    this.nuovoTesto = event.detail.value;
+    this.errore = '';
+  }
+
+  inviaAnnotazione() {
+    if (!this.nuovoTesto.trim()) {
+      this.errore = 'Write your annotation first';
       return;
     }
 
-    const testoOriginale: string = this.canzone.testo;
-
-    const annotazioniOrdinate = [...this.annotazioni].sort((a, b) => a.startIndex - b.startIndex);
-
-    let risultato = '';
-    let posizioneCorrente = 0;
-
-    for (const ann of annotazioniOrdinate) {
-      const start: number = ann.startIndex;
-      const end: number = ann.endIndex;
-
-      if (start < posizioneCorrente) continue;
-
-      const prima = testoOriginale.slice(posizioneCorrente, start).replace(/\n/g, '<br>');
-      const evidenziato = testoOriginale.slice(start, end).replace(/\n/g, '<br>');
-      risultato += prima;
-      risultato += `<span class="annotated-text" data-annotation-id="${ann.id}">${evidenziato}</span>`;
-      posizioneCorrente = end;
-    }
-
-    risultato += testoOriginale.slice(posizioneCorrente).replace(/\n/g, '<br>');
-    this.testoConAnnotazioni = this.sanitizer.bypassSecurityTrustHtml(risultato);
-  }
-
-  onTestoSelezionato(event: MouseEvent | TouchEvent) {
-    setTimeout(() => {
-      const selection = window.getSelection();
-
-      if (!selection || selection.isCollapsed) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
+    this.inviando = true;
+    this.annotationService.create(this.songId, this.selezione.start, this.selezione.end, this.nuovoTesto).subscribe({
+      next: (res) => {
+        this.inviando = false;
+        this.selezione = null;
+        this.aperta = { id: res.id };
+        this.messaggio = res.status === 'pending' ? 'Annotation sent! A moderator will review it soon.' : '';
+        window.getSelection()?.removeAllRanges();
+        this.caricaAnnotazioni();
+      },
+      error: (err) => {
+        this.inviando = false;
+        this.errore = err.error.message || 'Error saving the annotation';
       }
+    });
+  }
 
-      const testoSelezionato = selection.toString().trim();
-      if (!testoSelezionato || testoSelezionato.length === 0) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
+  approva(a: any) {
+    this.annotationService.approve(a.id).subscribe({
+      next: () => { this.messaggio = 'Annotation approved'; this.caricaAnnotazioni(); },
+      error: (err) => { this.errore = err.error.message || 'Error approving'; }
+    });
+  }
+
+  rifiuta(a: any) {
+    this.annotationService.reject(a.id).subscribe({
+      next: () => { this.aperta = null; this.caricaAnnotazioni(); },
+      error: (err) => { this.errore = err.error.message || 'Error rejecting'; }
+    });
+  }
+
+  async elimina(a: any) {
+    const alert = await this.alertC.create({
+      header: 'Delete annotation?',
+      message: 'The annotation, its votes and its suggestions will be deleted.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Delete', role: 'destructive', handler: () => {
+          this.annotationService.delete(a.id).subscribe({
+            next: () => { this.chiudi(); this.caricaAnnotazioni(); },
+            error: (err) => { this.errore = err.error.message || 'Error deleting the annotation'; }
+          });
+        } }
+      ]
+    });
+    await alert.present();
+  }
+
+  vota(a: any, valore: number) {
+    if (!this.mioNome) {
+      this.vaiAlLogin();
+      return;
+    }
+
+    const nuovo = a.my_vote === valore ? 0 : valore;
+    this.annotationService.vote(a.id, nuovo).subscribe({
+      next: (res) => {
+        a.score = res.score;
+        a.my_vote = res.my_vote;
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  getPunteggio(score: number): string {
+    if (score > 0) return '+' + score;
+    return String(score);
+  }
+
+  puoSegnalare(a: any): boolean {
+    return a.status === 'approved' && a.username !== this.mioNome;
+  }
+
+  apriSegnalazione() {
+    if (!this.mioNome) {
+      this.vaiAlLogin();
+      return;
+    }
+
+    this.motivo = '';
+    this.erroreSegnalazione = '';
+    this.segnalazioneAperta = true;
+  }
+
+  chiudiSegnalazione() {
+    this.segnalazioneAperta = false;
+  }
+
+  scegliMotivo(motivo: string) {
+    this.motivo = motivo;
+    this.erroreSegnalazione = '';
+  }
+
+  onMotivo(event: any) {
+    this.motivo = event.detail.value;
+    this.erroreSegnalazione = '';
+  }
+
+  inviaSegnalazione() {
+    if (!this.motivo.trim()) {
+      this.erroreSegnalazione = 'Please write the reason of the report';
+      return;
+    }
+
+    this.segnalando = true;
+    this.reportService.reportAnnotation(this.aperta.id, this.motivo).subscribe({
+      next: async (res) => {
+        this.segnalando = false;
+        this.segnalazioneAperta = false;
+
+        const toast = await this.toastC.create({
+          message: 'Thanks! Your report has been sent to the moderators.',
+          icon: 'checkmark-circle',
+          duration: 3000,
+          position: 'bottom',
+          cssClass: 'dark-toast'
+        });
+        await toast.present();
+      },
+      error: (err) => {
+        this.segnalando = false;
+        this.erroreSegnalazione = err.error.message || 'Error sending the report';
       }
-
-      const rangeSelezionato = selection.getRangeAt(0);
-      const containerLyrics = this.lyricsContainerRef?.nativeElement;
-      if (!containerLyrics || !containerLyrics.contains(rangeSelezionato.commonAncestorContainer)) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
-      }
-
-      // Controlla se qualsiasi nodo nel range selezionato appartiene a un'annotazione esistente
-      const fragmentClonato = rangeSelezionato.cloneContents();
-      const spanNelRange = fragmentClonato.querySelectorAll('[data-annotation-id]');
-      const antenatiAnnotati = (rangeSelezionato.commonAncestorContainer.parentElement as HTMLElement)?.closest('[data-annotation-id]');
-      if (spanNelRange.length > 0 || antenatiAnnotati) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
-      }
-
-      if (!this.mioUid) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
-      }
-
-      const testoOriginale: string = this.canzone?.testo || '';
-      const startIndex = testoOriginale.indexOf(testoSelezionato);
-      if (startIndex === -1) {
-        this.selectionPopup.visible = false;
-        this.cdr.detectChanges();
-        return;
-      }
-
-      this.testoSelezioneCorrente = testoSelezionato;
-      this.startIndexCorrente = startIndex;
-      this.endIndexCorrente = startIndex + testoSelezionato.length;
-
-      const rect = rangeSelezionato.getBoundingClientRect();
-      const containerRect = containerLyrics.getBoundingClientRect();
-      this.selectionPopup.top = rect.bottom - containerRect.top + 8;
-      this.selectionPopup.left = rect.left - containerRect.left;
-      this.selectionPopup.visible = true;
-
-      this.cdr.detectChanges();
-    }, 10);
+    });
   }
 
-  apriFormAnnotazione() {
-    this.formAnnotazioneAperto = true;
-    this.annotazioneAperta = null;
-    this.nuovaAnnotazioneTesto = '';
-    this.selectionPopup.visible = false;
-    this.cdr.detectChanges();
-  }
-
-  chiudiFormAnnotazione() {
-    this.formAnnotazioneAperto = false;
-    this.nuovaAnnotazioneTesto = '';
-    this.testoSelezioneCorrente = '';
-    this.startIndexCorrente = -1;
-    this.endIndexCorrente = -1;
-    this.selectionPopup.visible = false;
-    this.cdr.detectChanges();
-  }
-
-  apriAnnotazione(ann: any) {
-    this.annotazioneAperta = ann;
-    this.formAnnotazioneAperto = false;
-    this.nuovoImprovementTesto = '';
-    this.selectionPopup.visible = false;
-    this.cdr.detectChanges();
-  }
-
-  chiudiAnnotazione() {
-    this.annotazioneAperta = null;
-    this.nuovoImprovementTesto = '';
-    this.cdr.detectChanges();
-  }
-
-  async inviaAnnotazione() {
-    if (!this.mioUid || !this.songId || !this.nuovaAnnotazioneTesto.trim()) return;
-    try {
-      await this.annotationService.creaAnnotazione(this.songId, {
-        testoSelezionato: this.testoSelezioneCorrente,
-        startIndex: this.startIndexCorrente,
-        endIndex: this.endIndexCorrente,
-        testoAnnotazione: this.nuovaAnnotazioneTesto.trim(),
-        uid: this.mioUid,
-        nome: this.mioNome
-      });
-      await this.caricaAnnotazioni(this.songId);
-      this.chiudiFormAnnotazione();
-      const toast = await this.toastController.create({ message: 'Annotation submitted!', duration: 2500, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error("Errore invio annotazione:", err);
+  apriModifica(a: any) {
+    if (!this.mioNome) {
+      this.vaiAlLogin();
+      return;
     }
+
+    this.testoModifica = a.text;
+    this.modificaAperta = true;
+    this.errore = '';
+    this.messaggio = '';
   }
 
-  async inviaImprovement(ann: any) {
-    if (!this.mioUid || !this.songId || !this.nuovoImprovementTesto.trim()) return;
-    try {
-      await this.annotationService.aggiungiImprovement(this.songId, ann.id, {
-        uid: this.mioUid,
-        nome: this.mioNome,
-        testo: this.nuovoImprovementTesto.trim()
-      });
-      await this.caricaAnnotazioni(this.songId);
-      this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-      this.nuovoImprovementTesto = '';
-      const toast = await this.toastController.create({ message: 'Improvement submitted!', duration: 2500, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error("Errore invio improvement:", err);
-    }
+  onTestoModifica(event: any) {
+    this.testoModifica = event.detail.value;
+    this.errore = '';
   }
 
-  haLikeAnnotazione(ann: any): boolean {
-    return !!this.mioUid && ann.likes?.includes(this.mioUid);
+  inviaModifica(a: any) {
+    this.annotationService.proposeEdit(a.id, this.testoModifica).subscribe({
+      next: (res) => {
+        this.modificaAperta = false;
+        this.messaggio = res.status === 'pending' ? 'Edit sent! A moderator will review it soon.' : 'Annotation updated';
+        this.caricaAnnotazioni();
+      },
+      error: (err) => { this.errore = err.error.message || 'Error sending the edit'; }
+    });
   }
 
-  haDislikeAnnotazione(ann: any): boolean {
-    return !!this.mioUid && ann.dislikes?.includes(this.mioUid);
+  approvaModifica(e: any) {
+    this.annotationService.approveEdit(e.id).subscribe({
+      next: () => { this.messaggio = 'Edit approved'; this.caricaAnnotazioni(); },
+      error: (err) => { this.errore = err.error.message || 'Error approving the edit'; }
+    });
   }
 
-  async toggleLikeAnnotazione(ann: any) {
-    if (!this.mioUid || !this.songId) return;
-    await this.annotationService.toggleLikeAnnotazione(this.songId, ann.id, this.mioUid, this.haLikeAnnotazione(ann));
-    await this.caricaAnnotazioni(this.songId);
-    this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-  }
-
-  async toggleDislikeAnnotazione(ann: any) {
-    if (!this.mioUid || !this.songId) return;
-    await this.annotationService.toggleDislikeAnnotazione(this.songId, ann.id, this.mioUid, this.haDislikeAnnotazione(ann));
-    await this.caricaAnnotazioni(this.songId);
-    this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-  }
-
-  haLikeImprovement(imp: any): boolean {
-    return !!this.mioUid && imp.likes?.includes(this.mioUid);
-  }
-
-  haDislikeImprovement(imp: any): boolean {
-    return !!this.mioUid && imp.dislikes?.includes(this.mioUid);
-  }
-
-  async toggleLikeImprovement(ann: any, imp: any) {
-    if (!this.mioUid || !this.songId) return;
-    await this.annotationService.toggleLikeImprovement(this.songId, ann.id, ann.improvements, imp.id, this.mioUid, this.haLikeImprovement(imp));
-    await this.caricaAnnotazioni(this.songId);
-    this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-  }
-
-  async toggleDislikeImprovement(ann: any, imp: any) {
-    if (!this.mioUid || !this.songId) return;
-    await this.annotationService.toggleDislikeImprovement(this.songId, ann.id, ann.improvements, imp.id, this.mioUid, this.haDislikeImprovement(imp));
-    await this.caricaAnnotazioni(this.songId);
-    this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-  }
-
-  async approvaAnnotazione(ann: any) {
-    if (!this.songId) return;
-    try {
-      await this.annotationService.approvaAnnotazione(this.songId, ann.id);
-      await this.caricaAnnotazioni(this.songId);
-      this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-      const toast = await this.toastController.create({ message: 'Annotation approved.', duration: 2000, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async rifiutaAnnotazione(ann: any) {
-    if (!this.songId) return;
-    try {
-      await this.annotationService.rifiutaAnnotazione(this.songId, ann.id);
-      await this.caricaAnnotazioni(this.songId);
-      this.chiudiAnnotazione();
-      const toast = await this.toastController.create({ message: 'Annotation deleted.', duration: 2000, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async accettaImprovement(ann: any, imp: any) {
-    if (!this.songId) return;
-    try {
-      await this.annotationService.accettaImprovement(
-        this.songId, ann.id, ann.improvements, imp.id,
-        imp.testo, { uid: imp.uid, nome: imp.nome }, ann.contributori
-      );
-      await this.caricaAnnotazioni(this.songId);
-      this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-      const toast = await this.toastController.create({ message: 'Improvement accepted.', duration: 2000, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async rifiutaImprovement(ann: any, imp: any) {
-    if (!this.songId) return;
-    try {
-      await this.annotationService.rifiutaImprovement(this.songId, ann.id, ann.improvements, imp.id);
-      await this.caricaAnnotazioni(this.songId);
-      this.annotazioneAperta = this.annotazioni.find(a => a.id === ann.id) || null;
-      const toast = await this.toastController.create({ message: 'Improvement discarded.', duration: 2000, position: 'bottom', color: 'dark' });
-      await toast.present();
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  onClickLyrics(event: MouseEvent) {
-  console.log('=== CLICK LYRICS ===');
-  console.log('target:', event.target);
-  console.log('innerHTML del target:', (event.target as HTMLElement).outerHTML);
-  const target = event.target as HTMLElement;
-  console.log('target tagName:', target.tagName);
-  console.log('target className:', target.className);
-  const spanAnnotato = target.closest('[data-annotation-id]') as HTMLElement;
-  console.log('spanAnnotato trovato:', spanAnnotato);
-  if (spanAnnotato) {
-    const annId = spanAnnotato.getAttribute('data-annotation-id');
-    console.log('annotation id:', annId);
-    console.log('annotazioni disponibili:', this.annotazioni);
-    const ann = this.annotazioni.find(a => a.id === annId);
-    console.log('annotazione trovata:', ann);
-    if (ann) {
-      this.apriAnnotazione(ann);
-    }
+  rifiutaModifica(e: any) {
+    this.annotationService.rejectEdit(e.id).subscribe({
+      next: () => { this.caricaAnnotazioni(); },
+      error: (err) => { this.errore = err.error.message || 'Error rejecting the edit'; }
+    });
   }
 }
-
-}*/

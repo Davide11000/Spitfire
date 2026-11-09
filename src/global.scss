@@ -157,3 +157,15 @@ ion-button.square-btn {
     }
   }
 }
+
+ion-button.white-btn {
+  --color: #ffffff;
+  --border-color: #ffffff;
+  --background: transparent;
+  --background-hover: rgba(255, 255, 255, 0.12);
+
+  &.active {
+    --background: #ffffff;
+    --color: #111111;
+  }
+}

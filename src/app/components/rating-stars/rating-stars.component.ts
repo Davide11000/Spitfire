@@ -1,100 +1,91 @@
-/*import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular';
-import { RatingService } from '../../services/rating'; 
-import { Auth } from '../../services/auth';
 import { addIcons } from 'ionicons';
 import { star, starHalf, starOutline } from 'ionicons/icons';
+import { Rating } from '../../services/rating';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-rating-stars',
-  standalone: true,
-  imports: [CommonModule, IonIcon],
   templateUrl: './rating-stars.component.html',
-  styleUrls: ['./rating-stars.component.scss']
+  styleUrls: ['./rating-stars.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [IonIcon, DecimalPipe],
 })
-export class RatingStarsComponent implements OnInit {
-  @Input() id!: string; 
-  @Input() tipo!: 'album' | 'canzone'; 
+export class RatingStarsComponent implements OnChanges {
+  @Input() type!: 'song' | 'record';
+  @Input() id!: number | string;
 
-  private ratingService = inject(RatingService);
-  private authService = inject(Auth);
-  private router = inject(Router);
+  public average = 0;
+  public count = 0;
+  public myRating = 0;
+  public hover = 0;
+  public stars = [1, 2, 3, 4, 5];
 
-  utenteLoggatoUid: string = '';
-  votoMedio: number = 0;
-  votoUtente: number = 0;
-  votoHover: number = 0;
-
-  constructor() {
+  constructor(private ratingService : Rating, private auth : Auth, private router : Router) {
     addIcons({ star, starHalf, starOutline });
   }
 
-  ngOnInit() {
-    if (!this.id || !this.tipo) return;
+  ngOnChanges() {
+    if (!this.type || this.id === null || this.id === undefined) return;
 
-    this.ratingService.ascoltaMediaGlobale(this.id, this.tipo).subscribe({
-      next: (media) => this.votoMedio = media,
-      error: (err) => console.error("Errore media globale:", err)
-    });
-
-    this.authService.user$.subscribe({
-      next: (user) => {
-        if (user) {
-          this.utenteLoggatoUid = user.uid;
-          this.ratingService.ascoltaVotoUtente(this.id, this.utenteLoggatoUid, this.tipo).subscribe({
-            next: (voto) => this.votoUtente = voto,
-            error: (err) => console.error("Errore voto utente:", err)
-          });
-        }
-      }
+    this.hover = 0;
+    this.ratingService.getRating(this.type, Number(this.id)).subscribe({
+      next: (res) => { this.setSummary(res); },
+      error: (err) => { console.error('Error fetching rating', err); }
     });
   }
 
-  getIconaStella(indiceStella: number): 'full' | 'half' | 'empty' {
-    const votoRiferimento = this.votoHover > 0 ? this.votoHover : this.votoUtente;
-    if (votoRiferimento >= indiceStella) return 'full';
-    if (votoRiferimento >= indiceStella - 0.5) return 'half';
-    return 'empty';
+  setSummary(res: any) {
+    this.average = res.average;
+    this.count = res.count;
+    this.myRating = res.myRating;
   }
 
-  gestisciHoverStella(event: MouseEvent, indiceStella: number) {
-    const target = event.target as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const xSelezionata = event.clientX - rect.left;
-
-    if (xSelezionata < rect.width / 2) {
-      this.votoHover = indiceStella - 0.5;
-    } else {
-      this.votoHover = indiceStella;
-    }
+  // Se il mouse è sulla metà sinistra della stella vale mezza stella
+  getValue(event: MouseEvent, n: number): number {
+    const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    if (event.clientX - box.left < box.width / 2) return n - 0.5;
+    return n;
   }
 
-  resetHoverStella() {
-    this.votoHover = 0;
+  getIcon(n: number): string {
+    const value = this.hover || this.myRating;
+    if (value >= n) return 'star';
+    if (value >= n - 0.5) return 'star-half';
+    return 'star-outline';
   }
 
-  async inviaVotoStella(event: MouseEvent, indiceStella: number) {
-    if (!this.utenteLoggatoUid) {
-      await this.router.navigate(['/login']);
+  onMove(event: MouseEvent, n: number) {
+    this.hover = this.getValue(event, n);
+  }
+
+  onLeave() {
+    this.hover = 0;
+  }
+
+  onClick(event: MouseEvent, n: number) {
+    if (!this.auth.getUsernameFromToken()) {
+      this.router.navigate(['/login']);
       return;
     }
 
-    const target = event.target as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const xSelezionata = event.clientX - rect.left;
-    let votoScelto = indiceStella;
+    const value = this.getValue(event, n);
 
-    if (xSelezionata < rect.width / 2) {
-      votoScelto = indiceStella - 0.5;
+    // Cliccando di nuovo sullo stesso voto lo tolgo
+    if (value === this.myRating) {
+      this.ratingService.removeRating(this.type, Number(this.id)).subscribe({
+        next: (res) => { this.setSummary(res); },
+        error: (err) => { console.error('Error removing rating', err); }
+      });
+      return;
     }
 
-    try {
-      await this.ratingService.inviaVoto(this.id, this.utenteLoggatoUid, votoScelto, this.tipo);
-      this.votoUtente = votoScelto;
-    } catch (error) {
-      console.error("Errore durante l'invio del voto:", error);
-    }
+    this.ratingService.rate(this.type, Number(this.id), value).subscribe({
+      next: (res) => { this.setSummary(res); },
+      error: (err) => { console.error('Error saving rating', err); }
+    });
   }
-}*/
+}

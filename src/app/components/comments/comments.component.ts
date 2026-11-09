@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonButton, IonIcon, IonTextarea, IonSpinner, IonModal, AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { thumbsUp, thumbsUpOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle } from 'ionicons/icons';
+import { thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle } from 'ionicons/icons';
 import { Comment } from '../../services/comment';
 import { Auth } from '../../services/auth';
 import { User } from '../../services/user';
@@ -19,6 +19,7 @@ import { Report } from '../../services/report';
 export class CommentsComponent implements OnChanges {
   @Input() type!: string;
   @Input() id!: number | string;
+  @Input() title = 'Comments';
 
   public myUsername: string | null = null;
   public canModerate = false;
@@ -43,7 +44,7 @@ export class CommentsComponent implements OnChanges {
   constructor(private commentService : Comment, private auth : Auth, private userService : User,
               private reportService : Report, private router : Router, private alertC : AlertController,
               private toastC : ToastController) {
-    addIcons({ thumbsUp, thumbsUpOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle });
+    addIcons({ thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, chatbubbleOutline, trashOutline, chevronDownOutline, chevronUpOutline, chevronBackOutline, chevronForwardOutline, flagOutline, closeOutline, checkmarkCircle });
   }
 
   ngOnChanges() {
@@ -191,29 +192,26 @@ export class CommentsComponent implements OnChanges {
     });
   }
 
-  toggleLike(comment: any) {
+  // Mi piace = +1, non mi piace = -1; cliccando di nuovo lo stesso voto lo tolgo
+  vote(comment: any, value: number) {
     if (!this.myUsername) {
       this.goToLogin();
       return;
     }
 
-    if (comment.liked) {
-      this.commentService.removeLike(comment.id).subscribe({
-        next: (res) => {
-          comment.liked = 0;
-          comment.likes = res.likes;
-        },
-        error: (err) => { console.error('Error removing like', err); }
-      });
-    } else {
-      this.commentService.addLike(comment.id).subscribe({
-        next: (res) => {
-          comment.liked = 1;
-          comment.likes = res.likes;
-        },
-        error: (err) => { console.error('Error adding like', err); }
-      });
-    }
+    const newValue = comment.my_vote === value ? 0 : value;
+    this.commentService.vote(comment.id, newValue).subscribe({
+      next: (res) => {
+        comment.score = res.score;
+        comment.my_vote = res.my_vote;
+      },
+      error: (err) => { console.error('Error voting the comment', err); }
+    });
+  }
+
+  getScore(score: number): string {
+    if (score > 0) return '+' + score;
+    return String(score);
   }
 
   async onDelete(comment: any, parent: any) {

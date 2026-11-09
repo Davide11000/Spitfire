@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonImg, IonLabel, IonList, IonListHeader, IonItem, IonIcon, IonButton } from '@ionic/angular';
@@ -7,25 +7,29 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Auth } from '../../services/auth'
 import { User } from '../../services/user';
 import { addIcons } from 'ionicons';
-import { createOutline } from 'ionicons/icons';
+import { createOutline, heart, heartOutline } from 'ionicons/icons';
 import { CommentsComponent } from "../../components/comments/comments.component";
-import { GenresComponent } from "../../components/genres/genres.component";
 import { Subscription } from 'rxjs';
 import { Record } from '../../services/record';
 import { Artist } from '../../services/artist';
 import { Song } from '../../services/song';
+import { Genre } from '../../services/genre';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { ContributorsComponent } from '../../components/contributors/contributors.component';
+import { RatingStarsComponent } from '../../components/rating-stars/rating-stars.component';
+import { getCoverGradient, DEFAULT_HEADER } from '../../utils/cover-color';
 
 @Component({
   selector: 'app-albumtemplate',
   templateUrl: './albumtemplate.page.html',
   styleUrls: ['./albumtemplate.page.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     IonContent, FooterComponent, CommonModule, NavbarComponent,
     FormsModule, IonLabel, IonList, IonListHeader, IonItem,
     RouterModule, CommentsComponent,
-    IonIcon, IonButton, GenresComponent
+    IonIcon, IonButton, ContributorsComponent, RatingStarsComponent
 ]
 })
 export class AlbumtemplatePage implements OnInit, OnDestroy {
@@ -37,29 +41,63 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   private record = inject(Record);
   private artist = inject(Artist);
   private song = inject(Song);
+  private genre = inject(Genre);
 
   albumId: string | null = null;
   album: any = null;
   tracklist: any[] = [];
+  generi: any[] = [];
+  mioUsername: string | null = null;
+  isPreferito: boolean = false;
   utenteLoggatoUid: string | null = null;
   mioNome: string = 'Utente';
   isAdmin: boolean = false;
   isModerator: boolean = false;
-  public stileSfondoCard: string = 'rgb(35, 35, 35)';
+  public stileSfondoCard: string = DEFAULT_HEADER;
 
   private adminSub!: Subscription;
   private moderatorSub!: Subscription;
 
   constructor() {
-    addIcons({ createOutline });
+    addIcons({ createOutline, heart, heartOutline });
+  }
+
+  ionViewWillEnter() {
+    this.mioUsername = this.auth.getUsernameFromToken();
+
+    if (this.albumId) {
+      this.caricaDettagliAlbum(this.albumId);
+      this.controllaPreferito();
+    }
+  }
+
+  controllaPreferito() {
+    this.isPreferito = false;
+    if (!this.mioUsername || !this.albumId) return;
+
+    this.user.getFavouriteRecords(this.mioUsername).subscribe({
+      next: (res) => { this.isPreferito = res.some((r: any) => r.id === Number(this.albumId)); },
+      error: (err) => console.error(err)
+    });
+  }
+
+  togglePreferito() {
+    if (!this.mioUsername) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const id = Number(this.albumId);
+    const richiesta = this.isPreferito ? this.user.removeFavouriteRecord(id) : this.user.addFavouriteRecord(id);
+
+    richiesta.subscribe({
+      next: () => { this.isPreferito = !this.isPreferito; },
+      error: (err) => console.error(err)
+    });
   }
 
   ngOnInit() {
     this.albumId = this.route.snapshot.paramMap.get('id');
-
-    if (this.albumId) {
-      this.caricaDettagliAlbum(this.albumId);
-    }
 
     const token = this.auth.getToken();
 
@@ -117,6 +155,10 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
           next: (res) => this.tracklist = res,
           error: (err) => console.error(err)
         });
+        this.genre.getRecordGenres(parseInt(id)).subscribe({
+          next: (res) => { this.generi = res; },
+          error: (err) => console.error(err)
+        });
         //this.tracklist = this.album.tracklist || this.album.canzoni || [];
         this.estraiColoriCopertina();
         this.cdr.detectChanges();
@@ -164,101 +206,18 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   }
 
   vaiACorrectEntry() {
-    if (!this.album || !this.albumId) return;
-
-    const titoliTracce = Array.isArray(this.album.tracklist)
-      ? this.album.tracklist.map((traccia: any) => {
-          if (typeof traccia === 'object' && traccia !== null) {
-            return traccia.titolo || '';
-          }
-          return typeof traccia === 'string' ? traccia : '';
-        })
-      : [];
-
-    const params: any = {
-      tipo: 'album',
-      fotoBase64: this.album.image || '',
-      titolo: this.album.recordname || '',
-      artista: this.album.artid || '',
-      dataRilascio: this.album.release_date || '',
-      lingua: this.album.language || '',
-      tracklist: JSON.stringify(titoliTracce)
-    };
-
-    this.router.navigate(['/add-content'], { queryParams: params });
+    if (!this.albumId) return;
+    this.router.navigate(['/add-content'], { queryParams: { correct: 'record', id: this.albumId } });
   }
 
-  estraiColoriCopertina() {
-    if (!this.album || !this.album.fotoBase64) return;
+  getCover(): string {
+    if (!this.album || !this.album.image) return 'assets/default-cover.svg';
+    return 'http://localhost:3000' + this.album.image;
+  }
 
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.src = this.album.fotoBase64;
+  async estraiColoriCopertina() {
+    if (!this.album || !this.album.image) return;
 
-    img.onload = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) throw new Error('Canvas 2D non disponibile');
-
-        canvas.width = 40;
-        canvas.height = 40;
-        ctx.drawImage(img, 0, 0, 40, 40);
-
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        const conteggioColori: { [key: string]: number } = {};
-
-        for (let i = 0; i < imgData.length; i += 4) {
-          const r = imgData[i];
-          const g = imgData[i + 1];
-          const b = imgData[i + 2];
-          const a = imgData[i + 3];
-
-          if (a < 200) continue;
-
-          const rArrotondato = Math.round(r / 16) * 16;
-          const gArrotondato = Math.round(g / 16) * 16;
-          const bArrotondato = Math.round(b / 16) * 16;
-
-          const luma = 0.299 * rArrotondato + 0.587 * gArrotondato + 0.114 * bArrotondato;
-          if (luma < 30 || luma > 235) continue;
-
-          const chiaveColore = `${rArrotondato},${gArrotondato},${bArrotondato}`;
-          conteggioColori[chiaveColore] = (conteggioColori[chiaveColore] || 0) + 1;
-        }
-
-        const coloriOrdinati = Object.keys(conteggioColori).sort((a, b) => conteggioColori[b] - conteggioColori[a]);
-
-        let primoColore = 'rgb(45, 45, 45)';
-        let secondoColore = 'rgb(30, 30, 30)';
-
-        if (coloriOrdinati.length > 0) {
-          primoColore = `rgb(${coloriOrdinati[0]})`;
-        }
-        if (coloriOrdinati.length > 1) {
-          secondoColore = `rgb(${coloriOrdinati[1]})`;
-        } else if (coloriOrdinati.length === 1) {
-          const parti = coloriOrdinati[0].split(',');
-          secondoColore = `rgb(${Math.floor(Number(parti[0]) * 0.5)}, ${Math.floor(Number(parti[1]) * 0.5)}, ${Math.floor(Number(parti[2]) * 0.5)})`;
-        }
-
-        this.stileSfondoCard = `linear-gradient(to bottom, ${primoColore} 0%, ${secondoColore} 100%)`;
-        document.documentElement.style.setProperty('--colore-topmenu-dinamico', primoColore);
-        this.cdr.detectChanges();
-
-      } catch (error) {
-        console.error("Errore Canvas", error);
-        this.stileSfondoCard = 'linear-gradient(135deg, rgb(45, 45, 45) 0%, rgb(30, 30, 30) 100%)';
-        document.documentElement.style.removeProperty('--colore-topmenu-dinamico');
-        this.cdr.detectChanges();
-      }
-    };
-
-    img.onerror = (err) => {
-      console.error("Errore nell'analisi dei colori:", err);
-      this.stileSfondoCard = 'linear-gradient(135deg, rgb(45, 45, 45) 0%, rgb(30, 30, 30) 100%)';
-      document.documentElement.style.removeProperty('--colore-topmenu-dinamico');
-      this.cdr.detectChanges();
-    };
+    this.stileSfondoCard = await getCoverGradient(this.getCover());
   }
 }

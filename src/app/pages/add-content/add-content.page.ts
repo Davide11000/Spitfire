@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { closeOutline, sendOutline, imageOutline, addOutline, calendarOutline } from 'ionicons/icons';
@@ -9,6 +10,7 @@ import { Request } from '../../services/request';
 import { Artist } from '../../services/artist';
 import { Record } from '../../services/record';
 import { Genre } from '../../services/genre';
+import { Song } from '../../services/song';
 
 @Component({
   selector: 'app-add-content',
@@ -47,6 +49,7 @@ export class AddContentPage implements OnInit {
   public country = '';
   public bio = '';
   public tracks: string[] = [''];
+  public duration = '';
   public image: File | null = null;
   public imagePreview = '';
 
@@ -63,7 +66,11 @@ export class AddContentPage implements OnInit {
 
   public myRequests: any[] = [];
 
-  constructor(private requestService : Request, private artistService : Artist, private recordService : Record, private genreService : Genre) {
+  public correctionId: number | null = null;
+  private original: any = null;
+
+  constructor(private requestService : Request, private artistService : Artist, private recordService : Record, private genreService : Genre,
+              private songService : Song, private route : ActivatedRoute, private router : Router) {
     addIcons({ closeOutline, sendOutline, imageOutline, addOutline, calendarOutline });
   }
 
@@ -71,6 +78,19 @@ export class AddContentPage implements OnInit {
     this.genreService.getAllGenres().subscribe({
       next: (res) => { this.genreList = res; },
       error: (err) => { console.error('Error loading genres', err); }
+    });
+
+    this.route.queryParamMap.subscribe(params => {
+      const type = params.get('correct');
+      const id = params.get('id');
+
+      if (type && id) {
+        this.startCorrection(type, parseInt(id));
+      } else if (this.isCorrection()) {
+        this.correctionId = null;
+        this.original = null;
+        this.resetForm();
+      }
     });
   }
 
@@ -97,6 +117,7 @@ export class AddContentPage implements OnInit {
   getTypeLabel(type: string): string {
     if (type === 'song') return 'Song';
     if (type === 'record') return 'Album';
+    if (type === 'translation') return 'Translation';
     return 'Artist';
   }
 
@@ -124,6 +145,7 @@ export class AddContentPage implements OnInit {
     this.country = '';
     this.bio = '';
     this.tracks = [''];
+    this.duration = '';
     this.image = null;
     this.imagePreview = '';
     this.artistSuggestions = [];
@@ -232,22 +254,168 @@ export class AddContentPage implements OnInit {
     this.imagePreview = '';
   }
 
+  // CORREZIONE
+
+  getImageUrl(image: string | null): string {
+    if (!image) return '';
+    return 'http://localhost:3000' + image;
+  }
+
+  // Uso !== null perché anche 0 è un id valido
+  isCorrection(): boolean {
+    return this.correctionId !== null;
+  }
+
+  startCorrection(type: string, id: number) {
+    this.type = type;
+    this.correctionId = id;
+    this.resetForm();
+    this.successMessage = '';
+    this.original = { genres: [], tracks: [] };
+
+    if (type === 'song') {
+      this.songService.getSongbyId(id).subscribe({
+        next: (res) => {
+          this.name = res.songname || '';
+          this.artistName = res.artname || '';
+          this.albumName = res.recordname || '';
+          this.language = res.language || '';
+          this.lyrics = res.lyrics || '';
+          this.duration = res.duration || '';
+          this.imagePreview = this.getImageUrl(res.image || res.recordimage);
+          this.saveOriginal();
+        },
+        error: (err) => { this.errorMessage = 'The song to correct was not found'; }
+      });
+
+      this.genreService.getSongGenres(id).subscribe({
+        next: (res) => {
+          this.genres = res.map((g: any) => g.name);
+          this.original.genres = [...this.genres];
+        },
+        error: (err) => { console.error('Error loading genres', err); }
+      });
+    }
+
+    if (type === 'record') {
+      this.recordService.getRecord(String(id)).subscribe({
+        next: (res) => {
+          this.name = res.recordname || '';
+          this.releaseDate = res.release_date ? res.release_date.substring(0, 10) : '';
+          this.language = res.language || '';
+          this.imagePreview = this.getImageUrl(res.image);
+          this.saveOriginal();
+
+          this.artistService.getArtist(res.artid).subscribe({
+            next: (artist) => { this.artistName = artist.artname; },
+            error: (err) => { console.error('Error loading the artist', err); }
+          });
+        },
+        error: (err) => { this.errorMessage = 'The album to correct was not found'; }
+      });
+
+      this.genreService.getRecordGenres(id).subscribe({
+        next: (res) => {
+          this.genres = res.map((g: any) => g.name);
+          this.original.genres = [...this.genres];
+        },
+        error: (err) => { console.error('Error loading genres', err); }
+      });
+
+      this.songService.getSongsbyRecordID(id).subscribe({
+        next: (res) => {
+          this.original.tracks = res.map((s: any) => s.songname);
+          this.tracks = [...this.original.tracks, ''];
+        },
+        error: (err) => { this.tracks = ['']; }
+      });
+    }
+
+    if (type === 'artist') {
+      this.artistService.getArtist(id).subscribe({
+        next: (res) => {
+          this.name = res.artname || '';
+          this.birthDate = res.birth_date ? res.birth_date.substring(0, 10) : '';
+          this.country = res.country || '';
+          this.bio = res.bio || '';
+          this.imagePreview = this.getImageUrl(res.image);
+          this.saveOriginal();
+        },
+        error: (err) => { this.errorMessage = 'The artist to correct was not found'; }
+      });
+    }
+  }
+
+  saveOriginal() {
+    this.original.name = this.name;
+    this.original.releaseDate = this.releaseDate;
+    this.original.language = this.language;
+    this.original.lyrics = this.lyrics;
+    this.original.duration = this.duration;
+    this.original.birthDate = this.birthDate;
+    this.original.country = this.country;
+    this.original.bio = this.bio;
+  }
+
+  isExistingTrack(index: number): boolean {
+    return this.isCorrection() && index < this.original.tracks.length;
+  }
+
+  cancelCorrection() {
+    this.router.navigate(['/add-content']);
+  }
+
+  addChangedFields(formData: FormData): number {
+    let changes = 0;
+
+    const fields = [
+      ['releaseDate', this.releaseDate], ['language', this.language], ['lyrics', this.lyrics], ['duration', this.duration],
+      ['birthDate', this.birthDate], ['country', this.country], ['bio', this.bio]
+    ];
+
+    for (const [key, value] of fields) {
+      if (value && value.trim() && value.trim() !== (this.original[key] || '').trim()) {
+        formData.append(key, value.trim());
+        changes++;
+      }
+    }
+
+    if (this.genres.length > 0 && [...this.genres].sort().join(', ') !== [...this.original.genres].sort().join(', ')) {
+      formData.append('genres', this.genres.join(', '));
+      changes++;
+    }
+
+    const newTracks = this.tracks.filter(t => t.trim() && !this.original.tracks.includes(t.trim()));
+    if (this.type === 'record' && newTracks.length > 0) {
+      formData.append('tracklist', newTracks.join('\n'));
+      changes++;
+    }
+
+    if (this.image) {
+      formData.append('image', this.image);
+      changes++;
+    }
+
+    if (this.name.trim() !== this.original.name.trim()) {
+      changes++;
+    }
+
+    return changes;
+  }
+
   // INVIO
 
-  // Controlla che i campi obbligatori del tipo scelto siano compilati
   isFormValid(): boolean {
-    if (!this.name || !this.image) return false;
+    if (!this.name.trim()) return false;
+    if (this.isCorrection()) return true;
 
-    if (this.type === 'song') {
-      return !!this.artistName && !!this.albumName && !!this.releaseDate && this.genres.length > 0 && !!this.language;
-    }
+    if (this.type === 'song') return !!this.artistName && !!this.albumName;
+    if (this.type === 'record') return !!this.artistName;
+    return true;
+  }
 
-    if (this.type === 'record') {
-      const filledTracks = this.tracks.filter(t => t);
-      return !!this.artistName && !!this.releaseDate && this.genres.length > 0 && !!this.language && filledTracks.length > 0;
-    }
-
-    return !!this.birthDate && !!this.country && !!this.bio;
+  isDurationValid(): boolean {
+    return !this.duration || /^[0-9]{1,3}:[0-5][0-9]$/.test(this.duration.trim());
   }
 
   onSend() {
@@ -255,14 +423,55 @@ export class AddContentPage implements OnInit {
     this.successMessage = '';
 
     if (!this.isFormValid()) {
-      this.errorMessage = 'Please fill in all the fields';
+      if (this.isCorrection()) this.errorMessage = 'The title is required';
+      else if (this.type === 'song') this.errorMessage = 'Title, artist and album are required';
+      else if (this.type === 'record') this.errorMessage = 'Title and artist are required';
+      else this.errorMessage = 'The name is required';
+      return;
+    }
+
+    if (!this.isDurationValid()) {
+      this.errorMessage = 'The duration must be written as m:ss, e.g. 6:53';
       return;
     }
 
     const formData = new FormData();
     formData.append('type', this.type);
-    formData.append('name', this.name);
+    formData.append('name', this.name.trim());
 
+    if (this.isCorrection()) {
+      formData.append('targetId', String(this.correctionId));
+
+      if (this.addChangedFields(formData) === 0) {
+        this.errorMessage = 'Change at least one field';
+        return;
+      }
+    } else {
+      this.addNewFields(formData);
+    }
+
+    this.sending = true;
+    this.requestService.sendRequest(formData).subscribe({
+      next: (res) => {
+        this.sending = false;
+        this.loadMyRequests();
+
+        if (this.isCorrection()) {
+          this.router.navigate(['/add-content']);
+          this.successMessage = 'Correction sent! An admin will review it soon.';
+        } else {
+          this.resetForm();
+          this.successMessage = 'Request sent! An admin will review it soon.';
+        }
+      },
+      error: (err) => {
+        this.sending = false;
+        this.errorMessage = err.error.message || 'Error sending the request';
+      }
+    });
+  }
+
+  addNewFields(formData: FormData) {
     if (this.image) {
       formData.append('image', this.image);
     }
@@ -270,10 +479,10 @@ export class AddContentPage implements OnInit {
     if (this.type === 'song') {
       formData.append('artistName', this.artistName);
       formData.append('albumName', this.albumName);
-      formData.append('releaseDate', this.releaseDate);
       formData.append('genres', this.genres.join(', '));
       formData.append('language', this.language);
       formData.append('lyrics', this.lyrics);
+      formData.append('duration', this.duration.trim());
     }
 
     if (this.type === 'record') {
@@ -281,8 +490,7 @@ export class AddContentPage implements OnInit {
       formData.append('releaseDate', this.releaseDate);
       formData.append('genres', this.genres.join(', '));
       formData.append('language', this.language);
-      // Le canzoni vengono salvate una per riga, saltando i campi lasciati vuoti
-      formData.append('tracklist', this.tracks.filter(t => t).join('\n'));
+      formData.append('tracklist', this.tracks.filter(t => t.trim()).join('\n'));
     }
 
     if (this.type === 'artist') {
@@ -290,20 +498,6 @@ export class AddContentPage implements OnInit {
       formData.append('country', this.country);
       formData.append('bio', this.bio);
     }
-
-    this.sending = true;
-    this.requestService.sendRequest(formData).subscribe({
-      next: (res) => {
-        this.sending = false;
-        this.successMessage = 'Request sent! An admin will review it soon.';
-        this.resetForm();
-        this.loadMyRequests();
-      },
-      error: (err) => {
-        this.sending = false;
-        this.errorMessage = err.error.message || 'Error sending the request';
-      }
-    });
   }
 
 }

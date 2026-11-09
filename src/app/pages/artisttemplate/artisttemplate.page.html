@@ -13,17 +13,15 @@
             Birth / Foundation: {{ (artista.birth_date | date:'d MMMM y') }}
           </p>
         }
-        @if (utenteLoggatoUid) {
-          <ion-button
-            fill="outline"
-            [color]="isFavourite ? 'medium' : 'warning'"
-            size="small"
-            class="favourite-btn"
-            (click)="toggleFavourite()">
-            <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
-            {{ isFavourite ? 'Saved' : 'Save to Favourites' }}
-          </ion-button>
-        }
+        <ion-button
+          fill="outline"
+          size="small"
+          class="favourite-btn white-btn"
+          [class.active]="isFavourite"
+          (click)="toggleFavourite()">
+          <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
+          {{ isFavourite ? 'In favourites' : 'Add to favourites' }}
+        </ion-button>
       </div>
     </div>
     <div class="content-sections-wrapper">
@@ -84,14 +82,15 @@
           </div>
         }
       </div>
-      @if (utenteLoggatoUid) {
-        <div class="artist-actions-wrapper">
-          <ion-button fill="outline" color="medium" size="small" class="artist-action-btn" (click)="vaiACorrectEntry()">
-            <ion-icon slot="start" name="create-outline"></ion-icon>
-            Correct entry
-          </ion-button>
-        </div>
-      }
+      <div class="artist-actions-wrapper">
+        @if (artista) {
+          <app-contributors type="artist" [id]="artista.id"></app-contributors>
+        }
+        <ion-button fill="outline" color="medium" size="small" class="artist-action-btn" (click)="vaiACorrectEntry()">
+          <ion-icon slot="start" name="create-outline"></ion-icon>
+          Correct entry
+        </ion-button>
+      </div>
     </div>
     <app-footer></app-footer>
   </ion-content>

@@ -1,0 +1,64 @@
+<div class="menu-wrapper">
+  <button class="menu-btn" (click)="menuOpen = !menuOpen">
+    <ion-icon name="language-outline"></ion-icon>
+    <span>{{ current ? current.language : 'Translations' }}</span>
+    <ion-icon class="caret" [name]="menuOpen ? 'caret-up' : 'caret-down'"></ion-icon>
+  </button>
+
+  @if (menuOpen) {
+    <div class="backdrop" (click)="menuOpen = false"></div>
+    <div class="menu">
+      <button class="item" [class.active]="!current" (click)="choose(null)">
+        Original{{ originalLanguage ? ' (' + originalLanguage + ')' : '' }}
+        @if (!current) {
+          <ion-icon name="checkmark"></ion-icon>
+        }
+      </button>
+      @for (t of translations; track t.language) {
+        <button class="item" [class.active]="current?.language === t.language" (click)="choose(t)">
+          {{ t.language }}
+          @if (current?.language === t.language) {
+            <ion-icon name="checkmark"></ion-icon>
+          }
+        </button>
+      }
+      <button class="item add" (click)="openAdd()">
+        <ion-icon name="add-outline"></ion-icon>
+        Add a translation
+      </button>
+    </div>
+  }
+</div>
+
+<ion-modal class="tr-modal" [isOpen]="isAddOpen" (didDismiss)="isAddOpen = false">
+  <ng-template>
+    <div class="tr-box">
+      <div class="tr-header">
+        <b>Add a translation</b>
+        <ion-button fill="clear" class="close-btn" (click)="isAddOpen = false">
+          <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+      </div>
+      <p class="tr-song">{{ songName }}</p>
+
+      <label class="tr-label">Language</label>
+      <ion-select class="tr-input" fill="outline" placeholder="Choose a language" interface="popover" [interfaceOptions]="selectOptions" [value]="newLanguage" (ionChange)="onLanguage($event)">
+        @for (l of getAvailableLanguages(); track l) {
+          <ion-select-option [value]="l">{{ l }}</ion-select-option>
+        }
+      </ion-select>
+
+      <label class="tr-label">Translated lyrics</label>
+      <ion-textarea class="tr-input" fill="outline" [autoGrow]="true" [rows]="10" placeholder="Write the translated lyrics, line by line" [value]="newLyrics" (ionInput)="onLyrics($event)"></ion-textarea>
+
+      @if (error) {
+        <p class="tr-error">{{ error }}</p>
+      }
+
+      <div class="tr-footer">
+        <ion-button fill="clear" class="tr-btn tr-cancel" (click)="isAddOpen = false">Cancel</ion-button>
+        <ion-button class="tr-btn" [disabled]="sending" (click)="send()">Send translation</ion-button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

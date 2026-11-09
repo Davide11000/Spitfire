@@ -7,11 +7,11 @@
         <ion-icon name="flag-outline"></ion-icon>
         <b>Reports</b>
         @if (!loading) {
-          <span class="count">{{ groups.length }}</span>
+          <span class="count">{{ groups.length + annotationGroups.length }}</span>
         }
       </div>
       <p class="page-subtitle">
-        Comments reported by the users. Delete the comment if the report is right, or keep it if it's not.
+        Comments and annotations reported by the users. Delete them if the report is right, or keep them if it's not.
       </p>
     </div>
 
@@ -20,6 +20,55 @@
     } @else if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>
     } @else {
+      @for (group of annotationGroups; track group.annotation_id) {
+        <div class="card">
+          <div class="card-top">
+            <span class="badge">Annotation</span>
+            <span class="target link" (click)="goToAnnotation(group)">{{ group.songname || 'Deleted song' }}</span>
+          </div>
+
+          <div class="reported-comment">
+            <img class="avatar" [src]="getPhoto(group.author_photo)" (click)="goToProfile(group.author)" />
+            <div class="comment-content">
+              <div class="comment-header">
+                <span class="username" (click)="goToProfile(group.author)">{{ getName(group.author) }}</span>
+                <span class="date">{{ getDate(group.date) | date:'dd MMM yyyy, HH:mm' }}</span>
+              </div>
+              <p class="quote">"{{ group.selected_text }}"</p>
+              <p class="comment-text">{{ group.text }}</p>
+            </div>
+          </div>
+
+          <div class="reports-list">
+            <span class="reports-title">
+              {{ group.reports.length === 1 ? '1 report' : group.reports.length + ' reports' }}
+            </span>
+            @for (report of group.reports; track report.id) {
+              <div class="report">
+                <span class="username small" (click)="goToProfile(report.username)">{{ '@' + report.username }}</span>
+                <span class="reason">{{ report.reason }}</span>
+                <span class="date">{{ getDate(report.created_at) | date:'dd MMM, HH:mm' }}</span>
+              </div>
+            }
+          </div>
+
+          @if (group.error) {
+            <p class="error">{{ group.error }}</p>
+          }
+
+          <div class="card-actions">
+            <ion-button fill="outline" class="action-btn keep-btn" (click)="onRejectAnnotation(group)">
+              <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+              Keep annotation
+            </ion-button>
+            <ion-button class="action-btn" (click)="onAcceptAnnotation(group)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Delete annotation
+            </ion-button>
+          </div>
+        </div>
+      }
+
       @for (group of groups; track group.comment_id) {
         <div class="card">
           <div class="card-top">
@@ -71,7 +120,9 @@
             </ion-button>
           </div>
         </div>
-      } @empty {
+      }
+
+      @if (groups.length === 0 && annotationGroups.length === 0) {
         <div class="empty">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
           <p>No reports to check. All clear!</p>

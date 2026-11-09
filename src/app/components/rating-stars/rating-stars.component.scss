@@ -1,34 +1,36 @@
-.rating-container {
+.rating {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin: 10px 0;
+  gap: 10px;
   width: fit-content;
 }
 
-.average-score {
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.stars-wrapper {
+.stars {
   display: flex;
-  gap: 2px;
+  gap: 1px;
 
   ion-icon {
-    font-size: 1.8rem;
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
-    color: #555555; 
-    transition: transform 0.1s ease;
+    transition: transform 0.1s;
 
     &:hover {
-      transform: scale(1.15); 
+      transform: scale(1.15);
+    }
+
+    &.on {
+      color: #ffc409;
     }
   }
+}
 
-  ion-icon.active-star {
-    color: #994a15;
+.info {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+
+  b {
+    font-size: 1.05rem;
+    color: #ffffff;
   }
 }

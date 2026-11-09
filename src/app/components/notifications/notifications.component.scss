@@ -97,8 +97,22 @@
     background: var(--ion-color-primary);
   }
 
-  &.new_request {
+  &.new_request,
+  &.new_correction,
+  &.new_translation {
     background: #f9a825;
+  }
+
+  &.new_annotation,
+  &.new_annotation_edit,
+  &.annotation_approved,
+  &.annotation_edit_approved {
+    background: #00897b;
+  }
+
+  &.annotation_rejected,
+  &.annotation_edit_rejected {
+    background: #757575;
   }
 
   &.message {

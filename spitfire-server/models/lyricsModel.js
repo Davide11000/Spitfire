@@ -11,6 +11,16 @@ const Lyrics = {
             });
     },
 
+    update: (songid, language, lyrics) => {
+        return new Promise((resolve, reject) => {
+            const query = `UPDATE lyrics SET lyrics = ? WHERE songid = ? AND language = ?`;
+            db.run(query, [lyrics, songid, language], function (err) {
+                if (err) reject(err);
+                else resolve({songid, language, lyrics});
+            });
+        });
+    },
+
     findBySongId: (songid) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT * FROM lyrics WHERE songid = ?`;
