@@ -102,7 +102,7 @@ export class ArtisttemplatePage implements OnInit {
 
   async caricaDettagliArtista(id: string) {
     try {
-      this.artistService.getArtist(id).subscribe({
+      this.artistService.getArtist(parseInt(id)).subscribe({
         next: (res) => this.artista = res,
         error: (err) => console.error(err)
       });

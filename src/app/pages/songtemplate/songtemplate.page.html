@@ -1,4 +1,4 @@
-<app-topmenu></app-topmenu>
+<app-navbar></app-navbar>
 
 <ion-content class="globalbg">
 
@@ -11,13 +11,13 @@
           <div class="song-title">
             <b>{{ canzone.titolo }}</b>
           </div>
-          <div class="song-artist" (click)="vaiAllArtista(canzone.artista)">
+          <div class="song-artist" (click)="vaiAllArtista(canzone.artId)">
             {{ canzone.artista }}
           </div>
 
-          @if (canzone.dataRilascio) {
+          @if (canzone.release_date) {
             <div class="song-meta">
-              <b>Release Date:</b> {{ canzone.dataRilascio | date:'dd/MM/yyyy' }}
+              <b>Release Date:</b> {{ canzone.dataRilascio | date:'d MMMM y' }}
             </div>
           }
 
@@ -40,9 +40,9 @@
             </div>
           }
 
-          @if (songId) {
+          <!--@if (songId) {
             <app-rating-stars [id]="songId" tipo="canzone"></app-rating-stars>
-          }
+        }-->
 
           @if (canzone.album) {
             <div class="song-meta">
@@ -141,7 +141,7 @@
   </div>
 
   @if (songId) {
-    <app-comments [id]="songId" [nomeEntita]="canzone?.titolo" tipo="canzone"></app-comments>
+    <app-comments [id]="songId" [type]="canzone"></app-comments>
   }
 
   <app-footer></app-footer>

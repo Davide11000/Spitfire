@@ -24,10 +24,12 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     artname TEXT,
     image TEXT,
-    birth_date TEXT,
+    birth_date DATE,
     country TEXT,
     bio TEXT
   );
+
+  INSERT OR IGNORE INTO artists VALUES (0, 'Nick Drake', '', '1948-06-19', 'Rangoon', '');
 
   CREATE TABLE IF NOT EXISTS records (
     id INTEGER PRIMARY KEY,
@@ -47,16 +49,17 @@ db.exec(`
     songname TEXT,
     duration TIME,
     recordid INTEGER,
+    artid INTEGER,
     image TEXT,
-    release_date TEXT,
+    release_date DATE,
     language TEXT,
     lyrics TEXT,
     rating NUMERIC DEFAULT 0,
     FOREIGN KEY (recordid) REFERENCES records(id)
   );
 
-  INSERT OR IGNORE INTO songs VALUES (0, 'test', '00-00-00', 0, '', '1972-02-25', 'English', '');
-  INSERT OR IGNORE INTO songs VALUES (1, 'test2', '00-00-00', 0, '', '1972-02-25', 'English', '');
+  INSERT OR IGNORE INTO songs VALUES (0, 'test', '00-00-00', 0, 0, '', '1972-02-25', 'English', '', 0);
+  INSERT OR IGNORE INTO songs VALUES (1, 'test2', '00-00-00', 0, 0, '', '1972-02-25', 'English', '', 0);
 
   CREATE TABLE IF NOT EXISTS genres (
     id INTEGER PRIMARY KEY,

@@ -7,7 +7,7 @@ import {
   createOutline, closeOutline, checkmarkOutline, trashOutline,
   thumbsUpOutline, thumbsUpSharp, thumbsDownOutline, thumbsDownSharp, addOutline, pencilOutline
 } from 'ionicons/icons';
-import { GenreService, TipoEntita } from '../../services/genre';
+import { Genre } from '../../services/genre';
 import { GENERI_DISPONIBILI } from '../../constants/generi';
 
 @Component({
@@ -19,7 +19,7 @@ import { GENERI_DISPONIBILI } from '../../constants/generi';
 })
 export class GenresComponent implements OnChanges {
   @Input() entityId!: string;
-  @Input() tipo!: TipoEntita;
+  /*@Input() tipo!: TipoEntita;*/
   @Input() generiAttuali: string[] = [];
   @Input() mioUid: string | null = null;
   @Input() mioNome: string = 'Utente';
@@ -35,7 +35,7 @@ export class GenresComponent implements OnChanges {
   public modalTipo: 'add' | 'remove' = 'add';
   public selezione = new Set<string>();
 
-  private genreService = inject(GenreService);
+  private genre = inject(Genre);
   private toastCtrl = inject(ToastController);
   private cdr = inject(ChangeDetectorRef);
 
@@ -57,7 +57,7 @@ export class GenresComponent implements OnChanges {
 
   async caricaProposte() {
     try {
-      this.proposte = await this.genreService.getGenreChanges(this.tipo, this.entityId);
+      /*this.proposte = await this.genreService.getGenreChanges(this.tipo, this.entityId);*/
       this.cdr.detectChanges();
     } catch (e) {
       console.error(e);
@@ -100,12 +100,12 @@ export class GenresComponent implements OnChanges {
   async confermaProposta() {
     if (!this.mioUid || this.selezione.size === 0) return;
     try {
-      await this.genreService.proponiGenreChange(this.tipo, this.entityId, {
+      /*await this.genreService.proponiGenreChange(this.tipo, this.entityId, {
         generi: Array.from(this.selezione),
         tipoCambio: this.modalTipo,
         uid: this.mioUid,
         nome: this.mioNome
-      });
+      });*/
       this.modalAperto = false;
       await this.caricaProposte();
       this.toast('Proposta inviata, in attesa di revisione.');
@@ -120,13 +120,13 @@ export class GenresComponent implements OnChanges {
 
   async toggleLike(p: any) {
     if (!this.mioUid) return;
-    await this.genreService.toggleLike(this.tipo, this.entityId, p.id, this.mioUid, this.haLike(p));
+    /*await this.genreService.toggleLike(this.tipo, this.entityId, p.id, this.mioUid, this.haLike(p));*/
     await this.caricaProposte();
   }
 
   async toggleDislike(p: any) {
     if (!this.mioUid) return;
-    await this.genreService.toggleDislike(this.tipo, this.entityId, p.id, this.mioUid, this.haDislike(p));
+    /*await this.genreService.toggleDislike(this.tipo, this.entityId, p.id, this.mioUid, this.haDislike(p));*/
     await this.caricaProposte();
   }
 
@@ -134,7 +134,7 @@ export class GenresComponent implements OnChanges {
 
   async approva(p: any) {
     try {
-      const nuovi = await this.genreService.approvaGenreChange(this.tipo, this.entityId, p.id);
+      const nuovi = /*await this.genreService.approvaGenreChange(this.tipo, this.entityId, p.id);*/ ["temp"];
       this.generiCorrenti = nuovi;
       await this.caricaProposte();
       this.toast('Proposta approvata.');
@@ -146,7 +146,7 @@ export class GenresComponent implements OnChanges {
 
   async elimina(p: any) {
     try {
-      await this.genreService.cancellaProposta(this.tipo, this.entityId, p.id);
+      /*await this.genreService.cancellaProposta(this.tipo, this.entityId, p.id);*/
       await this.caricaProposte();
     } catch (e) {
       console.error(e);

@@ -8,9 +8,9 @@
       </div>
       <div class="artist-info-card-overlay">
         <h1 class="artist-title">{{ artista.nome }}</h1>
-        @if (artista.dataNascita) {
+        @if (artista.birth_date) {
           <p class="artist-subtitle">
-            Birth / Foundation: {{ (artista.dataNascita.toString() | date:'dd/MM/yyyy':'UTC') }}
+            Birth / Foundation: {{ (artista.birth_date | date:'d MMMM y') }}
           </p>
         }
         @if (utenteLoggatoUid) {
@@ -34,14 +34,14 @@
             <ion-item lines="none" (click)="vaiAllaCanzone(canzone.id)" button class="song-row">
               <span class="song-index" slot="start">{{ idx + 1 }}</span>
               <ion-avatar slot="start" class="song-avatar">
-                <img [src]="canzone.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
+                <img [src]="canzone.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
               </ion-avatar>
               <ion-label class="song-info">
-                <h2>{{ canzone.titolo }}</h2>
+                <h2>{{ canzone.songname }}</h2>
               </ion-label>
               <div slot="end" class="song-rating">
                 <ion-icon name="star" class="star-icon"></ion-icon>
-                <span>{{ canzone.ratingMedia || '0.0' }}</span>
+                <span>{{ canzone.rating || '0.0' }}</span>
               </div>
             </ion-item>
             } @empty {
@@ -59,13 +59,13 @@
               <ion-col size="6" size-sm="4" size-md="3" size-lg="2" class="album-col">
                 <div class="album-card" (click)="vaiAllAlbum(album.id)">
                   <div class="album-img-wrapper">
-                    <img [src]="album.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover">
+                    <img [src]="album.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover">
                   </div>
                   <div class="album-meta">
                     <h3 class="album-title">{{ album.titolo }}</h3>
-                    @if (album.dataRilascio)
+                    @if (album.release_date)
                       {
-                      <p class="album-year">{{ album.dataRilascio | date:'yyyy':'UTC' }}</p>
+                      <p class="album-year">{{ album.release_date | date:'yyyy' }}</p>
                     }
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+/*import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { IonIcon } from '@ionic/angular';
@@ -97,4 +97,4 @@ export class RatingStarsComponent implements OnInit {
       console.error("Errore durante l'invio del voto:", error);
     }
   }
-}
+}*/

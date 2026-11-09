@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonImg, IonButton, IonSpinner, IonIcon, ToastController } from '@ionic/angular';
-import { TopmenuComponent } from '../../components/topmenu/topmenu.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { RatingStarsComponent } from "../../components/rating-stars/rating-stars.component";
+//import { RatingStarsComponent } from "../../components/rating-stars/rating-stars.component";
 import { AnnotationsComponent } from '../../components/annotations/annotations.component';
 import { addIcons } from 'ionicons';
 import { addOutline, closeOutline, musicalNotesOutline, createOutline, languageOutline, sendOutline, pencilOutline } from 'ionicons/icons';
@@ -17,13 +16,14 @@ import { User } from '../../services/user';
 import { Song } from '../../services/song';
 import { Artist } from '../../services/artist';
 import { Playlist } from '../../services/playlist';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
   selector: 'app-songtemplate',
   templateUrl: './songtemplate.page.html',
   styleUrls: ['./songtemplate.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonImg, IonButton, IonSpinner, TopmenuComponent, FooterComponent, RatingStarsComponent, IonIcon, CommentsComponent, AnnotationsComponent, GenresComponent]
+  imports: [CommonModule, FormsModule, IonContent, IonImg, IonButton, IonSpinner, FooterComponent, /*RatingStarsComponent,*/ IonIcon, CommentsComponent, AnnotationsComponent, GenresComponent, NavbarComponent]
 })
 export class SongtemplatePage implements OnInit, OnDestroy {
 
@@ -290,9 +290,9 @@ export class SongtemplatePage implements OnInit, OnDestroy {
     }
   }
 
-  async vaiAllArtista(nomeArtista: string) {
-    if (!nomeArtista) return;
-    this.artist.getArtist(nomeArtista).subscribe({
+  async vaiAllArtista(id: number) {
+    if (!id) return;
+    this.artist.getArtist(id).subscribe({
       next: (res) => this.router.navigate(['/artisttemplate', res]),
       error: (err) => console.error(err)
     });

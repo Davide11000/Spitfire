@@ -8,7 +8,7 @@ export class Artist {
     private baseUrl = "http://localhost:3000/artists";
     private http = inject(HttpClient);
 
-    getArtist(id: string) : Observable<any> {
+    getArtist(id: number) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
 

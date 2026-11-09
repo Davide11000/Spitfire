@@ -9,8 +9,8 @@
           <div style="font-size: xx-large;">
             <b class="album-name">{{ album.recordname }}</b>
           </div>
-          <div class="artist-info" (click)="vaiAllArtista(album.artId)">
-            {{ album.artista }}
+          <div class="artist-info" [routerLink]="[`/artists/${album.artId}`]">
+            {{ album.artId }}
           </div>
           @if (album.release_date) {
             <div style="font-size: 1rem;">
@@ -52,7 +52,7 @@
               color="rgba(0, 0, 0, 0)"
               class="track-item"
               style="--border-style: solid; --border-width: 0 0 1px 0;"
-              (click)="vaiAllaCanzone(traccia.id)">
+              [routerLink]="[`/songs/${traccia.id}`]">
               <ion-label style="color: antiquewhite;">
                 <span style="color: #ffc409; margin-right: 10px; font-weight: bold;">
                   {{ $index + 1 }}.

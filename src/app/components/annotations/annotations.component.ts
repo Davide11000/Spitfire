@@ -1,4 +1,4 @@
-import { Component, OnChanges, SimpleChanges, inject, ChangeDetectorRef, ElementRef, ViewChild, Input } from '@angular/core';
+/*import { Component, OnChanges, SimpleChanges, inject, ChangeDetectorRef, ElementRef, ViewChild, Input } from '@angular/core';
 
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -355,4 +355,4 @@ export class AnnotationsComponent implements OnChanges {
   }
 }
 
-}
+}*/

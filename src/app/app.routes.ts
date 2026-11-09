@@ -70,5 +70,9 @@ export const routes: Routes = [
   {
     path: 'artists/:id',
     loadComponent: () => import('./pages/artisttemplate/artisttemplate.page').then(m => m.ArtisttemplatePage),
+  },
+  {
+    path: 'songs/:id',
+    loadComponent: () => import('./pages/songtemplate/songtemplate.page').then(m => m.SongtemplatePage),
   }
 ];
