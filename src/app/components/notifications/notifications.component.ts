@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectionStra
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close } from 'ionicons/icons';
+import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray } from 'ionicons/icons';
 import { Notification } from '../../services/notification';
 
 @Component({
@@ -22,7 +22,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private timer: any = null;
 
   constructor(private notificationService : Notification, private router : Router) {
-    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close });
+    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray });
   }
 
   ngOnInit() {
@@ -77,6 +77,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'reply') return 'chatbubble';
     if (type === 'request_accepted') return 'checkmark';
     if (type === 'request_rejected') return 'close';
+    if (type === 'new_request') return 'file-tray';
     return 'mail';
   }
 
@@ -87,11 +88,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'reply') return 'replied to your comment';
     if (type === 'request_accepted') return 'accepted your request';
     if (type === 'request_rejected') return 'rejected your request';
+    if (type === 'new_request') return 'sent a new request';
     return 'sent you a message';
   }
 
   getPreview(notification: any): string {
-    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected') {
+    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request') {
       return notification.text;
     }
     if (notification.type === 'playlist_like') return notification.playlist_name || '';
@@ -128,6 +130,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     if (notification.type === 'request_accepted' || notification.type === 'request_rejected') {
       this.router.navigate(['/add-content']);
+    }
+
+    if (notification.type === 'new_request') {
+      this.router.navigate(['/requests']);
     }
 
     if ((notification.type === 'like' || notification.type === 'reply') && notification.target_type === 'playlist') {

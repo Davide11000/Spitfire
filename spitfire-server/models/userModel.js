@@ -31,6 +31,16 @@ const User = {
     });
   },
 
+  findAdmins: () => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT username FROM users WHERE ruolo = 'admin'`;
+      db.all(query, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   updateEmail: (username, email) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE users SET email = ? WHERE username = ?`;

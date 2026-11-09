@@ -4,6 +4,17 @@ const Record = require("../models/recordModel");
 const Song = require("../models/songModel");
 const Genre = require("../models/genreModel");
 const Notification = require("../models/notificationModel");
+const User = require("../models/userModel");
+
+async function notifyAdmins(username, name) {
+  const admins = await User.findAdmins();
+
+  for (const admin of admins) {
+    if (admin.username !== username) {
+      await Notification.create(admin.username, "new_request", username, null, name);
+    }
+  }
+}
 
 exports.create = async (req, res) => {
   try {
@@ -28,6 +39,7 @@ exports.create = async (req, res) => {
 
       // Il testo della canzone è facoltativo (es. brani strumentali)
       const result = await Request.createSong(username, name, artistName, albumName, releaseDate, genres, language, lyrics, image);
+      await notifyAdmins(username, name);
       return res.status(201).json(result);
     }
 
@@ -37,6 +49,7 @@ exports.create = async (req, res) => {
       }
 
       const result = await Request.createRecord(username, name, artistName, releaseDate, genres, language, tracklist, image);
+      await notifyAdmins(username, name);
       return res.status(201).json(result);
     }
 
@@ -46,6 +59,7 @@ exports.create = async (req, res) => {
       }
 
       const result = await Request.createArtist(username, name, birthDate, country, bio, image);
+      await notifyAdmins(username, name);
       return res.status(201).json(result);
     }
 

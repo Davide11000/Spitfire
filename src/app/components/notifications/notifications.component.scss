@@ -97,6 +97,10 @@
     background: var(--ion-color-primary);
   }
 
+  &.new_request {
+    background: #f9a825;
+  }
+
   &.message {
     background: #8e24aa;
   }

@@ -62,7 +62,7 @@ exports.getSongByRecordID = async (req, res) => {
     const recordid = req.params.recordid;
     const songs = await Song.findByrecordid(recordid);
 
-    if (!songs) {
+    if (songs.length === 0) {
       return res.status(404).json({ message: "This record contains no songs" });
     }
 
