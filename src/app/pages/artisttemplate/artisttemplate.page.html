@@ -4,10 +4,10 @@
   <ion-content class="globalbg artist-content">
     <div class="artist-hero">
       <div class="image-container">
-        <ion-img class="artist-main-img" [src]="artista.fotoBase64 || 'assets/shapes.svg'"></ion-img>
+        <ion-img class="artist-main-img" [src]="artista.image || 'assets/shapes.svg'"></ion-img>
       </div>
       <div class="artist-info-card-overlay">
-        <h1 class="artist-title">{{ artista.nome }}</h1>
+        <h1 class="artist-title">{{ artista.artname }}</h1>
         @if (artista.birth_date) {
           <p class="artist-subtitle">
             Birth / Foundation: {{ (artista.birth_date | date:'d MMMM y') }}

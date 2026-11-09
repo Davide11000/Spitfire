@@ -50,8 +50,10 @@ export class ArtisttemplatePage implements OnInit {
         this.caricaDettagliArtista(this.artistaId);
       }
     });*/
-    this.artistaId = this.route.snapshot.paramMap.get("artId");
-
+    this.artistaId = this.route.snapshot.paramMap.get("id");
+    if (this.artistaId) {
+      this.caricaDettagliArtista(this.artistaId);
+    }
     const token = this.auth.getToken();
 
     this.recordService.getAllRecordsByArtist(this.artistaId || '').subscribe({
@@ -106,21 +108,21 @@ export class ArtisttemplatePage implements OnInit {
         next: (res) => this.artista = res,
         error: (err) => console.error(err)
       });
-
+      
       if (this.artista) {
-        await this.caricaAlbumArtista(this.artista.nome);
-        await this.calcolaBraniPopolari(this.artista.nome);
+        await this.caricaAlbumArtista(this.artista.artname);
+        await this.calcolaBraniPopolari(this.artista.artname);
       }
-
+      
       if (this.utenteLoggatoUid) {
         await this.controllaSeIsFavourite();
       }
-      this.cdr.detectChanges();
     } catch (error) {
       console.error(error);
       alert("Artist not found.");
       this.router.navigate(['/home']);
     }
+    this.cdr.detectChanges();
     /*try {
       const docRef = doc(this.firestore, 'artists', id);
       const docSnap = await getDoc(docRef);
