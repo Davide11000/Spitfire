@@ -47,6 +47,7 @@ const Report = {
                                WHEN 'artist' THEN (SELECT artname FROM artists WHERE artists.id = comments.target_id)
                                WHEN 'playlist' THEN (SELECT name FROM playlists WHERE playlists.id = comments.target_id)
                                WHEN 'annotation' THEN (SELECT selected_text FROM annotations WHERE annotations.id = comments.target_id)
+                               WHEN 'about' THEN (SELECT 'About ' || recordname FROM abouts JOIN records ON records.id = abouts.target_id WHERE abouts.id = comments.target_id)
                              END AS target_name
                            FROM comment_reports
                            JOIN comments ON comments.id = comment_reports.comment_id

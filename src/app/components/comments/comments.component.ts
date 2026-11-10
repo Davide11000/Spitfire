@@ -20,6 +20,9 @@ export class CommentsComponent implements OnChanges {
   @Input() type!: string;
   @Input() id!: number | string;
   @Input() title = 'Comments';
+  // Se true la sezione parte chiusa e si apre con la freccetta (es. "Suggest an improvement")
+  @Input() collapsible = false;
+  public open = false;
 
   public myUsername: string | null = null;
   public canModerate = false;
@@ -48,6 +51,7 @@ export class CommentsComponent implements OnChanges {
   }
 
   ngOnChanges() {
+    this.open = false;
     this.myUsername = this.auth.getUsernameFromToken();
     this.canModerate = false;
 

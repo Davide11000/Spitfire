@@ -56,20 +56,26 @@
         }
         <ion-list class="playlist-tracks">
           @for (song of songs; track song.id) {
-            <ion-item lines="full" class="track-item">
-              <ion-avatar slot="start" class="track-avatar">
-                <img [src]="getSongImage(song)" />
-              </ion-avatar>
-              <ion-label class="track-details">
-                <h2 class="song-title">{{ song.songname }}</h2>
-                <p class="artist-name">{{ song.artname }}</p>
-              </ion-label>
+            <div class="track-row" (click)="goToSong(song)">
+              <img class="track-cover" [src]="getSongImage(song)" />
+              <div class="track-details">
+                <span class="artist-name">{{ song.artname }}</span>
+                <span class="title-line">
+                  <span class="song-title">{{ song.songname }}</span>
+                  @if (song.duration) {
+                    <span class="track-meta">{{ song.duration }}</span>
+                  }
+                </span>
+                @if (song.recordname) {
+                  <span class="track-meta">from {{ song.recordname }}{{ song.release_date ? ' (' + song.release_date.substring(0, 4) + ')' : '' }}</span>
+                }
+              </div>
               @if (isOwner) {
-                <ion-button class="trash" slot="end" fill="clear" (click)="removeSong(song)">
+                <ion-button class="trash" fill="clear" (click)="$event.stopPropagation(); removeSong(song)">
                   <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                 </ion-button>
               }
-            </ion-item>
+            </div>
           } @empty {
             <div class="empty-playlist">
               <p>This playlist is empty.{{ isOwner ? ' Add some tracks!' : '' }}</p>

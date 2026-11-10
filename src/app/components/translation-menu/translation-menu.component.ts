@@ -98,11 +98,15 @@ export class TranslationMenuComponent implements OnChanges {
 
     this.sending = true;
     this.requestService.sendRequest(formData).subscribe({
-      next: async () => {
+      next: async (res) => {
         this.sending = false;
         this.isAddOpen = false;
+
+        // Se l'ha aggiunta l'admin è già pubblicata: ricarico l'elenco delle traduzioni
+        if (res.status === 'accepted') this.ngOnChanges();
+
         const toast = await this.toastC.create({
-          message: 'Translation sent! An admin will review it soon.',
+          message: res.status === 'accepted' ? 'Translation added!' : 'Translation sent! An admin will review it soon.',
           icon: 'checkmark-circle',
           duration: 2500,
           position: 'bottom',

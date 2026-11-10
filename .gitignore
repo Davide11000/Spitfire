@@ -37,6 +37,7 @@ yarn-error.log
 # Backend (spitfire-server)
 spitfire-server/node_modules/
 spitfire-server/database.sqlite
+spitfire-server/backups/
 spitfire-server/.env
 
 # IDEs and editors

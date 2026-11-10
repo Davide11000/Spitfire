@@ -31,6 +31,21 @@ function getEntityName(type, entity) {
   return entity.artname;
 }
 
+// L'admin non passa per le richieste: quello che invia viene applicato subito
+async function sendOrApply(req, res, result, name, notificationType) {
+  if (req.user.ruolo === "admin") {
+    const request = await Request.findById(result.id);
+    const created = await applyRequest(request);
+    if (!created) {
+      return res.status(404).json({ message: "The page to correct no longer exists" });
+    }
+    return res.status(201).json({ ...result, status: "accepted", created });
+  }
+
+  await notifyAdmins(req.user.username, name, notificationType);
+  res.status(201).json(result);
+}
+
 exports.create = async (req, res) => {
   try {
     const username = req.user.username;
@@ -56,8 +71,7 @@ exports.create = async (req, res) => {
         name: song.songname, language, lyrics: lyrics.trim()
       });
 
-      await notifyAdmins(username, song.songname + " (" + language + ")", "new_translation");
-      return res.status(201).json(result);
+      return await sendOrApply(req, res, result, song.songname + " (" + language + ")", "new_translation");
     }
 
     if (type !== "song" && type !== "record" && type !== "artist") {
@@ -114,8 +128,7 @@ exports.create = async (req, res) => {
       image
     });
 
-    await notifyAdmins(username, name.trim(), isCorrection ? "new_correction" : "new_request");
-    res.status(201).json(result);
+    await sendOrApply(req, res, result, name.trim(), isCorrection ? "new_correction" : "new_request");
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -232,15 +245,10 @@ async function applyCorrection(request) {
   return song;
 }
 
-exports.accept = async (req, res) => {
-  try {
-    const request = await Request.findById(req.params.id);
-
-    if (!request || request.status !== "pending") {
-      return res.status(404).json({ message: "Request not found" });
-    }
-
-    let created;
+// Applica una richiesta: crea o corregge la canzone/album/artista o salva la traduzione.
+// Restituisce l'elemento creato/modificato, oppure null se la pagina da correggere non esiste più
+async function applyRequest(request) {
+  let created;
 
     if (request.type === "translation") {
       const translations = await Lyrics.findBySongId(request.target_id);
@@ -255,9 +263,7 @@ exports.accept = async (req, res) => {
 
     if (request.target_id !== null && request.type !== "translation") {
       created = await applyCorrection(request);
-      if (!created) {
-        return res.status(404).json({ message: "The page to correct no longer exists" });
-      }
+      if (!created) return null;
     }
 
     if (request.target_id === null && request.type === "artist") {
@@ -311,8 +317,24 @@ exports.accept = async (req, res) => {
       await addSongGenres(created.id, genreIds);
     }
 
-    await Contribution.add(request.type === "translation" ? "song" : request.type, created.id, request.username);
-    await Request.setStatus(request.id, "accepted");
+  await Contribution.add(request.type === "translation" ? "song" : request.type, created.id, request.username);
+  await Request.setStatus(request.id, "accepted");
+  return created;
+}
+
+exports.accept = async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.id);
+
+    if (!request || request.status !== "pending") {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    const created = await applyRequest(request);
+    if (!created) {
+      return res.status(404).json({ message: "The page to correct no longer exists" });
+    }
+
     if (request.username !== req.user.username) {
       const contentType = request.type === "translation" ? "song" : request.type;
       await Notification.createForContent(request.username, "request_accepted", req.user.username, contentType, created.id, request.name);

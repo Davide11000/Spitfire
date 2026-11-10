@@ -120,6 +120,9 @@ const User = {
     await run(`UPDATE records SET rating = COALESCE((SELECT ROUND(AVG(rating), 2) FROM record_ratings WHERE record_id = records.id), 0)`, []);
     await run(`DELETE FROM contributions WHERE username = ?`, [username]);
     await run(`DELETE FROM annotation_edits WHERE username = ?`, [username]);
+    await run(`DELETE FROM about_votes WHERE username = ?`, [username]);
+    await run(`DELETE FROM about_edits WHERE username = ?`, [username]);
+    await run(`UPDATE abouts SET username = NULL WHERE username = ?`, [username]);
     await run(`UPDATE annotations SET username = NULL WHERE username = ?`, [username]);
     await run(`DELETE FROM users WHERE username = ?`, [username]);
   },

@@ -3,11 +3,42 @@
 }
 
 .profile-header {
+  position: relative;
   background: #141414;
   padding: 4% 2%;
   color: #f2f2f2;
   overflow: hidden;
   min-height: 100%;
+}
+
+.photo-block {
+  float: left;
+  margin: 0 24px 10px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.photo-links {
+  display: flex;
+  gap: 8px;
+}
+
+// Un po' più piccoli dei tasti normali, per stare sotto la foto
+ion-button.square-btn.photo-btn {
+  height: 36px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-size: 0.7rem;
+}
+
+.top-actions {
+  position: absolute;
+  top: 24px;
+  right: 2%;
+  display: flex;
+  gap: 10px;
 }
 
 .profile-photo {
@@ -16,8 +47,6 @@
   overflow: hidden;
   border-radius: 50%;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  float: left;
-  margin: 0 24px 10px 0;
 
   img {
     width: 100%;
@@ -457,5 +486,13 @@
 
   &:hover .song-name {
     text-decoration: underline;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-actions {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 16px;
   }
 }

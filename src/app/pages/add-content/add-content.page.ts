@@ -456,6 +456,16 @@ export class AddContentPage implements OnInit {
         this.sending = false;
         this.loadMyRequests();
 
+        // L'admin non passa per le richieste: vado direttamente alla pagina creata/corretta
+        if (res.status === 'accepted') {
+          this.resetForm();
+          this.successMessage = '';
+          if (this.type === 'song') this.router.navigate(['/songs', res.created.id]);
+          if (this.type === 'record') this.router.navigate(['/records', res.created.id]);
+          if (this.type === 'artist') this.router.navigate(['/artists', res.created.id]);
+          return;
+        }
+
         if (this.isCorrection()) {
           this.router.navigate(['/add-content']);
           this.successMessage = 'Correction sent! An admin will review it soon.';

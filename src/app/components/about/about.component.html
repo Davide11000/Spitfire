@@ -1,0 +1,100 @@
+<section class="about">
+  <h2 class="about-title">About <i>{{ albumName }}</i></h2>
+
+  @if (loading) {
+    <p class="empty">Loading...</p>
+  } @else if (!about) {
+    @if (scrivendo) {
+      <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="5" [maxlength]="5000"
+                    placeholder="What should people know about this album?" [value]="testo" (ionInput)="onTesto($event)"></ion-textarea>
+      <div class="actions">
+        <ion-button fill="clear" class="btn cancel" (click)="scrivendo = false">Cancel</ion-button>
+        <ion-button class="btn" [disabled]="inviando" (click)="invia()">Send about</ion-button>
+      </div>
+    } @else {
+      <p class="empty">No one has written about this album yet.</p>
+      <ion-button class="square-btn dark-square" (click)="apriScrittura()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Write the about
+      </ion-button>
+    }
+  } @else {
+    @if (about.status === 'pending') {
+      <span class="pending-badge">Waiting for review</span>
+    }
+
+    <app-contributors class="contributors" type="about" [id]="about.id" [version]="about.text"></app-contributors>
+
+    @if (modificando) {
+      <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="5" [maxlength]="5000"
+                    [value]="testo" (ionInput)="onTesto($event)"></ion-textarea>
+      <div class="actions">
+        <ion-button fill="clear" class="btn cancel" (click)="modificando = false">Cancel</ion-button>
+        <ion-button class="btn" [disabled]="inviando" (click)="inviaModifica()">Send edit</ion-button>
+      </div>
+    } @else {
+      <p class="text">{{ about.text }}</p>
+    }
+
+    @if (about.status === 'pending' && canModerate) {
+      <div class="actions">
+        <ion-button fill="outline" class="btn reject" (click)="rifiuta()">Reject</ion-button>
+        <ion-button class="btn" (click)="approva()">
+          <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+          Approve
+        </ion-button>
+      </div>
+    }
+
+    @if (about.status === 'approved') {
+      <div class="votes">
+        <button class="vote" [class.on]="about.my_vote === 1" title="I like it" (click)="vota(1)">
+          <ion-icon [name]="about.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+        </button>
+        @if (about.score) {
+          <span class="score" [class.positive]="about.score > 0" [class.negative]="about.score < 0">{{ getPunteggio(about.score) }}</span>
+        }
+        <button class="vote" [class.on]="about.my_vote === -1" title="I don't like it" (click)="vota(-1)">
+          <ion-icon [name]="about.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
+        </button>
+        @if (!modificando) {
+          <button class="vote edit" (click)="apriModifica()">
+            <ion-icon name="create-outline"></ion-icon>
+            Edit
+          </button>
+        }
+        @if (canModerate) {
+          <button class="vote delete" title="Delete about" (click)="elimina()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        }
+      </div>
+    }
+
+    @for (e of about.pending_edits; track e.id) {
+      <div class="edit-box">
+        <span class="edit-title">Proposed edit by <b>{{ '@' + e.username }}</b></span>
+        <p class="text">{{ e.text }}</p>
+        @if (canModerate) {
+          <div class="actions">
+            <ion-button fill="outline" class="btn reject" (click)="rifiutaModifica(e)">Reject</ion-button>
+            <ion-button class="btn" (click)="approvaModifica(e)">Approve edit</ion-button>
+          </div>
+        } @else {
+          <span class="pending-badge">Waiting for review</span>
+        }
+      </div>
+    }
+  }
+
+  @if (errore) {
+    <p class="error">{{ errore }}</p>
+  }
+  @if (messaggio) {
+    <p class="message">{{ messaggio }}</p>
+  }
+
+  @if (about && about.status === 'approved') {
+    <app-comments class="suggestions" type="about" [id]="about.id" title="Suggest an improvement" [collapsible]="true"></app-comments>
+  }
+</section>

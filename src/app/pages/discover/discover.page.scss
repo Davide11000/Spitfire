@@ -1,36 +1,209 @@
-.maindiv {
-    text-align: center; 
-    display: block;  
-    height: 100%; 
-    padding: 15% 0%;
-    justify-items: center;
+.globalbg {
+  --background: #0d0d0d;
 }
 
-.maininput {
-    margin: 32px 0px; 
-    font-size: 32px;
-    width: max-content;
-    /*
-    --border-color:grey;
-    --highlight-color-valid: yellow
-    */
+.discover-page {
+  max-width: 1100px;
+  min-height: 75vh;
+  margin: 0 auto;
+  padding: 40px 16px 60px;
+  color: #f2f2f2;
 }
 
-.albumitem {
-    font-size: 32px;
-    height: max-content;
+.page-title {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
 }
 
-.biglabel {
-    --min-height: fit-content; 
-    display: block; 
-    font-size: 64px; 
-    margin: 32px; 
-    padding: 5px;
-    box-shadow: 0px 10px 10px -15px black;
-    color: antiquewhite;
+.page-subtitle {
+  color: #999;
+  margin: 8px 0 32px;
 }
 
-ion-toolbar > ion-checkbox {
-    margin: 15px;
+.steps {
+  display: flex;
+  gap: 6px;
+  max-width: 360px;
+}
+
+.step-bar {
+  flex: 1;
+  height: 4px;
+  background: #333;
+
+  &.done {
+    background: var(--ion-color-primary);
+  }
+}
+
+.step-label {
+  display: block;
+  margin-top: 8px;
+  color: #999;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.question {
+  margin: 28px 0 8px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.hint {
+  color: #999;
+  margin: 0 0 8px;
+}
+
+// Le scelte: stesso stile squadrato dei bottoni del sito
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.chip {
+  padding: 12px 18px;
+  border: 2px solid #555;
+  background: transparent;
+  color: #ccc;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: var(--ion-color-primary);
+    color: #f2f2f2;
+  }
+
+  &.selected {
+    border-color: var(--ion-color-primary);
+    background: var(--ion-color-primary);
+    color: #fff;
+  }
+}
+
+.error {
+  color: var(--ion-color-primary);
+  margin: 16px 0 0;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tag {
+  padding: 4px 10px;
+  border: 1px solid #444;
+  color: #999;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.albums {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.album {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+
+  &:hover .cover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7);
+  }
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  margin-bottom: 8px;
+  background: #1a1a1a;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.artist {
+  width: fit-content;
+  color: rgba(255, 235, 205, 0.85);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #f2f2f2;
+  font-weight: bold;
+
+  ion-icon {
+    color: #ffc409;
+  }
+}
+
+@media (max-width: 900px) {
+  .albums {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .page-title {
+    font-size: 2.2rem;
+  }
+
+  .question {
+    font-size: 1.5rem;
+  }
+
+  .albums {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

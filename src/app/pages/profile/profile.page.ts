@@ -155,7 +155,15 @@ export class ProfilePage implements OnInit {
 
     this.userService.getUser(username).subscribe({
       next: (res) => { this.user = res; },
-      error: (err) => { this.errorMessage = 'User not found'; }
+      error: (err) => {
+        // Se il profilo che non esiste è il mio, il token è vecchio: logout e vado al login
+        if (username === myUsername) {
+          this.auth.logout();
+          this.router.navigate(['/login']);
+          return;
+        }
+        this.errorMessage = 'User not found';
+      }
     });
 
     this.follow.getFollowers(username).subscribe({

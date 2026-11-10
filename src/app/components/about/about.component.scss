@@ -1,0 +1,200 @@
+// La sezione sta nella parte bianca della pagina album: testi scuri
+.about {
+  margin-top: 32px;
+  padding: 20px 24px;
+  border: 1px solid #111;
+  border-radius: 8px;
+  color: #222;
+}
+
+.about-title {
+  margin: 0 0 10px;
+  font-size: 1.6rem;
+  font-weight: bold;
+}
+
+.empty {
+  color: #666;
+  margin: 6px 0 14px;
+}
+
+.dark-square {
+  --border-color: #222;
+  --color: #222;
+}
+
+.pending-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border: 1px solid #f9a825;
+  color: #b07800;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.contributors {
+  display: block;
+}
+
+.text {
+  margin: 12px 0 0;
+  max-width: 900px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.field {
+  margin-top: 10px;
+  max-width: 900px;
+  --color: #222;
+  --placeholder-color: #888;
+  --border-radius: 8px;
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn {
+  --border-radius: 8px;
+  text-transform: none;
+}
+
+.cancel {
+  --color: #555;
+}
+
+.reject {
+  --color: #222;
+  --border-color: #ccc;
+}
+
+.votes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.vote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #777;
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 1.15rem;
+  }
+
+  &:hover,
+  &.on {
+    color: var(--ion-color-primary);
+  }
+
+  &.edit {
+    margin-left: 16px;
+  }
+
+  &.delete:hover {
+    color: #e53935;
+  }
+}
+
+.score {
+  min-width: 24px;
+  text-align: center;
+  font-weight: bold;
+
+  &.positive {
+    color: #2e9d4f;
+  }
+
+  &.negative {
+    color: #e53935;
+  }
+}
+
+.edit-box {
+  max-width: 900px;
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+}
+
+.edit-title {
+  color: #777;
+  font-size: 0.85rem;
+
+  b {
+    color: #222;
+  }
+}
+
+.error {
+  color: var(--ion-color-primary);
+  margin: 12px 0 0;
+}
+
+.message {
+  color: #2e9d4f;
+  margin: 12px 0 0;
+}
+
+.suggestions {
+  display: block;
+  margin-top: 8px;
+}
+
+// Commenti e contributors sono pensati per lo sfondo scuro: qui li scurisco
+.about ::ng-deep {
+  .section-title {
+    color: #222;
+  }
+
+  // I suggerimenti allineati a sinistra sotto il testo, non centrati
+  .comments-section {
+    max-width: 900px;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+
+  .toggle {
+    color: #444;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  .user {
+    color: #222;
+    border-color: #ccc;
+  }
+
+  .comments-section, .comment-text, .username {
+    color: #222;
+  }
+
+  .comment-input {
+    --color: #222;
+  }
+
+  .page-btn {
+    border-color: #ccc;
+  }
+}

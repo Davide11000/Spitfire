@@ -65,6 +65,8 @@
           }
         </ion-list>
       </div>
+
+      <app-about [recordId]="album.id" [albumName]="album.recordname"></app-about>
     </div>
     @if (albumId) {
       <app-comments [id]="albumId" type="record"></app-comments>

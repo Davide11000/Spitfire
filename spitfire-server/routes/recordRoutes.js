@@ -11,6 +11,7 @@ router.get("/record/:recordname", recordController.getRecordByName);
 router.get("/recent/:len", recordController.getRecentRecords);
 router.get("/top/:len", recordController.getTopRecords);
 router.get("/discover", recordController.getDiscoverRecords);
+router.get("/languages", recordController.getLanguages);
 router.get("/:id", recordController.getRecordByID);
 
 

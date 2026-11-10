@@ -301,6 +301,37 @@ db.exec(`
     FOREIGN KEY (username) REFERENCES users(username)
   );
 
+  CREATE TABLE IF NOT EXISTS abouts (
+    id INTEGER PRIMARY KEY,
+    target_type TEXT NOT NULL,
+    target_id INTEGER NOT NULL,
+    username TEXT,
+    text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS about_votes (
+    about_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    value INTEGER NOT NULL,
+    PRIMARY KEY (about_id, username),
+    FOREIGN KEY (about_id) REFERENCES abouts(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS about_edits (
+    id INTEGER PRIMARY KEY,
+    about_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (about_id) REFERENCES abouts(id),
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
   CREATE TABLE IF NOT EXISTS annotation_edits (
     id INTEGER PRIMARY KEY,
     annotation_id INTEGER NOT NULL,

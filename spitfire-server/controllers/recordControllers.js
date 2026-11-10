@@ -116,27 +116,49 @@ exports.getTopRecords = async (req, res) => {
   }
 };
 
+// Discover: consiglia 5 album in base a generi, epoche (decenni) e lingue scelte.
+// Ogni album riceve un punteggio: +3 per ogni genere in comune, +2 se è dell'epoca giusta, +1 se è nella lingua giusta.
+// Servono almeno un genere in comune; a parità di punteggio vince l'album con il voto medio più alto.
 exports.getDiscoverRecords = async (req, res) => {
   try {
-    const genre = req.query.genre;
-    const era = req.query.era;
+    const split = (value) => (value || "").split(",").map(v => v.trim()).filter(v => v);
+    const genres = split(req.query.genres);
+    const eras = split(req.query.eras).map(Number).filter(e => e);
+    const langs = split(req.query.langs);
 
-    if (!genre) {
-      return res.status(400).json({ message: "Genre is required" });
+    if (genres.length === 0) {
+      return res.status(400).json({ message: "Choose at least one genre" });
     }
 
-    let records;
-    if (era) {
-      records = await Record.discoverRecords(genre, era);
-    } else {
-      records = await Record.findByGenre(genre);
+    const records = await Record.findAllWithGenres();
+    const results = [];
+
+    for (const r of records) {
+      const recordGenres = (r.genres || "").split(",");
+      const genreMatches = genres.filter(g => recordGenres.includes(g)).length;
+      if (genreMatches === 0) continue;
+
+      const year = Number((r.release_date || "").substring(0, 4));
+      const eraMatch = eras.some(e => year >= e && year <= e + 9);
+      const langMatch = langs.includes(r.language);
+
+      r.score = genreMatches * 3 + (eraMatch ? 2 : 0) + (langMatch ? 1 : 0);
+      r.genres = recordGenres;
+      results.push(r);
     }
 
-    if (!records) {
-      return res.status(404).json({ message: "No records found" });
-    }
-    
-    res.json(records);
+    results.sort((a, b) => b.score - a.score || b.average - a.average);
+    res.json(results.slice(0, 5));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Le lingue degli album presenti nel database (per le scelte di Discover)
+exports.getLanguages = async (req, res) => {
+  try {
+    const rows = await Record.findLanguages();
+    res.json(rows.map(r => r.language));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

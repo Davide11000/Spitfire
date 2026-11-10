@@ -28,11 +28,12 @@ export class Record {
     }
 
     getDiscoverRecords(genres: string[], eras: number[], langs: string[]) : Observable<any> {
-        let url = `${this.baseUrl}/discover?genre=${genres[0]}`;
-        if (eras.length > 0) {
-            url += `&era=${eras[0]}`;
-        }
-        return this.http.get(url);
+        const params = `genres=${encodeURIComponent(genres.join(','))}&eras=${eras.join(',')}&langs=${encodeURIComponent(langs.join(','))}`;
+        return this.http.get(`${this.baseUrl}/discover?${params}`);
+    }
+
+    getLanguages() : Observable<any> {
+        return this.http.get(`${this.baseUrl}/languages`);
     }
 
     search(text: string) : Observable<any> {

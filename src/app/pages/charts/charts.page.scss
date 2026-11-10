@@ -1,0 +1,309 @@
+.globalbg {
+  --background: #ffffff;
+}
+
+.charts-page {
+  max-width: 1100px;
+  min-height: 70vh;
+  margin: 0 auto;
+  padding: 32px 16px 60px;
+  color: #222;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.page-subtitle {
+  color: #666;
+  margin: 8px 0 24px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.type-segment {
+  width: 260px;
+
+  ion-segment-button {
+    --color: #666;
+    --color-checked: var(--ion-color-primary);
+    --indicator-color: var(--ion-color-primary);
+  }
+}
+
+// Menu a tendina come in Playlists ("Recently updated" / "Popular"), ma scuro su bianco
+.dropdown {
+  position: relative;
+}
+
+.dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 170px;
+  height: 44px;
+  padding: 0 18px;
+  border: 2px solid #222;
+  background: transparent;
+  color: #222;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+  }
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 11;
+  min-width: 100%;
+  max-height: 320px;
+  overflow-y: auto;
+  border: 2px solid #222;
+  background: #ffffff;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: none;
+  background: transparent;
+  color: #444;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background: #eeeeee;
+    color: #111;
+  }
+
+  &.active {
+    color: var(--ion-color-primary);
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.chart-list {
+  border-top: 1px solid #e2e2e2;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 6px 20px 6px 6px;
+  background: #ffffff;
+  cursor: pointer;
+
+  &:nth-child(odd) {
+    background: #eeeeee;
+  }
+
+  &:hover {
+    background: #dddddd;
+  }
+}
+
+.rank {
+  min-width: 56px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #999;
+}
+
+.cover {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #ddd;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.artist {
+  width: fit-content;
+  color: #111111;
+  font-size: 1.15rem;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.title-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.name {
+  color: #111111;
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.year,
+.album {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.average {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #222;
+
+  ion-icon {
+    color: #e0a800;
+  }
+}
+
+.count {
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.empty {
+  color: #777;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.page-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  color: #111111;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  &:disabled {
+    color: #bbb;
+    cursor: default;
+  }
+}
+
+.page-num {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 17px;
+  background: none;
+  color: #444;
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  &:hover {
+    background: #eee;
+  }
+
+  &.active {
+    background: #111111;
+    color: #fff;
+    font-weight: bold;
+  }
+}
+
+.dots {
+  color: #999;
+  padding: 0 4px;
+}
+
+@media (max-width: 700px) {
+  .row {
+    gap: 12px;
+    padding-right: 10px;
+  }
+
+  .rank {
+    min-width: 36px;
+    font-size: 1.1rem;
+  }
+
+  .cover {
+    width: 80px;
+    height: 80px;
+  }
+
+  .info {
+    gap: 6px;
+  }
+}

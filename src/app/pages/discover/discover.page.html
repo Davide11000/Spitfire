@@ -1,229 +1,116 @@
 <app-navbar></app-navbar>
-<ion-content style="--background: linear-gradient(to bottom, rgb(128, 22, 22), rgb(199, 101, 76));">
-  <div class="maindiv">
-    @if (current == 'genres') {
-      <ion-label class="biglabel">
-        <b>What are your favourite genres?</b>
-      </ion-label>
 
-      <ion-searchbar 
-        class="maininput";
-        style="width: auto; text-align: left;" 
-        color="rgba(0,0,0,0)"
-        placeholder="Search genre..."
-        [(ngModel)]="genreInput";
-        (ionInput)="displayResults(genreInput)">
-      </ion-searchbar>
+<ion-content class="globalbg">
+  <div class="discover-page">
+    <h1 class="page-title">DISCOVER</h1>
+    <p class="page-subtitle">Answer three questions and we'll suggest five albums for you.</p>
 
-      <ion-list>
-        @for (result of searchResults; track $index) {
-          <ion-item
-            button="true" 
-            detail="true" 
-            style="width:256px"
-            detailIcon="add-circle-outline" 
-            (click)="addGenre(result)">
-            {{result}}
-          </ion-item>
+    @if (step < 4) {
+      <div class="steps">
+        @for (s of [1, 2, 3]; track s) {
+          <span class="step-bar" [class.done]="s <= step"></span>
         }
-      </ion-list>
-    
-      <!--<ion-input
-        class="maininput" 
-        [clearInput]="true"
-        helperText="Press Enter to submit"
-        errorText="Invalid genre"
-        placeholder="Enter genre name..."
-        [(ngModel)]="genreInput"
-        (change)="addGenre(genreInput)">
-      </ion-input>-->
-  
-      <ion-buttons style="
-        flex-direction: column;
-        gap: 4px;">
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('era')">
-          Done
-        </ion-button>
-      </ion-buttons>
-      <ion-list 
-        lines="none"
-        style="
-          background: transparent;
-          margin-bottom: 16px;">
-        @for (genre of genres; track $index) 
-        {
-          <ion-item 
-            button="true" 
-            detail="true" 
-            style="--background: transparent;"
-            detailIcon="close-circle-sharp" 
-            (click)="removeGenre(genre)">
-            {{genre}}
-          </ion-item>
-        }
-      </ion-list>
+      </div>
+      <span class="step-label">Step {{ step }} of 3</span>
     }
 
-    @else if (current == 'era') {
-      <ion-label class="biglabel">
-        <b>Which era are your favourite songs from?</b>
-      </ion-label>
-
-      <ion-toolbar style="--background: transparent">
-        <ion-checkbox [checked]="this.eras.includes(1960)" (ionChange)="toggleEra(1960)">
-          1960s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(1970)" (ionChange)="toggleEra(1970)">
-          1970s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(1980)" (ionChange)="toggleEra(1980)">
-          1980s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(1990)" (ionChange)="toggleEra(1990)">
-          1990s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(2000)" (ionChange)="toggleEra(2000)">
-          2000s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(2010)" (ionChange)="toggleEra(2010)">
-          2010s
-        </ion-checkbox>
-        <ion-checkbox [checked]="this.eras.includes(2020)" (ionChange)="toggleEra(2020)">
-          2020s
-        </ion-checkbox>
-      </ion-toolbar>
-
-      <ion-buttons style="
-        flex-direction: column;
-        gap: 4px;">
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('lang')">
-          Done
-        </ion-button>
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('genres')">
-          Back
-        </ion-button>
-      </ion-buttons>
+    @if (step === 1) {
+      <h2 class="question">What are your favourite genres?</h2>
+      <div class="chips">
+        @for (g of genreList; track g) {
+          <button class="chip" [class.selected]="genres.includes(g)" (click)="toggle(genres, g)">{{ g }}</button>
+        }
+      </div>
     }
 
-    @else if (current == 'lang') {
-      <ion-label class="biglabel">
-        <b>Which language do you like lyrics to be in?</b>
-      </ion-label>
-
-      <ion-searchbar 
-        class="maininput";
-        style="width: auto; text-align: left;" 
-        color="rgba(0,0,0,0)"
-        placeholder="Search language..."
-        [(ngModel)]="langInput";
-        (ionInput)="displayLangs(langInput)">
-      </ion-searchbar>
-
-      <ion-list>
-        @for (result of langSearchResults; track $index) {
-          <ion-item
-            button="true" 
-            detail="true" 
-            style="width:256px"
-            detailIcon="add-circle-outline" 
-            (click)="addLang(result)">
-            {{result}}
-          </ion-item>
+    @if (step === 2) {
+      <h2 class="question">Which era is your music from?</h2>
+      <div class="chips">
+        @for (e of eraList; track e) {
+          <button class="chip" [class.selected]="eras.includes(e)" (click)="toggle(eras, e)">{{ e }}s</button>
         }
-      </ion-list>
-
-       <!--<ion-input 
-        class="maininput" 
-        [clearInput]="true" 
-        label="Leave blank if you have no preferences";
-        labelPlacement="stacked";
-        helperText="Press Enter to submit"
-        errorText="Invalid genre"
-        placeholder="Enter language..."
-        [(ngModel)]="langInput"
-        (change)="addLang(langInput)">
-      </ion-input>-->
-
-      <ion-buttons style="
-        flex-direction: column;
-        gap: 4px;">
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('end')">
-          Done
-        </ion-button>
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('era')">
-          Back
-        </ion-button>
-      </ion-buttons>
-
-      <ion-list 
-        lines="none"
-        style="
-          background: transparent;
-          margin-bottom: 16px;">
-        @for (lang of langs; track $index) 
-        {
-          <ion-item 
-            button="true" 
-            detail="true" 
-            style="--background: transparent;"
-            detailIcon="close-circle-sharp" 
-            (click)="removeLang(lang)">
-            {{lang}}
-          </ion-item>
-        }
-      </ion-list>
+      </div>
     }
 
-    @else if (current == "end") {
-      <ion-label style="font-size: 32px;">
-        @if (this.albums.length == 1) {
-          Here's an album you might like:
+    @if (step === 3) {
+      <h2 class="question">Which language do you like the lyrics in?</h2>
+      <p class="hint">Optional: skip it if you have no preference.</p>
+      <div class="chips">
+        @for (l of langList; track l) {
+          <button class="chip" [class.selected]="langs.includes(l)" (click)="toggle(langs, l)">{{ l }}</button>
         }
-        @else {
-          Here are {{this.albums.length}} albums you might like:
-        }
-      </ion-label>
+      </div>
+    }
 
-      <ion-list>
-        <ion-buttons>
-        @for (album of albums; track $index) 
-        {
-            <ion-button>
-              <ion-img [src]=album.fotoBase64 style="width: 128px; height: 128px;">
-              </ion-img>
-              <ion-item class="albumitem"; (click)="goToAlbum(album.id)">
-                {{album.artista}} - {{album.titolo}}
-              </ion-item>
-            </ion-button>
+    @if (error) {
+      <p class="error">{{ error }}</p>
+    }
+
+    @if (step < 4) {
+      <div class="nav-buttons">
+        @if (step > 1) {
+          <ion-button class="square-btn" (click)="back()">
+            <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+            Back
+          </ion-button>
+        }
+        <ion-button class="square-btn filled" (click)="next()">
+          {{ step === 3 ? 'Find my albums' : 'Next' }}
+          <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    }
+
+    @if (step === 4) {
+      <h2 class="question">
+        @if (albums.length === 1) {
+          Here's an album you might like
+        } @else {
+          Here are {{ albums.length }} albums you might like
+        }
+      </h2>
+
+      <div class="choices">
+        @for (g of genres; track g) { <span class="tag">{{ g }}</span> }
+        @for (e of eras; track e) { <span class="tag">{{ e }}s</span> }
+        @for (l of langs; track l) { <span class="tag">{{ l }}</span> }
+      </div>
+
+      @if (loading) {
+        <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+      } @else {
+        <div class="albums">
+          @for (album of albums; track album.id) {
+            <div class="album" (click)="goToAlbum(album)">
+              <img class="cover" [src]="getCover(album)" />
+              <span class="name">{{ album.recordname }}</span>
+              @if (album.artname) {
+                <span class="artist" (click)="goToArtist($event, album)">{{ album.artname }}</span>
+              }
+              <span class="meta">
+                {{ album.release_date ? album.release_date.substring(0, 4) : '' }}
+                @if (album.count) {
+                  <span class="rating"><ion-icon name="star"></ion-icon> {{ album.average | number:'1.2-2' }}</span>
+                }
+              </span>
+            </div>
+          } @empty {
+            <p class="hint">No albums match your choices. Try with other genres.</p>
           }
-        </ion-buttons>
-      </ion-list>
+        </div>
+      }
 
-      <ion-buttons>
-        <ion-button 
-          size="large"
-          fill="clear"
-          (click)="changeQuestion('lang')">
+      <div class="nav-buttons">
+        <ion-button class="square-btn" (click)="back()">
+          <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
           Back
         </ion-button>
-      </ion-buttons>
+        <ion-button class="square-btn filled" (click)="restart()">
+          <ion-icon slot="start" name="refresh-outline"></ion-icon>
+          Start over
+        </ion-button>
+      </div>
     }
-
   </div>
   <app-footer></app-footer>
 </ion-content>

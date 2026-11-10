@@ -33,10 +33,6 @@
         <span class="pending-badge">Waiting for review</span>
       }
 
-      <div class="author">
-        <img [src]="getFoto(aperta.foto_profilo)" (click)="vaiAlProfilo(aperta.username)" />
-        <span>Created by <b (click)="vaiAlProfilo(aperta.username)">{{ aperta.username ? '@' + aperta.username : 'Deleted user' }}</b></span>
-      </div>
       <app-contributors class="contributors" type="annotation" [id]="aperta.id" [version]="aperta.text"></app-contributors>
 
       @if (modificaAperta) {
@@ -102,7 +98,7 @@
       }
 
       @if (aperta.status === 'approved') {
-        <app-comments class="suggestions" type="annotation" [id]="aperta.id" title="Suggest an improvement"></app-comments>
+        <app-comments class="suggestions" type="annotation" [id]="aperta.id" title="Suggest an improvement" [collapsible]="true"></app-comments>
       }
     } @else if (selezione) {
       <div class="panel-header">

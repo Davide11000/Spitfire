@@ -17,6 +17,7 @@ import { Genre } from '../../services/genre';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ContributorsComponent } from '../../components/contributors/contributors.component';
 import { RatingStarsComponent } from '../../components/rating-stars/rating-stars.component';
+import { AboutComponent } from '../../components/about/about.component';
 import { getCoverGradient, DEFAULT_HEADER } from '../../utils/cover-color';
 
 @Component({
@@ -29,7 +30,7 @@ import { getCoverGradient, DEFAULT_HEADER } from '../../utils/cover-color';
     IonContent, FooterComponent, CommonModule, NavbarComponent,
     FormsModule, IonLabel, IonList, IonListHeader, IonItem,
     RouterModule, CommentsComponent,
-    IonIcon, IonButton, ContributorsComponent, RatingStarsComponent
+    IonIcon, IonButton, ContributorsComponent, RatingStarsComponent, AboutComponent
 ]
 })
 export class AlbumtemplatePage implements OnInit, OnDestroy {

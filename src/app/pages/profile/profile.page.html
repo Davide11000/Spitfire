@@ -3,9 +3,41 @@
 <ion-content class="globalbg">
   @if (user) {
     <div class="profile-header">
-      <div class="profile-photo">
-        <img [src]="getPhoto(user.foto_profilo)" />
+      <!-- Foto con, sotto, i link per cambiarla o toglierla (solo sul proprio profilo) -->
+      <div class="photo-block">
+        <div class="profile-photo">
+          <img [src]="getPhoto(user.foto_profilo)" />
+        </div>
+        @if (isOwnProfile) {
+          <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)" />
+          <div class="photo-links">
+            <ion-button fill="outline" class="square-btn photo-btn" (click)="photoInput.click()">
+              <ion-icon slot="start" name="image-outline"></ion-icon>
+              Change
+            </ion-button>
+            @if (user.foto_profilo) {
+              <ion-button fill="outline" class="square-btn photo-btn" (click)="onRemovePhoto()">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Remove
+              </ion-button>
+            }
+          </div>
+        }
       </div>
+
+      <!-- Settings e Logout in alto a destra -->
+      @if (isOwnProfile) {
+        <div class="top-actions">
+          <ion-button fill="outline" class="square-btn" (click)="goToSettings()">
+            <ion-icon slot="start" name="settings-outline"></ion-icon>
+            Settings
+          </ion-button>
+          <ion-button fill="outline" class="square-btn" (click)="onLogout()">
+            <ion-icon slot="start" name="log-out-outline"></ion-icon>
+            Logout
+          </ion-button>
+        </div>
+      }
       <div class="profile-info">
         <div class="username">
           <b>{{ '@' + user.username }}</b>
@@ -22,28 +54,7 @@
           </button>
         </div>
         <div class="actions">
-          @if (isOwnProfile) {
-            <!-- Il bottone apre l'input file nascosto -->
-            <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)" />
-            <ion-button fill="outline" class="square-btn" (click)="photoInput.click()">
-              <ion-icon slot="start" name="image-outline"></ion-icon>
-              Change photo
-            </ion-button>
-            @if (user.foto_profilo) {
-              <ion-button fill="outline" class="square-btn" (click)="onRemovePhoto()">
-                <ion-icon slot="start" name="trash-outline"></ion-icon>
-                Remove photo
-              </ion-button>
-            }
-            <ion-button fill="outline" class="square-btn" (click)="goToSettings()">
-              <ion-icon slot="start" name="settings-outline"></ion-icon>
-              Settings
-            </ion-button>
-            <ion-button fill="outline" class="square-btn" (click)="onLogout()">
-              <ion-icon slot="start" name="log-out-outline"></ion-icon>
-              Logout
-            </ion-button>
-          } @else {
+          @if (!isOwnProfile) {
             <ion-button fill="outline" class="square-btn" [class.filled]="!isFollowing" (click)="onFollow()">
               {{ isFollowing ? 'Unfollow' : 'Follow' }}
             </ion-button>

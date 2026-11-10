@@ -1,5 +1,14 @@
 <div class="comments-section">
-  <h3 class="section-title">{{ title }} <span class="count">{{ total }}</span></h3>
+  @if (collapsible) {
+    <button class="section-title toggle-title" (click)="open = !open">
+      {{ title }} <span class="count">{{ total }}</span>
+      <ion-icon [name]="open ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+    </button>
+  } @else {
+    <h3 class="section-title">{{ title }} <span class="count">{{ total }}</span></h3>
+  }
+
+  @if (!collapsible || open) {
 
   @if (myUsername) {
     <div class="write-box">
@@ -146,8 +155,6 @@
           }
         </div>
       </div>
-    } @empty {
-      <p class="no-comments">There are no comments yet. Be the first!</p>
     }
   }
 
@@ -163,6 +170,7 @@
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </button>
     </div>
+  }
   }
 </div>
 

@@ -68,4 +68,10 @@ app.use('/contributors', contributionRoutes);
 const ratingRoutes = require('./routes/ratingRoutes');
 app.use('/ratings', ratingRoutes);
 
+const chartRoutes = require('./routes/chartRoutes');
+app.use('/charts', chartRoutes);
+
+const aboutRoutes = require('./routes/aboutRoutes');
+app.use('/abouts', aboutRoutes);
+
 module.exports = app;

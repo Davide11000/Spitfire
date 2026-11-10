@@ -73,7 +73,15 @@ export class NavbarComponent implements OnInit {
         this.photo = res.foto_profilo;
         this.role = res.ruolo;
       },
-      error: (err) => { console.error('Error fetching user', err); }
+      error: (err) => {
+        // L'account del token non esiste più (es. database ricreato): faccio il logout
+        if (err.status === 404) {
+          this.auth.logout();
+          this.isLoggedIn = false;
+          this.photo = null;
+          this.role = '';
+        }
+      }
     });
   }
 

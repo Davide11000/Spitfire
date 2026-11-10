@@ -25,6 +25,23 @@ const Contribution = {
         });
     },
 
+    // Chi ha scritto l'about più chi ha una modifica approvata
+    findByAbout : (aboutId) => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT users.username, users.foto_profilo FROM abouts
+                           JOIN users ON users.username = abouts.username
+                           WHERE abouts.id = ?
+                           UNION
+                           SELECT users.username, users.foto_profilo FROM about_edits
+                           JOIN users ON users.username = about_edits.username
+                           WHERE about_edits.about_id = ? AND about_edits.status = 'approved'`;
+            db.all(query, [aboutId, aboutId], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    },
+
     findByAnnotation : (annotationId) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT users.username, users.foto_profilo FROM annotations

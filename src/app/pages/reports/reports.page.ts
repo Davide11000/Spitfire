@@ -160,6 +160,7 @@ export class ReportsPage implements OnInit {
     if (type === 'record') return 'Album';
     if (type === 'artist') return 'Artist';
     if (type === 'annotation') return 'Annotation';
+    if (type === 'about') return 'About';
     return 'Playlist';
   }
 

@@ -81,6 +81,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'new_correction') return 'create';
     if (type === 'new_translation') return 'language';
     if (type.startsWith('annotation') || type.startsWith('new_annotation')) return 'chatbox-ellipses';
+    if (type.startsWith('about') || type.startsWith('new_about')) return 'create';
     return 'mail';
   }
 
@@ -100,11 +101,17 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'annotation_rejected') return 'rejected your annotation';
     if (type === 'annotation_edit_approved') return 'approved your edit to an annotation';
     if (type === 'annotation_edit_rejected') return 'rejected your edit to an annotation';
+    if (type === 'new_about') return 'wrote an album about to review';
+    if (type === 'new_about_edit') return 'proposed an edit to an album about';
+    if (type === 'about_approved') return 'approved your album about';
+    if (type === 'about_rejected') return 'rejected your album about';
+    if (type === 'about_edit_approved') return 'approved your edit to an album about';
+    if (type === 'about_edit_rejected') return 'rejected your edit to an album about';
     return 'sent you a message';
   }
 
   getPreview(notification: any): string {
-    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.annotation_id) {
+    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.annotation_id || notification.type.includes('about')) {
       return notification.text;
     }
     if (notification.type === 'playlist_like') return notification.playlist_name || '';
@@ -139,7 +146,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.router.navigate(['/playlist', notification.playlist_id]);
     }
 
-    if (notification.type === 'request_accepted' && notification.content_type) {
+    if (notification.type.includes('about') && notification.content_type) {
+      this.goToContent(notification.content_type, notification.content_id);
+    } else if (notification.type === 'request_accepted' && notification.content_type) {
       this.goToContent(notification.content_type, notification.content_id);
     } else if (notification.type === 'request_accepted' || notification.type === 'request_rejected') {
       this.router.navigate(['/add-content']);
@@ -170,6 +179,10 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (notification.target_type === 'song') this.router.navigate(['/songs', notification.target_id]);
     if (notification.target_type === 'record') this.router.navigate(['/records', notification.target_id]);
     if (notification.target_type === 'artist') this.router.navigate(['/artists', notification.target_id]);
+
+    if (notification.target_type === 'about' && notification.comment_record_id !== null) {
+      this.router.navigate(['/records', notification.comment_record_id]);
+    }
 
     if (notification.target_type === 'annotation' && notification.comment_song_id !== null) {
       this.router.navigate(['/songs', notification.comment_song_id], { queryParams: { annotation: notification.target_id } });

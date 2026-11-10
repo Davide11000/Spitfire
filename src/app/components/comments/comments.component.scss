@@ -334,3 +334,21 @@
     color: #e53935;
   }
 }
+
+.toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+
+  ion-icon {
+    margin-left: 6px;
+    font-size: 1.1rem;
+    color: #999;
+  }
+}

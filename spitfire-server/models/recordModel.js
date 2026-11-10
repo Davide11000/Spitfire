@@ -144,6 +144,34 @@ const Record = {
     })
   },
 
+  // Tutti gli album con artista, generi (separati da virgola) e media dei voti
+  findAllWithGenres: () => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT records.id, records.recordname, records.image, records.release_date, records.language,
+                       artists.id AS artist_id, artists.artname,
+                       (SELECT GROUP_CONCAT(genres.name) FROM record_genres JOIN genres ON genres.id = record_genres.genre_id
+                        WHERE record_genres.record_id = records.id) AS genres,
+                       COALESCE((SELECT ROUND(AVG(rating), 2) FROM record_ratings WHERE record_id = records.id), 0) AS average,
+                       (SELECT COUNT(*) FROM record_ratings WHERE record_id = records.id) AS count
+                     FROM records
+                     LEFT JOIN artists ON artists.id = records.artid`;
+      db.all(query, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
+  findLanguages: () => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT DISTINCT language FROM records WHERE language IS NOT NULL AND language != '' ORDER BY language`;
+      db.all(query, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   discoverRecords: (genre, era) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT records.*, artists.artname

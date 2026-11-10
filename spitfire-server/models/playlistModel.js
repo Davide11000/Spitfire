@@ -170,7 +170,8 @@ const Playlist = {
 
     getSongs : (playlistId) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT songs.id, songs.songname, songs.recordid, songs.image, artists.artname, records.image AS recordimage
+            const query = `SELECT songs.id, songs.songname, songs.recordid, songs.image, songs.duration, artists.artname, records.image AS recordimage,
+                                   records.recordname, records.release_date
                             FROM playlist_songs 
                             JOIN songs ON playlist_songs.song_id = songs.id
                             JOIN records ON songs.recordid = records.id

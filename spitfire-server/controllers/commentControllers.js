@@ -6,6 +6,7 @@ const Record = require("../models/recordModel");
 const Artist = require("../models/artistModel");
 const Playlist = require("../models/playlistModel");
 const Annotation = require("../models/annotationModel");
+const About = require("../models/aboutModel");
 
 async function findTarget(type, id) {
     if (type === "song") return await Song.findById(id);
@@ -13,6 +14,7 @@ async function findTarget(type, id) {
     if (type === "artist") return await Artist.findById(id);
     if (type === "playlist") return await Playlist.findById(id);
     if (type === "annotation") return await Annotation.findById(id);
+    if (type === "about") return await About.findById(id);
     return null;
 }
 
@@ -25,7 +27,7 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: "The comment cannot be empty" });
         }
 
-        if (type !== "song" && type !== "record" && type !== "artist" && type !== "playlist" && type !== "annotation") {
+        if (type !== "song" && type !== "record" && type !== "artist" && type !== "playlist" && type !== "annotation" && type !== "about") {
             return res.status(400).json({ message: "Invalid type" });
         }
 

@@ -1,0 +1,100 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg">
+  <div class="charts-page">
+    <h1 class="page-title">CHARTS</h1>
+    <p class="page-subtitle">{{ getSubtitle() }}</p>
+
+    <div class="filters">
+      <ion-segment [value]="type" (ionChange)="onTypeChange($event)" class="type-segment">
+        <ion-segment-button value="record"><ion-label>Albums</ion-label></ion-segment-button>
+        <ion-segment-button value="song"><ion-label>Songs</ion-label></ion-segment-button>
+      </ion-segment>
+
+      <!-- Menu a tendina come quello della pagina Playlists -->
+      <div class="dropdown">
+        <button class="dropdown-btn" (click)="toggleMenu('year')">
+          {{ year || 'All time' }}
+          <ion-icon [name]="openMenu === 'year' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </button>
+        @if (openMenu === 'year') {
+          <div class="dropdown-backdrop" (click)="openMenu = ''"></div>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" [class.active]="year === ''" (click)="chooseYear('')">All time</button>
+            @for (y of years; track y) {
+              <button class="dropdown-item" [class.active]="year === y" (click)="chooseYear(y)">{{ y }}</button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="dropdown">
+        <button class="dropdown-btn" (click)="toggleMenu('genre')">
+          {{ genre || 'All genres' }}
+          <ion-icon [name]="openMenu === 'genre' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </button>
+        @if (openMenu === 'genre') {
+          <div class="dropdown-backdrop" (click)="openMenu = ''"></div>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" [class.active]="genre === ''" (click)="chooseGenre('')">All genres</button>
+            @for (g of genres; track g.id) {
+              <button class="dropdown-item" [class.active]="genre === g.name" (click)="chooseGenre(g.name)">{{ g.name }}</button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (loading) {
+      <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else {
+      <div class="chart-list">
+        @for (item of items; track item.id; let i = $index) {
+          <div class="row" (click)="goToItem(item)">
+            <span class="rank">{{ getRank(i) }}</span>
+            <img class="cover" [src]="getCover(item)" />
+            <div class="info">
+              @if (item.artname) {
+                <span class="artist" (click)="goToArtist($event, item)">{{ item.artname }}</span>
+              }
+              <span class="title-line">
+                <span class="name">{{ item.name }}</span>
+                @if (item.release_date) {
+                  <span class="year">({{ item.release_date.substring(0, 4) }})</span>
+                }
+              </span>
+              @if (item.album) {
+                <span class="album">from {{ item.album }}</span>
+              }
+            </div>
+            <div class="score">
+              <span class="average"><ion-icon name="star"></ion-icon> {{ item.average | number:'1.2-2' }}</span>
+              <span class="count">{{ item.count | number }} {{ item.count === 1 ? 'rating' : 'ratings' }}</span>
+            </div>
+          </div>
+        } @empty {
+          <p class="empty">No rated {{ type === 'record' ? 'albums' : 'songs' }} for these filters.</p>
+        }
+      </div>
+
+      @if (totalPages > 1) {
+        <div class="pagination">
+          <button class="page-link" [disabled]="page === 1" (click)="goToPage(page - 1)">
+            <ion-icon name="play-skip-back"></ion-icon> Prev
+          </button>
+          @for (p of getPageButtons(); track $index) {
+            @if (p === 0) {
+              <span class="dots">...</span>
+            } @else {
+              <button class="page-num" [class.active]="p === page" (click)="goToPage(p)">{{ p }}</button>
+            }
+          }
+          <button class="page-link" [disabled]="page === totalPages" (click)="goToPage(page + 1)">
+            Next <ion-icon name="play-skip-forward"></ion-icon>
+          </button>
+        </div>
+      }
+    }
+  </div>
+  <app-footer></app-footer>
+</ion-content>

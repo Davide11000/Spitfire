@@ -64,6 +64,10 @@ export class PlaylistPage implements OnInit {
     return this.getImage(song.recordimage);
   }
 
+  goToSong(song: any) {
+    this.router.navigate(['/songs', song.id]);
+  }
+
   goToCreator() {
     this.router.navigate(['/profile', this.playlist.username]);
   }
