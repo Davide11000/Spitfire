@@ -157,7 +157,7 @@ export class ReportsPage implements OnInit {
 
   getTargetLabel(type: string): string {
     if (type === 'song') return 'Song';
-    if (type === 'record') return 'Album';
+    if (type === 'record') return 'Record';
     if (type === 'artist') return 'Artist';
     if (type === 'annotation') return 'Annotation';
     if (type === 'about') return 'About';

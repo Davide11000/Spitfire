@@ -6,13 +6,13 @@
   } @else if (!about) {
     @if (scrivendo) {
       <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="5" [maxlength]="5000"
-                    placeholder="What should people know about this album?" [value]="testo" (ionInput)="onTesto($event)"></ion-textarea>
+                    placeholder="What should people know about this record?" [value]="testo" (ionInput)="onTesto($event)"></ion-textarea>
       <div class="actions">
         <ion-button fill="clear" class="btn cancel" (click)="scrivendo = false">Cancel</ion-button>
         <ion-button class="btn" [disabled]="inviando" (click)="invia()">Send about</ion-button>
       </div>
     } @else {
-      <p class="empty">No one has written about this album yet.</p>
+      <p class="empty">No one has written about this record yet.</p>
       <ion-button class="square-btn dark-square" (click)="apriScrittura()">
         <ion-icon slot="start" name="create-outline"></ion-icon>
         Write the about

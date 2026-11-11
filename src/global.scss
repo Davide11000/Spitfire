@@ -37,12 +37,12 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 
 :root {
-  --ion-color-primary: #e53935;
-  --ion-color-primary-rgb: 229, 57, 53;
+  --ion-color-primary: #c62828;
+  --ion-color-primary-rgb: 198, 40, 40;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #ca322f;
-  --ion-color-primary-tint: #e84d49;
+  --ion-color-primary-shade: #ae2323;
+  --ion-color-primary-tint: #cc3e3e;
 }
 
 ion-searchbar.md,
@@ -67,7 +67,7 @@ ion-popover.dark-select {
 
   ion-item {
     --background: #1f1f1f;
-    --background-hover: #e53935;
+    --background-hover: var(--ion-color-primary);
     --background-hover-opacity: 0.12;
     --color: #f2f2f2;
     --border-color: transparent;
@@ -167,5 +167,96 @@ ion-button.white-btn {
   &.active {
     --background: #ffffff;
     --color: #111111;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+ * Pagine chiare (sfondo bianco, testi scuri), come Charts.
+ * Le pagine canzone e album restano scure. Si attiva mettendo "theme-light" su ion-content.
+ * -------------------------------------------------------------------------- */
+.theme-light {
+  --background: #ffffff;
+  --color: #222222;
+  --ion-background-color: #ffffff;
+  --ion-text-color: #222222;
+  --ion-item-background: transparent;
+  --ion-item-color: #222222;
+  --ion-border-color: #dddddd;
+  --ion-placeholder-color: #888888;
+  color: #222222;
+
+  // Bottoni squadrati: neri invece che bianchi
+  ion-button.square-btn {
+    --border-color: #222222;
+    --color: #222222;
+
+    &:hover {
+      --border-color: var(--ion-color-primary);
+      --color: var(--ion-color-primary);
+    }
+
+    &.filled {
+      --background: #222222;
+      --color: #ffffff;
+
+      &:hover {
+        --background: var(--ion-color-primary);
+        --border-color: var(--ion-color-primary);
+        --color: #ffffff;
+      }
+    }
+  }
+
+  ion-searchbar {
+    --background: #f2f2f2;
+    --color: #222222;
+    --placeholder-color: #888888;
+    --icon-color: #888888;
+  }
+
+  // Componenti pensati per lo sfondo scuro: qui scuriscono i testi
+  app-comments {
+    .comments-section, .section-title, .comment-text, .username {
+      color: #222222;
+    }
+
+    .comment-input {
+      --color: #222222;
+    }
+
+    .action, .date, .login-notice {
+      color: #777777;
+    }
+
+    .page-btn {
+      border-color: #cccccc;
+      color: #444444;
+    }
+  }
+
+  app-contributors {
+    .toggle {
+      color: #555555;
+
+      &:hover {
+        color: #000000;
+      }
+    }
+
+    .user {
+      color: #222222;
+      border-color: #cccccc;
+    }
+  }
+}
+
+.theme-light ion-button.white-btn {
+  --color: #222222;
+  --border-color: #222222;
+  --background-hover: rgba(0, 0, 0, 0.06);
+
+  &.active {
+    --background: #222222;
+    --color: #ffffff;
   }
 }

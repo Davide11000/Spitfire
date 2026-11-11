@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
-  
+<ion-content class="globalbg theme-light">
+
   <div class="hero-section">
     <div class="hero-content">
       <h1 class="hero-title">SpitFire</h1>
@@ -11,125 +11,99 @@
 
   <div class="page-container">
 
-    <section class="section-wrapper">
-      <div class="custom-highlight-box">
-        <div class="bar-text-box">
-          <span class="custom-badge-tag">BAR OF THE DAY</span>
-          <p class="bar-quote">"Now I run the game got the whole world talkin', King Kunta"</p>
-          <div class="bar-meta">
-            <span class="bar-artist">Kendrick Lamar</span> 
-            <span class="bar-sep">—</span> 
-            <span class="bar-song">King Kunta (2015)</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    <!-- Gli ultimi album aggiunti -->
     <section class="section-wrapper">
       <h2 class="section-title">
-        <ion-icon name="time-outline"></ion-icon> Recently Added Tracks
+        <ion-icon name="time-outline"></ion-icon> Recently Added Records
       </h2>
 
-      @if (caricamentoRecenti) {
-        <div class="home-spinner">
-          <ion-spinner color="warning"></ion-spinner>
-        </div>
+      @if (loadingRecent) {
+        <div class="home-spinner"><ion-spinner name="crescent"></ion-spinner></div>
       } @else {
-        @if (recentRecords.length === 0) {
-          <p class="empty-text">No records added recently.</p>
-        } @else {
-          <div class="custom-rows-list">
-            @for (record of recentRecords; track record.id; let idx = $index) {
-              <div class="rows-list-item" [routerLink]="['/records', record.id]">
-                <div class="item-index">{{ idx + 1 }}</div>
-                
-                <div class="item-mini-cover">
-                  <img [src]="record.fotoBase64 || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
-                </div>
-
-                <div class="item-info">
-                  <div class="item-title">{{ record.recordname }}</div>
-                  <div class="item-artist">{{ record.artid }}</div>
-                </div>
-                <div class="item-arrow">
-                  <ion-icon name="chevron-forward-outline"></ion-icon>
-                </div>
+        <div class="rows-list">
+          @for (album of recentRecords; track album.id; let i = $index) {
+            <div class="row" (click)="goToAlbum(album.id)">
+              <span class="row-index">{{ i + 1 }}</span>
+              <img class="row-cover" [src]="getCover(album.image)" />
+              <div class="row-info">
+                <span class="row-title">{{ album.recordname }}</span>
+                <span class="row-sub">
+                  <span class="link" (click)="goToArtist($event, album.artid)">{{ album.artname }}</span>
+                  @if (album.release_date) {
+                    · {{ album.release_date.substring(0, 4) }}
+                  }
+                </span>
               </div>
-            }
-          </div>
-
-          @if (altreRecentSongs) {
-            <div class="load-more-wrapper">
-              <ion-button
-                fill="outline"
-                class="load-more-btn"
-                [disabled]="caricamentoAltriRecenti"
-                (click)="caricaAltreRecenti()">
-                @if (caricamentoAltriRecenti) {
-                  <ion-spinner name="crescent"></ion-spinner>
-                } @else {
-                  LOAD MORE
-                }
-              </ion-button>
+              <ion-icon class="row-arrow" name="chevron-forward-outline"></ion-icon>
             </div>
+          } @empty {
+            <p class="empty-text">No records yet.</p>
           }
+        </div>
+
+        @if (recentRecords.length === recentLimit) {
+          <div class="load-more-wrapper">
+            <ion-button fill="outline" class="square-btn" (click)="moreRecent()">Load more</ion-button>
+          </div>
         }
       }
     </section>
 
-    <section class="section-wrapper" style="padding-bottom: 60px;">
+    <!-- Bar of the day: l'ultima annotazione approvata -->
+    @if (barOfTheDay) {
+      <section class="section-wrapper">
+        <div class="bar-box" (click)="goToBar()">
+          <span class="bar-mark">&ldquo;</span>
+          <div class="bar-body">
+          <span class="bar-badge">LATEST ANNOTATION</span>
+          <p class="bar-quote">{{ barOfTheDay.selected_text }}</p>
+          <div class="bar-meta">
+            <span class="bar-artist">{{ barOfTheDay.artname }}</span>
+            <span class="bar-sep">—</span>
+            <span>{{ barOfTheDay.songname }}</span>
+            @if (barOfTheDay.recordname) {
+              <span class="bar-sep">·</span>
+              <span>{{ barOfTheDay.recordname }}{{ barOfTheDay.release_date ? ' (' + barOfTheDay.release_date.substring(0, 4) + ')' : '' }}</span>
+            }
+          </div>
+          <span class="bar-link">Read the annotation →</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Gli album con il voto più alto -->
+    <section class="section-wrapper last">
       <h2 class="section-title">
-        <ion-icon name="star" color="warning"></ion-icon> Top Rated
+        <ion-icon name="star"></ion-icon> Top Rated
       </h2>
 
-      @if (caricamentoTop) {
-        <div class="home-spinner">
-          <ion-spinner color="warning"></ion-spinner>
-        </div>
+      @if (loadingTop) {
+        <div class="home-spinner"><ion-spinner name="crescent"></ion-spinner></div>
       } @else {
-        @if (topRatedSongs.length === 0) {
-          <p class="empty-text">No rated tracks available.</p>
-        } @else {
-          <ion-grid class="ion-no-padding">
-            <ion-row style="margin: 0 -8px;">
-              @for (song of topRatedSongs; track song.id) {
-                <ion-col size="12" size-sm="6" size-md="3" style="padding: 8px;">
-                  <div class="custom-grid-box" [routerLink]="['/songtemplate', song.id]">
-                    
-                    <div class="box-cover-container">
-                      <img [src]="song.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Cover" />
-                    </div>
-
-                    <div class="box-meta-content">
-                      <div class="box-song-title">{{ song.songname }}</div>
-                      <div class="box-song-artist">{{ song.artid }}</div>
-                    </div>
-                  </div>
-                </ion-col>
+        <div class="grid">
+          @for (album of topRecords; track album.id) {
+            <div class="grid-box" (click)="goToAlbum(album.id)">
+              <img class="grid-cover" [src]="getCover(album.image)" />
+              <span class="grid-title">{{ album.recordname }}</span>
+              <span class="grid-sub">{{ album.artname }}</span>
+              @if (album.rating > 0) {
+                <span class="grid-rating"><ion-icon name="star"></ion-icon> {{ album.rating | number:'1.2-2' }}</span>
               }
-            </ion-row>
-          </ion-grid>
-
-          @if (altreTopSongs) {
-            <div class="load-more-wrapper">
-              <ion-button
-                fill="outline"
-                class="load-more-btn"
-                [disabled]="caricamentoAltriTop"
-                (click)="caricaAltreTop()">
-                @if (caricamentoAltriTop) {
-                  <ion-spinner name="crescent"></ion-spinner>
-                } @else {
-                  LOAD MORE
-                }
-              </ion-button>
             </div>
+          } @empty {
+            <p class="empty-text">No rated records yet.</p>
           }
+        </div>
+
+        @if (topRecords.length === topLimit) {
+          <div class="load-more-wrapper">
+            <ion-button fill="outline" class="square-btn" (click)="moreTop()">Load more</ion-button>
+          </div>
         }
       }
     </section>
 
   </div>
-
   <app-footer></app-footer>
 </ion-content>

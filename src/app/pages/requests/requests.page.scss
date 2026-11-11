@@ -1,12 +1,12 @@
 .globalbg {
-  --background: #0d0d0d;
+  --background: #ffffff;
 }
 
 .admin-page {
   max-width: 860px;
   margin: 0 auto;
   padding: 32px 16px 60px;
-  color: #f2f2f2;
+  color: #222222;
 }
 
 .page-title {
@@ -22,25 +22,25 @@
   .count {
     padding: 2px 12px;
     border-radius: 14px;
-    background: #262626;
-    color: #ccc;
+    background: #eeeeee;
+    color: #444444;
     font-size: 1rem;
   }
 }
 
 .page-subtitle {
-  color: #999;
+  color: #777777;
   margin: 8px 0 24px;
 }
 
 .filter-segment {
   margin-bottom: 24px;
-  --background: #1a1a1a;
+  --background: #f4f4f4;
 }
 
 ion-segment-button {
-  --color: #999;
-  --color-checked: #fff;
+  --color: #777777;
+  --color-checked: var(--ion-color-primary);
   --indicator-color: var(--ion-color-primary);
   text-transform: none;
 }
@@ -57,7 +57,9 @@ ion-segment-button {
 }
 
 .card {
-  background: #1a1a1a;
+  background: #ffffff;
+  border: 1px solid #d6d6d6;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   border-radius: 0;
   padding: 20px;
   margin-bottom: 20px;
@@ -74,7 +76,7 @@ ion-segment-button {
   height: 140px;
   object-fit: cover;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 
   &.round {
     border-radius: 50%;
@@ -99,7 +101,7 @@ ion-segment-button {
 .badge.correction {
   margin-left: 6px;
   background: #f9a825;
-  color: #0d0d0d;
+  color: #ffffff;
 }
 
 .name {
@@ -109,7 +111,7 @@ ion-segment-button {
 }
 
 .sub {
-  color: #ccc;
+  color: #444444;
   margin-top: 2px;
 }
 
@@ -122,7 +124,7 @@ ion-segment-button {
 }
 
 .info-label {
-  color: #888;
+  color: #777777;
 }
 
 .genres {
@@ -133,7 +135,7 @@ ion-segment-button {
 
 .genre {
   padding: 1px 10px;
-  border: 1px solid #444;
+  border: 1px solid #cccccc;
   border-radius: 12px;
   font-size: 0.8rem;
 }
@@ -141,18 +143,18 @@ ion-segment-button {
 .block {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #262626;
+  border-top: 1px solid #e5e5e5;
 }
 
 .block-title {
-  color: #888;
+  color: #777777;
   font-size: 0.8rem;
   text-transform: uppercase;
 }
 
 .long-text {
   margin: 6px 0 0;
-  color: #ccc;
+  color: #444444;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -165,7 +167,7 @@ ion-segment-button {
 .tracklist {
   margin: 6px 0 0;
   padding-left: 22px;
-  color: #ccc;
+  color: #444444;
   columns: 2;
 }
 
@@ -189,14 +191,14 @@ ion-segment-button {
   gap: 12px;
   margin-top: 18px;
   padding-top: 14px;
-  border-top: 1px solid #262626;
+  border-top: 1px solid #e5e5e5;
 }
 
 .requested-by {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #999;
+  color: #777777;
   font-size: 0.85rem;
 }
 
@@ -209,7 +211,7 @@ ion-segment-button {
 }
 
 .username {
-  color: #f2f2f2;
+  color: #222222;
   font-weight: bold;
   cursor: pointer;
 
@@ -229,17 +231,30 @@ ion-segment-button {
 }
 
 .reject-btn {
-  --color: #f2f2f2;
-  --border-color: #555;
+  --color: #222222;
+  --border-color: #bbbbbb;
 }
 
 .empty {
   text-align: center;
-  color: #999;
+  color: #777777;
   padding: 60px 0;
 
   ion-icon {
     font-size: 3rem;
-    color: #555;
+    color: #aaaaaa;
   }
+}
+
+.source-link {
+  color: var(--ion-color-primary);
+  overflow-wrap: anywhere;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.source-text {
+  overflow-wrap: anywhere;
 }

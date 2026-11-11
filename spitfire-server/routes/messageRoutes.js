@@ -6,6 +6,10 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.get("/conversations", authMiddleware, messageController.getConversations);
 router.get("/unread", authMiddleware, messageController.getUnreadCount);
 
+router.get("/:username/block", authMiddleware, messageController.getBlock);
+router.post("/:username/block", authMiddleware, messageController.block);
+router.delete("/:username/block", authMiddleware, messageController.unblock);
+
 router.get("/:username", authMiddleware, messageController.getChat);
 router.post("/:username", authMiddleware, messageController.send);
 

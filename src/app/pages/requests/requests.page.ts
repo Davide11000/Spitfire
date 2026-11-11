@@ -55,7 +55,7 @@ export class RequestsPage implements OnInit {
 
   getTypeLabel(type: string): string {
     if (type === 'song') return 'Song';
-    if (type === 'record') return 'Album';
+    if (type === 'record') return 'Record';
     if (type === 'translation') return 'Translation';
     return 'Artist';
   }
@@ -145,4 +145,9 @@ export class RequestsPage implements OnInit {
     });
   }
 
+
+  // Se la fonte è un indirizzo web la mostro come link cliccabile
+  isLink(source: string): boolean {
+    return /^https?:\/\//i.test(source);
+  }
 }

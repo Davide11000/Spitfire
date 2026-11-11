@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
+<ion-content class="globalbg theme-light">
   @if (user) {
     <div class="profile-header">
       <!-- Foto con, sotto, i link per cambiarla o toglierla (solo sul proprio profilo) -->
@@ -134,7 +134,7 @@
           </div>
 
           <div class="subsection">
-            <b class="subsection-title">Albums</b>
+            <b class="subsection-title">Records</b>
             <div class="card-grid small">
               @for (record of favouriteRecords; track record.id) {
                 <div class="card clickable" (click)="apriAlbum(record.id)">
@@ -145,7 +145,7 @@
                   <span class="card-sub">{{ record.artname }}</span>
                 </div>
               } @empty {
-                <p class="empty-text">No favourite albums yet.</p>
+                <p class="empty-text">No favourite records yet.</p>
               }
             </div>
           </div>
@@ -267,7 +267,7 @@
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="globalbg">
+        <ion-content class="globalbg theme-light">
           <ion-list class="users-list">
             @for (u of modalUsers; track u.username) {
               <ion-item lines="full" class="user-item" button (click)="goToProfile(u.username)">

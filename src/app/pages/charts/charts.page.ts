@@ -96,7 +96,7 @@ export class ChartsPage {
   }
 
   getSubtitle(): string {
-    let text = 'The best rated ' + (this.genre ? this.genre + ' ' : '') + (this.type === 'record' ? 'albums' : 'songs');
+    let text = 'The best rated ' + (this.genre ? this.genre + ' ' : '') + (this.type === 'record' ? 'records' : 'songs');
     text += this.year ? ' of ' + this.year : ' of all time';
     return text + '.';
   }

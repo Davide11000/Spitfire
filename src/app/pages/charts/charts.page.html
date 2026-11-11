@@ -7,11 +7,10 @@
 
     <div class="filters">
       <ion-segment [value]="type" (ionChange)="onTypeChange($event)" class="type-segment">
-        <ion-segment-button value="record"><ion-label>Albums</ion-label></ion-segment-button>
+        <ion-segment-button value="record"><ion-label>Records</ion-label></ion-segment-button>
         <ion-segment-button value="song"><ion-label>Songs</ion-label></ion-segment-button>
       </ion-segment>
 
-      <!-- Menu a tendina come quello della pagina Playlists -->
       <div class="dropdown">
         <button class="dropdown-btn" (click)="toggleMenu('year')">
           {{ year || 'All time' }}
@@ -73,7 +72,7 @@
             </div>
           </div>
         } @empty {
-          <p class="empty">No rated {{ type === 'record' ? 'albums' : 'songs' }} for these filters.</p>
+          <p class="empty">No rated {{ type === 'record' ? 'records' : 'songs' }} for these filters.</p>
         }
       </div>
 

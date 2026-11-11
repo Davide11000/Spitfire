@@ -98,7 +98,7 @@
 
     @if (foundRecords.length > 0) {
       <ion-list class="results-list">
-        <ion-list-header class="results-header">Albums</ion-list-header>
+        <ion-list-header class="results-header">Records</ion-list-header>
         @for (record of foundRecords; track record.id) {
           <ion-item lines="none" class="result-item" button [routerLink]="['/records', record.id]">
             <img slot="start" class="result-img" [src]="getImage(record.image)" />

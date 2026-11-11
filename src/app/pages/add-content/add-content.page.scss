@@ -1,5 +1,7 @@
 .globalbg {
-  --background: #0d0d0d;
+  // Stesso sfondo della Home: collage delle copertine con un velo nero
+  --background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('/assets/images/home-collage.jpg') top center / 100% auto repeat-y;
 }
 
 /* Contenitore centrato */
@@ -9,16 +11,17 @@
   align-items: center;
   gap: 24px;
   padding: 40px 16px;
-  color: #f2f2f2;
+  color: #222222;
 }
 
 .card {
   width: 100%;
   max-width: 600px;
-  background: #141414;
+  background: #ffffff;
+  border: 1px solid #c8c8c8;
   border-radius: 0;
   padding: 32px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .page-title {
@@ -27,17 +30,32 @@
 }
 
 .page-subtitle {
-  color: #999;
+  color: #777777;
   text-align: center;
   margin-bottom: 24px;
 }
 
+// Barra Song / Album / Artist: squadrata e marcata come i bottoni del sito
 .type-segment {
-  --background: #262626;
+  --background: #ffffff;
+  border: 2px solid #222222;
+  border-radius: 0;
 
   ion-segment-button {
-    --color: #999;
-    text-transform: none;
+    --color: #444444;
+    --color-checked: #ffffff;
+    --background-checked: var(--ion-color-primary);
+    --indicator-color: transparent;
+    --border-radius: 0;
+    min-height: 44px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    &:hover {
+      --color: var(--ion-color-primary);
+    }
   }
 }
 
@@ -67,13 +85,13 @@
 }
 
 .optional {
-  color: #999;
+  color: #777777;
   font-weight: normal;
 }
 
 .field-input {
-  --color: #f2f2f2;
-  --placeholder-color: #999;
+  --color: #222222;
+  --placeholder-color: #777777;
   --border-radius: 0;
   /* Bordo rosso quando il campo è selezionato (vale per input, textarea e select).
      Ionic altrimenti usa il verde per i campi già compilati ("valid") */
@@ -87,13 +105,13 @@
 }
 
 .suggestion {
-  --background: #1f1f1f;
-  --color: #f2f2f2;
+  --background: #f4f4f4;
+  --color: #222222;
   margin-bottom: 4px;
   border-radius: 0;
 
   p {
-    color: #999;
+    color: #777777;
   }
 }
 
@@ -108,13 +126,13 @@
   height: 110px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: #262626;
+  background: #eeeeee;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
-  color: #666;
+  color: #999999;
 
   img {
     width: 100%;
@@ -160,17 +178,17 @@
   border: 1px solid #8c8c8c;
   border-radius: 0;
   background: transparent;
-  color: #f2f2f2;
+  color: #222222;
   font-size: 1rem;
   text-align: left;
   cursor: pointer;
 
   &.empty {
-    color: #999;
+    color: #777777;
   }
 
   &:hover {
-    border-color: #f2f2f2;
+    border-color: #222222;
   }
 
   /* Rosso quando è selezionato o quando la finestra della data è aperta, come gli altri campi */
@@ -191,7 +209,7 @@
 .track-number {
   width: 20px;
   text-align: right;
-  color: #999;
+  color: #777777;
 }
 
 .add-track-btn {
@@ -203,12 +221,19 @@
   margin-bottom: 12px;
 }
 
+.requests-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 6px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
 .request-row {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 12px 0;
-  border-top: 1px solid #262626;
+  border-top: 1px solid #e5e5e5;
 }
 
 .request-image {
@@ -237,21 +262,21 @@
 }
 
 .request-sub {
-  color: #bbb;
+  color: #555555;
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
 
 .request-date {
-  color: #888;
+  color: #777777;
   font-size: 0.8rem;
 }
 
 .request-status {
   flex-shrink: 0;
   padding: 4px 10px;
-  border: 1px solid #888;
-  color: #ccc;
+  border: 1px solid #999999;
+  color: #444444;
   font-size: 0.75rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -268,7 +293,7 @@
 }
 
 .no-requests {
-  color: #999;
+  color: #777777;
   margin: 0;
 }
 
@@ -281,9 +306,9 @@
 
 /* Liste di giorno, mese e anno con i colori scuri della pagina */
 .date-picker {
-  --background: #1f1f1f;
+  --background: #f4f4f4;
   --background-rgb: 31, 31, 31;
-  --wheel-highlight-background: #2a2a2a;
+  --wheel-highlight-background: #e5e5e5;
   --wheel-fade-background-rgb: 31, 31, 31;
-  color: #f2f2f2;
+  color: #222222;
 }

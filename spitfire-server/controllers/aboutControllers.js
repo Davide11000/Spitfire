@@ -63,12 +63,12 @@ exports.create = async (req, res) => {
 
         const record = await Record.findById(recordId);
         if (!record) {
-            return res.status(404).json({ message: "Album not found" });
+            return res.status(404).json({ message: "Record not found" });
         }
 
         const existing = await About.findActive("record", record.id);
         if (existing) {
-            return res.status(400).json({ message: "This album already has an about (or one is waiting for review)" });
+            return res.status(400).json({ message: "This record already has an about (or one is waiting for review)" });
         }
 
         const status = isModerator(req.user) ? "approved" : "pending";

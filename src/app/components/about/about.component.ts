@@ -93,7 +93,7 @@ export class AboutComponent implements OnChanges {
 
   invia() {
     if (!this.testo.trim()) {
-      this.errore = 'Write something about the album';
+      this.errore = 'Write something about the record';
       return;
     }
 

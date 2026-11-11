@@ -94,7 +94,7 @@ export class DiscoverPage {
         this.loading = false;
       },
       error: (err) => {
-        this.error = err.error.message || 'Error finding the albums';
+        this.error = err.error.message || 'Error finding the records';
         this.loading = false;
       }
     });

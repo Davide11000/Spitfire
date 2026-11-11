@@ -1,12 +1,12 @@
 .globalbg {
-  --background: #0d0d0d;
+  --background: #ffffff;
 }
 
 .settings {
   max-width: 680px;
   margin: 0 auto;
   padding: 32px 16px 60px;
-  color: #f2f2f2;
+  color: #222222;
 }
 
 .back {
@@ -17,11 +17,11 @@
   padding: 0;
   border: none;
   background: none;
-  color: #999;
+  color: #777777;
   cursor: pointer;
 
   &:hover {
-    color: #f2f2f2;
+    color: #222222;
   }
 }
 
@@ -30,12 +30,14 @@
 }
 
 .page-subtitle {
-  color: #999;
+  color: #777777;
   margin: 4px 0 24px;
 }
 
 .box {
-  background: #1a1a1a;
+  background: #ffffff;
+  border: 1px solid #d6d6d6;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   padding: 20px;
   margin-bottom: 20px;
 
@@ -51,12 +53,12 @@
 }
 
 .box-text {
-  color: #bbb;
+  color: #555555;
   margin: 0 0 14px;
   overflow-wrap: anywhere;
 
   b {
-    color: #f2f2f2;
+    color: #222222;
   }
 }
 
@@ -67,8 +69,8 @@
 }
 
 .field-input {
-  --color: #f2f2f2;
-  --placeholder-color: #888;
+  --color: #222222;
+  --placeholder-color: #777777;
   --border-radius: 0;
   --highlight-color-focused: var(--ion-color-primary);
   --highlight-color-valid: var(--ion-color-primary);
@@ -97,9 +99,9 @@
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
-  border: 1px solid #444;
+  border: 1px solid #cccccc;
   background: transparent;
-  color: #999;
+  color: #777777;
   font-size: 0.85rem;
   text-align: left;
   cursor: pointer;
@@ -111,12 +113,12 @@
   }
 
   b {
-    color: #f2f2f2;
+    color: #222222;
     font-size: 0.95rem;
   }
 
   &:hover {
-    border-color: #888;
+    border-color: #999999;
   }
 
   &.selected {
@@ -142,12 +144,12 @@ ion-button.danger-btn {
   --width: 440px;
   --height: auto;
   --border-radius: 16px;
-  --background: #1f1f1f;
+  --background: #f4f4f4;
 }
 
 .delete-box {
   padding: 20px 24px 24px;
-  color: #f2f2f2;
+  color: #222222;
 }
 
 .delete-header {
@@ -159,10 +161,10 @@ ion-button.danger-btn {
 }
 
 .close-btn {
-  --color: #999;
+  --color: #777777;
 }
 
 .cancel-btn {
-  --color: #ccc;
+  --color: #444444;
   text-transform: none;
 }

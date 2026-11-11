@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
+<ion-content class="globalbg theme-light">
   <div class="admin-page">
     <div class="page-header">
       <div class="page-title">
@@ -11,7 +11,7 @@
         }
       </div>
       <p class="page-subtitle">
-        Songs, albums and artists the users want to add. If you accept, the page is created; if you reject, nothing happens.
+        Songs, records and artists the users want to add. If you accept, the page is created; if you reject, nothing happens.
       </p>
     </div>
 
@@ -23,7 +23,7 @@
         <ion-label>Songs ({{ countType('song') }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="record">
-        <ion-label>Albums ({{ countType('record') }})</ion-label>
+        <ion-label>Records ({{ countType('record') }})</ion-label>
       </ion-segment-button>
       <ion-segment-button value="artist">
         <ion-label>Artists ({{ countType('artist') }})</ion-label>
@@ -85,6 +85,14 @@
                 @if (request.language) {
                   <span class="info-label">Language</span>
                   <span>{{ request.language }}</span>
+                }
+                @if (request.source) {
+                  <span class="info-label">Source</span>
+                  @if (isLink(request.source)) {
+                    <a class="source-link" [href]="request.source" target="_blank" rel="noopener">{{ request.source }}</a>
+                  } @else {
+                    <span class="source-text">{{ request.source }}</span>
+                  }
                 }
                 @if (request.genres) {
                   <span class="info-label">Genres</span>

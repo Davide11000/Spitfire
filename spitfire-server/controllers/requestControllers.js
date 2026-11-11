@@ -49,7 +49,7 @@ async function sendOrApply(req, res, result, name, notificationType) {
 exports.create = async (req, res) => {
   try {
     const username = req.user.username;
-    const { type, targetId, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist, duration } = req.body;
+    const { type, targetId, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist, duration, source } = req.body;
     // È una correzione se c'è targetId (anche 0 è un id valido)
     const isCorrection = targetId !== undefined && targetId !== "";
 
@@ -108,7 +108,7 @@ exports.create = async (req, res) => {
       }
 
       if (type === "song" && !albumName) {
-        return res.status(400).json({ message: "The album is required" });
+        return res.status(400).json({ message: "The record is required" });
       }
     }
 
@@ -125,6 +125,7 @@ exports.create = async (req, res) => {
       bio: bio || null,
       tracklist: tracklist || null,
       duration: duration || null,
+      source: source && source.trim() ? source.trim() : null,
       image
     });
 

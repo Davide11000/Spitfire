@@ -1,13 +1,19 @@
 .globalbg {
-  --background: linear-gradient(to bottom, rgb(30, 30, 30), rgb(88, 28, 28));
+  --background: #ffffff;
   --padding-top: 0;
 }
 
 .hero-section {
   position: relative;
-  height: 30vh;
-  min-height: 220px;
-  background: transparent;
+  height: calc(42vh + 160px);
+  min-height: 460px;
+  // Lo spazio in basso è la zona della sfumatura (il titolo resta nella parte scura)
+  padding-bottom: 160px !important;
+  // Collage delle copertine scurito da un velo nero, che in basso sfuma nel bianco della pagina
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0) 45%, rgba(255, 255, 255, 0.9) 76%, #ffffff 90%),
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('/assets/images/home-collage.jpg') center / cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,6 +30,8 @@
     font-size: 4.5rem;
     font-weight: 900;
     color: #ffffff;
+    // Ombra intorno alle lettere: il testo si stacca dalle copertine senza riquadri
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.8);
     margin: 0 0 16px 0;
     letter-spacing: -2px;
     text-transform: uppercase;
@@ -35,7 +43,8 @@
 
   .hero-subtitle {
     font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.95), 0 0 3px rgba(0, 0, 0, 0.9);
     margin: 0;
     line-height: 1.6;
     font-weight: 400;
@@ -47,8 +56,10 @@
 }
 
 .page-container {
+  position: relative;
   max-width: 1100px;
-  margin: 0 auto;
+  // Sale sopra la sfumatura: "Recently Added Records" parte dentro il collage che sfuma
+  margin: -150px auto 0;
   padding: 0 20px;
 }
 
@@ -60,211 +71,256 @@
   font-family: 'Golos Text', sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #222222;
   margin-bottom: 24px;
   text-transform: uppercase;
   letter-spacing: 1px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid #222222;
   padding-bottom: 10px;
 }
 
-.custom-highlight-box {
+// ---------------------------------------------------------------- Recently Added Records (lista bianca)
+
+.rows-list {
+  background: #ffffff;
+  border: 1px solid #dddddd;
+}
+
+.row {
   display: flex;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 30px;
   align-items: center;
-  gap: 30px;
-  border-radius: 0;
-
-  @media (max-width: 768px) {
-    text-align: center;
-    padding: 20px;
-  }
-
-  .bar-text-box {
-    flex: 1;
-
-    .custom-badge-tag {
-      background: #ffc409;
-      color: black;
-      font-size: 0.7rem;
-      font-weight: 900;
-      padding: 3px 6px;
-      letter-spacing: 1px;
-      display: inline-block;
-      margin-bottom: 12px;
-      border-radius: 2px;
-    }
-
-    .bar-quote {
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 0 0 14px 0;
-      line-height: 1.3;
-      font-family: 'Golos Text', sans-serif;
-
-      @media (max-width: 576px) {
-        font-size: 1.25rem;
-      }
-    }
-
-    .bar-meta {
-      font-size: 0.95rem;
-      color: #a1a1a5;
-
-      .bar-artist {
-        color: #ffc409;
-        font-weight: 700;
-      }
-      .bar-sep {
-        margin: 0 6px;
-        color: rgba(255, 255, 255, 0.2);
-      }
-      .bar-song {
-        color: #ffffff;
-      }
-    }
-  }
-}
-
-.custom-rows-list {
-  display: flex;
-  flex-direction: column;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0;
-
-  .rows-list-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    cursor: pointer;
-    transition: background 0.2s;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.04);
-      
-      .item-title {
-        color: #ffc409;
-      }
-    }
-
-    .item-index {
-      font-size: 1.1rem;
-      font-weight: 900;
-      color: rgba(255, 255, 255, 0.2);
-      width: 30px;
-      text-align: left;
-    }
-
-    .item-mini-cover {
-      width: 40px;
-      height: 40px;
-      margin-right: 16px;
-      border-radius: 4px;
-      overflow: hidden;
-      flex-shrink: 0;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
-
-    .item-info {
-      flex: 1;
-      min-width: 0;
-
-      .item-title {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #ffffff;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: color 0.2s;
-      }
-
-      .item-artist {
-        font-size: 0.88rem;
-        color: #8e8e93;
-        margin-top: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .item-arrow {
-      color: rgba(255, 255, 255, 0.2);
-      font-size: 1.2rem;
-    }
-  }
-}
-
-.custom-grid-box {
-  background: rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0;
+  gap: 16px;
+  padding: 10px 20px 10px 14px;
+  border-bottom: 1px solid #eeeeee;
+  color: #222222;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  padding: 12px;
+  transition: background 0.2s;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &:hover {
-    background: rgba(0, 0, 0, 0.3);
-    .box-song-title {
-      color: #ffc409;
+    background: #f2f2f2;
+
+    .row-title {
+      color: var(--ion-color-primary);
     }
   }
+}
 
-  .box-cover-container {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+.row-index {
+  width: 24px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #bbbbbb;
+}
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+.row-cover {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #eeeeee;
+}
+
+.row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.row-sub {
+  color: #777777;
+  font-size: 0.88rem;
+}
+
+.link:hover {
+  color: #222222;
+  text-decoration: underline;
+}
+
+.row-arrow {
+  color: #bbbbbb;
+  font-size: 1.2rem;
+}
+
+// ---------------------------------------------------------------- Bar of the day (scheda bianca)
+
+.bar-box {
+  position: relative;
+  display: flex;
+  gap: 22px;
+  padding: 26px 30px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-left: 6px solid var(--ion-color-primary);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+
+    .bar-link {
+      color: var(--ion-color-primary);
     }
   }
+}
 
-  .box-meta-content {
-    padding: 12px 2px 2px 2px;
+// Le virgolette grandi decorative
+.bar-mark {
+  flex-shrink: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 5.5rem;
+  line-height: 0.8;
+  color: var(--ion-color-primary);
+}
 
-    .box-song-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #ffffff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: color 0.2s;
-    }
+.bar-body {
+  flex: 1;
+  min-width: 0;
+}
 
-    .box-song-artist {
-      font-size: 0.85rem;
-      color: #8e8e93;
-      margin-top: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+.bar-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--ion-color-primary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.bar-quote {
+  margin: 0 0 14px;
+  color: #111111;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.6rem;
+  font-style: italic;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.bar-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0;
+  color: #666666;
+  font-size: 0.9rem;
+}
+
+.bar-artist {
+  color: #222222;
+  font-weight: 800;
+}
+
+.bar-sep {
+  margin: 0 8px;
+  color: #bbbbbb;
+}
+
+.bar-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: #999999;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+@media (max-width: 576px) {
+  .bar-mark {
+    display: none;
+  }
+
+  .bar-quote {
+    font-size: 1.25rem;
+  }
+}
+
+// ---------------------------------------------------------------- Top Rated (schede bianche)
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.grid-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  background: #ffffff;
+  color: #222222;
+  border: 1px solid #dddddd;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+
+    .grid-title {
+      color: var(--ion-color-primary);
     }
   }
+}
+
+.grid-cover {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  margin-bottom: 8px;
+  background: #eeeeee;
+}
+
+.grid-title {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s;
+}
+
+.grid-sub {
+  color: #777777;
+  font-size: 0.85rem;
+}
+
+.grid-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  font-weight: 700;
+
+  ion-icon {
+    color: #e0a800;
+  }
+}
+
+.section-wrapper.last {
+  padding-bottom: 60px;
 }
 
 .home-spinner {
@@ -274,9 +330,9 @@
 }
 
 .empty-text {
-  color: #8e8e93;
+  padding: 16px;
+  color: #777777;
   font-style: italic;
-  font-size: 0.9rem;
 }
 
 .load-more-wrapper {
@@ -285,21 +341,14 @@
   margin-top: 20px;
 }
 
-.load-more-btn {
-  --color: #ffc409;
-  --border-color: #ffc409;
-  --border-width: 2px;
-  --border-radius: 0px;
-  --background: transparent;
-  --background-hover: #ffc409;
-  --color-hover: #ffffff;
-  --background-activated: #ffc409;
-  --color-activated: #ffffff;
-  --transition: background 0.2s ease, color 0.2s ease;
-  font-family: 'Golos Text', sans-serif;
-  font-weight: 800;
-  font-size: 0.85rem;
-  letter-spacing: 2px;
-  min-width: 160px;
-  height: 44px;
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

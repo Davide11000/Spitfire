@@ -1,20 +1,13 @@
-import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-
-import { RouterLink } from '@angular/router';
-import { 
-  IonContent, 
-  IonGrid, 
-  IonRow, 
-  IonCol, 
-  IonButton, 
-  IonIcon, 
-  IonSpinner
-} from '@ionic/angular';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { FooterComponent } from "../../components/footer/footer.component";
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { IonContent, IonButton, IonIcon, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { star, timeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 import { Record } from '../../services/record';
+import { Annotation } from '../../services/annotation';
 
 @Component({
   selector: 'app-home',
@@ -22,151 +15,86 @@ import { Record } from '../../services/record';
   styleUrls: ['home.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [
-    RouterLink,
-    IonContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonButton,
-    IonIcon,
-    IonSpinner,
-    NavbarComponent,
-    FooterComponent
-],
+  imports: [IonContent, IonButton, IonIcon, IonSpinner, DecimalPipe, NavbarComponent, FooterComponent],
 })
-export class HomePage implements OnInit {
-  private cdr = inject(ChangeDetectorRef);
-
+export class HomePage {
   public recentRecords: any[] = [];
-  public topRatedSongs: any[] = [];
+  public topRecords: any[] = [];
+  public barOfTheDay: any = null;
 
-  public caricamentoRecenti: boolean = true;
-  public caricamentoTop: boolean = true;
-  public caricamentoAltriRecenti: boolean = false;
-  public caricamentoAltriTop: boolean = false;
+  public loadingRecent = true;
+  public loadingTop = true;
 
-  public altreRecentSongs: boolean = true;
-  public altreTopSongs: boolean = true;
+  // Quanti album chiedo: "Load more" aumenta il numero e ricarica la lista
+  public recentLimit = 5;
+  public topLimit = 5;
 
-  //private lastRecentDoc: QueryDocumentSnapshot | null = null;
-  //private lastTopDoc: QueryDocumentSnapshot | null = null;
-
-  private readonly LIMIT_RECENTI = 5;
-  private readonly LIMIT_TOP = 4;
-
-  constructor(private recordService : Record) {
-    addIcons({ musicalNotesOutline, peopleOutline, star, timeOutline, chevronForwardOutline });
+  constructor(private recordService : Record, private annotationService : Annotation, private router : Router) {
+    addIcons({ star, timeOutline, chevronForwardOutline });
   }
 
-  ngOnInit() {
-    this.caricaContenutiRecenti();
-    this.caricaContenutiTopRated();
+  // Ricarico ogni volta che si entra nella Home: possono esserci album o annotazioni nuove
+  ionViewWillEnter() {
+    this.loadRecent();
+    this.loadTop();
+
+    this.annotationService.getLatest().subscribe({
+      next: (res) => { this.barOfTheDay = res; },
+      error: (err) => console.error(err)
+    });
   }
 
-  async caricaContenutiRecenti() {
-    try {
-      this.recordService.getRecentRecords(this.LIMIT_RECENTI).subscribe({
-        next: (res) => this.recentRecords = res,
-        error: (err) => console.error(err)
-      });
-      if (!this.recentRecords) {
-        this.recentRecords = [];
+  loadRecent() {
+    this.recordService.getRecentRecords(this.recentLimit).subscribe({
+      next: (res) => {
+        this.recentRecords = res;
+        this.loadingRecent = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loadingRecent = false;
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoRecenti = false;
-      this.cdr.detectChanges();
-    }
-    /*try {
-      const songsRef = collection(this.firestore, 'songs');
-      const q = query(songsRef, orderBy('titolo', 'asc'), limit(this.LIMIT_RECENTI));
-      const querySnapshot = await getDocs(q);
-      this.recentSongs = [];
-      querySnapshot.forEach((doc) => {
-        this.recentSongs.push({ id: doc.id, ...doc.data() });
-      });
-      this.lastRecentDoc = querySnapshot.docs[querySnapshot.docs.length - 1] ?? null;
-      this.altreRecentSongs = querySnapshot.docs.length === this.LIMIT_RECENTI;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoRecenti = false;
-      this.cdr.detectChanges();
-    }*/
+    });
   }
 
-  async caricaAltreRecenti() {
-    /*if (!this.lastRecentDoc || this.caricamentoAltriRecenti) return;
-    this.caricamentoAltriRecenti = true;
-    try {
-      const songsRef = collection(this.firestore, 'songs');
-      const q = query(songsRef, orderBy('titolo', 'asc'), startAfter(this.lastRecentDoc), limit(this.LIMIT_RECENTI));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        this.recentSongs.push({ id: doc.id, ...doc.data() });
-      });
-      this.lastRecentDoc = querySnapshot.docs[querySnapshot.docs.length - 1] ?? this.lastRecentDoc;
-      this.altreRecentSongs = querySnapshot.docs.length === this.LIMIT_RECENTI;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoAltriRecenti = false;
-      this.cdr.detectChanges();
-    }*/
-  }
-
-  async caricaContenutiTopRated() {
-    try {
-      this.recordService.getRecentRecords(this.LIMIT_RECENTI).subscribe({
-        next: (res) => this.topRatedSongs = res,
-        error: (err) => console.error(err)
-      });
-      if (!this.topRatedSongs) {
-        this.topRatedSongs = [];
+  loadTop() {
+    this.recordService.getTopRatedRecords(this.topLimit).subscribe({
+      next: (res) => {
+        this.topRecords = res;
+        this.loadingTop = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loadingTop = false;
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoTop = false;
-      this.cdr.detectChanges();
-    }
-    /*try {
-      const songsRef = collection(this.firestore, 'songs');
-      const q = query(songsRef, limit(this.LIMIT_TOP));
-      const querySnapshot = await getDocs(q);
-      this.topRatedSongs = [];
-      querySnapshot.forEach((doc) => {
-        this.topRatedSongs.push({ id: doc.id, ...doc.data() });
-      });
-      this.lastTopDoc = querySnapshot.docs[querySnapshot.docs.length - 1] ?? null;
-      this.altreTopSongs = querySnapshot.docs.length === this.LIMIT_TOP;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoTop = false;
-      this.cdr.detectChanges();
-    }*/
+    });
   }
 
-  async caricaAltreTop() {
-    /*if (!this.lastTopDoc || this.caricamentoAltriTop) return;
-    this.caricamentoAltriTop = true;
-    try {
-      const songsRef = collection(this.firestore, 'songs');
-      const q = query(songsRef, startAfter(this.lastTopDoc), limit(this.LIMIT_TOP));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        this.topRatedSongs.push({ id: doc.id, ...doc.data() });
-      });
-      this.lastTopDoc = querySnapshot.docs[querySnapshot.docs.length - 1] ?? this.lastTopDoc;
-      this.altreTopSongs = querySnapshot.docs.length === this.LIMIT_TOP;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      this.caricamentoAltriTop = false;
-      this.cdr.detectChanges();
-    }*/
+  moreRecent() {
+    this.recentLimit += 5;
+    this.loadRecent();
+  }
+
+  moreTop() {
+    this.topLimit += 5;
+    this.loadTop();
+  }
+
+  getCover(image: string | null): string {
+    if (!image) return 'assets/default-cover.svg';
+    return 'http://localhost:3000' + image;
+  }
+
+  goToAlbum(id: number) {
+    this.router.navigate(['/records', id]);
+  }
+
+  goToArtist(event: any, id: number) {
+    event.stopPropagation();
+    this.router.navigate(['/artists', id]);
+  }
+
+  goToBar() {
+    this.router.navigate(['/songs', this.barOfTheDay.song_id], { queryParams: { annotation: this.barOfTheDay.id } });
   }
 }

@@ -48,6 +48,7 @@ export class AddContentPage implements OnInit {
   public birthDate = '';
   public country = '';
   public bio = '';
+  public source = '';
   public tracks: string[] = [''];
   public duration = '';
   public image: File | null = null;
@@ -116,7 +117,7 @@ export class AddContentPage implements OnInit {
 
   getTypeLabel(type: string): string {
     if (type === 'song') return 'Song';
-    if (type === 'record') return 'Album';
+    if (type === 'record') return 'Record';
     if (type === 'translation') return 'Translation';
     return 'Artist';
   }
@@ -144,6 +145,7 @@ export class AddContentPage implements OnInit {
     this.birthDate = '';
     this.country = '';
     this.bio = '';
+    this.source = '';
     this.tracks = [''];
     this.duration = '';
     this.image = null;
@@ -311,7 +313,7 @@ export class AddContentPage implements OnInit {
             error: (err) => { console.error('Error loading the artist', err); }
           });
         },
-        error: (err) => { this.errorMessage = 'The album to correct was not found'; }
+        error: (err) => { this.errorMessage = 'The record to correct was not found'; }
       });
 
       this.genreService.getRecordGenres(id).subscribe({
@@ -424,7 +426,7 @@ export class AddContentPage implements OnInit {
 
     if (!this.isFormValid()) {
       if (this.isCorrection()) this.errorMessage = 'The title is required';
-      else if (this.type === 'song') this.errorMessage = 'Title, artist and album are required';
+      else if (this.type === 'song') this.errorMessage = 'Title, artist and record are required';
       else if (this.type === 'record') this.errorMessage = 'Title and artist are required';
       else this.errorMessage = 'The name is required';
       return;
@@ -438,6 +440,7 @@ export class AddContentPage implements OnInit {
     const formData = new FormData();
     formData.append('type', this.type);
     formData.append('name', this.name.trim());
+    if (this.source.trim()) formData.append('source', this.source.trim());
 
     if (this.isCorrection()) {
       formData.append('targetId', String(this.correctionId));

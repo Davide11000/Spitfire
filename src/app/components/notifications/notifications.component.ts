@@ -101,12 +101,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'annotation_rejected') return 'rejected your annotation';
     if (type === 'annotation_edit_approved') return 'approved your edit to an annotation';
     if (type === 'annotation_edit_rejected') return 'rejected your edit to an annotation';
-    if (type === 'new_about') return 'wrote an album about to review';
-    if (type === 'new_about_edit') return 'proposed an edit to an album about';
-    if (type === 'about_approved') return 'approved your album about';
-    if (type === 'about_rejected') return 'rejected your album about';
-    if (type === 'about_edit_approved') return 'approved your edit to an album about';
-    if (type === 'about_edit_rejected') return 'rejected your edit to an album about';
+    if (type === 'new_about') return 'wrote a record about to review';
+    if (type === 'new_about_edit') return 'proposed an edit to a record about';
+    if (type === 'about_approved') return 'approved your record about';
+    if (type === 'about_rejected') return 'rejected your record about';
+    if (type === 'about_edit_approved') return 'approved your edit to a record about';
+    if (type === 'about_edit_rejected') return 'rejected your edit to a record about';
     return 'sent you a message';
   }
 

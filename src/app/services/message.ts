@@ -34,6 +34,30 @@ export class Message {
     });
   }
 
+  isBlocked(username: string): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.get(`${this.baseUrl}/${username}/block`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  block(username: string): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.post(`${this.baseUrl}/${username}/block`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  unblock(username: string): Observable<any> {
+    const token = this.auth.getToken();
+
+    return this.http.delete(`${this.baseUrl}/${username}/block`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+
   sendMessage(username: string, text: string): Observable<any> {
     const token = this.auth.getToken();
 

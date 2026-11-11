@@ -111,6 +111,7 @@ const User = {
     await run(`DELETE FROM annotation_reports WHERE username = ?`, [username]);
     await run(`DELETE FROM notifications WHERE username = ? OR from_user = ?`, [username, username]);
     await run(`DELETE FROM messages WHERE sender = ? OR receiver = ?`, [username, username]);
+    await run(`DELETE FROM blocks WHERE blocker = ? OR blocked = ?`, [username, username]);
     await run(`DELETE FROM requests WHERE username = ?`, [username]);
     await run(`UPDATE comments SET username = NULL WHERE username = ?`, [username]);
     await run(`DELETE FROM annotation_votes WHERE username = ?`, [username]);

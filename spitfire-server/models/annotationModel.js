@@ -37,6 +37,19 @@ const Annotation = {
         return get(`SELECT * FROM annotations WHERE id = ?`, [id]);
     },
 
+    findLatest : () => {
+        return get(`SELECT annotations.id, annotations.selected_text, annotations.song_id,
+                      songs.songname, records.id AS record_id, records.recordname, records.release_date,
+                      artists.id AS artist_id, artists.artname
+                    FROM annotations
+                    JOIN songs ON songs.id = annotations.song_id
+                    LEFT JOIN records ON records.id = songs.recordid
+                    LEFT JOIN artists ON artists.id = records.artid
+                    WHERE annotations.status = 'approved'
+                    ORDER BY annotations.id DESC
+                    LIMIT 1`, []);
+    },
+
     findBySong : (songId, username, isModerator) => {
         return all(`SELECT annotations.*, users.foto_profilo,
                       (SELECT COALESCE(SUM(value), 0) FROM annotation_votes WHERE annotation_id = annotations.id) AS score,

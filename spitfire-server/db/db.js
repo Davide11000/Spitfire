@@ -163,6 +163,7 @@ db.exec(`
     tracklist TEXT,
     duration TEXT,
     image TEXT,
+    source TEXT,
     target_id INTEGER,
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -244,9 +245,19 @@ db.exec(`
     receiver TEXT NOT NULL,
     text TEXT NOT NULL,
     is_read INTEGER NOT NULL DEFAULT 0,
+    hidden INTEGER NOT NULL DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sender) REFERENCES users(username),
     FOREIGN KEY (receiver) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS blocks (
+    blocker TEXT NOT NULL,
+    blocked TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (blocker, blocked),
+    FOREIGN KEY (blocker) REFERENCES users(username),
+    FOREIGN KEY (blocked) REFERENCES users(username)
   );
 
   CREATE TABLE IF NOT EXISTS notifications (

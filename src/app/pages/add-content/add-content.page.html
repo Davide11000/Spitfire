@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
+<ion-content class="globalbg theme-light">
   <div class="add-content">
     <div class="card">
       <div class="page-title">
@@ -12,7 +12,7 @@
         </p>
       } @else {
         <p class="page-subtitle">
-          Can't find a song, an album or an artist? Send a request and an admin will add it. Fields marked with * are required.
+          Can't find a song, a record or an artist? Send a request and an admin will add it. Fields marked with * are required.
         </p>
       }
 
@@ -21,7 +21,7 @@
           <ion-label>Song</ion-label>
         </ion-segment-button>
         <ion-segment-button value="record">
-          <ion-label>Album</ion-label>
+          <ion-label>Record</ion-label>
         </ion-segment-button>
         <ion-segment-button value="artist">
           <ion-label>Artist</ion-label>
@@ -54,7 +54,7 @@
         <div class="field">
           <label class="field-label">
             @if (type === 'song') { Song title * }
-            @if (type === 'record') { Album title * }
+            @if (type === 'record') { Record title * }
             @if (type === 'artist') { Artist name * }
           </label>
           <ion-input class="field-input" fill="outline" [(ngModel)]="name" placeholder="Write the name here"></ion-input>
@@ -80,8 +80,8 @@
         <!-- Album: solo per le canzoni -->
         @if (type === 'song') {
           <div class="field">
-            <label class="field-label">Album {{ isCorrection() ? '' : '*' }}</label>
-            <ion-input class="field-input" fill="outline" [value]="albumName" [disabled]="isCorrection()" [debounce]="300" (ionInput)="onAlbumInput($event)" placeholder="Album title"></ion-input>
+            <label class="field-label">Record {{ isCorrection() ? '' : '*' }}</label>
+            <ion-input class="field-input" fill="outline" [value]="albumName" [disabled]="isCorrection()" [debounce]="300" (ionInput)="onAlbumInput($event)" placeholder="Record title"></ion-input>
             @if (albumSuggestions.length > 0) {
               <ion-list class="suggestions">
                 @for (album of albumSuggestions; track album.id) {
@@ -100,7 +100,7 @@
         <!-- Data: uscita per gli album, nascita per l'artista -->
         @if (type !== 'song') {
           <div class="field">
-            <label class="field-label">{{ type === 'artist' ? 'Birth date' : 'Release date' }}</label>
+            <label class="field-label">{{ type === 'artist' ? 'Birth / Foundation date' : 'Release date' }}</label>
             <button class="date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true">
               <ion-icon name="calendar-outline"></ion-icon>
               {{ getDate() ? formatDate(getDate()) : 'Choose a date' }}
@@ -176,6 +176,12 @@
           </div>
         }
 
+        <!-- Fonte: serve all'admin per verificare quello che è stato proposto -->
+        <div class="field">
+          <label class="field-label">Source</label>
+          <ion-input class="field-input" fill="outline" [(ngModel)]="source" placeholder="e.g. a link to Wikipedia, the official site or the record credits"></ion-input>
+        </div>
+
         @if (errorMessage) {
           <ion-text color="danger"><p class="message">{{ errorMessage }}</p></ion-text>
         }
@@ -196,6 +202,8 @@
     <div class="card">
       <div class="requests-title"><b>My requests</b></div>
 
+      <!-- Le richieste scorrono dentro la scheda -->
+      <div class="requests-list">
       @for (request of myRequests; track request.id) {
         <div class="request-row">
           <img class="request-image" [class.round]="request.type === 'artist'" [src]="getRequestImage(request.image)" />
@@ -223,6 +231,7 @@
       } @empty {
         <p class="no-requests">You haven't sent any requests yet.</p>
       }
+      </div>
     </div>
   </div>
 

@@ -14,6 +14,10 @@ export class Annotation {
     return { headers: { Authorization: `Bearer ${this.auth.getToken()}` } };
   }
 
+  getLatest(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/latest`);
+  }
+
   getBySong(songId: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/song/${songId}`, this.headers());
   }

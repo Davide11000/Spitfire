@@ -1,9 +1,9 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
+<ion-content class="globalbg theme-light">
   <div class="discover-page">
     <h1 class="page-title">DISCOVER</h1>
-    <p class="page-subtitle">Answer three questions and we'll suggest five albums for you.</p>
+    <p class="page-subtitle">Answer three questions and we'll suggest five records for you.</p>
 
     @if (step < 4) {
       <div class="steps">
@@ -55,7 +55,7 @@
           </ion-button>
         }
         <ion-button class="square-btn filled" (click)="next()">
-          {{ step === 3 ? 'Find my albums' : 'Next' }}
+          {{ step === 3 ? 'Find my records' : 'Next' }}
           <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
         </ion-button>
       </div>
@@ -64,9 +64,9 @@
     @if (step === 4) {
       <h2 class="question">
         @if (albums.length === 1) {
-          Here's an album you might like
+          Here's a record you might like
         } @else {
-          Here are {{ albums.length }} albums you might like
+          Here are {{ albums.length }} records you might like
         }
       </h2>
 
@@ -95,7 +95,7 @@
               </span>
             </div>
           } @empty {
-            <p class="hint">No albums match your choices. Try with other genres.</p>
+            <p class="hint">No records match your choices. Try with other genres.</p>
           }
         </div>
       }

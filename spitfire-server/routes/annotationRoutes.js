@@ -5,6 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const optionalAuthMiddleware = require("../middleware/optionalAuthMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
+router.get("/latest", annotationController.getLatest);
 router.get("/song/:songId", optionalAuthMiddleware, annotationController.getBySong);
 router.post("/", authMiddleware, annotationController.create);
 

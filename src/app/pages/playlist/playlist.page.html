@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<ion-content class="globalbg">
+<ion-content class="globalbg theme-light">
   @if (playlist) {
     <div class="playlist-header">
       <div class="playlist-cover">
@@ -100,7 +100,7 @@
             <ion-searchbar placeholder="Search a song" [debounce]="300" (ionInput)="onSearch($event)"></ion-searchbar>
           </ion-toolbar>
         </ion-header>
-        <ion-content class="globalbg">
+        <ion-content class="globalbg theme-light">
           @if (searching) {
             <div class="empty-playlist"><ion-spinner name="crescent"></ion-spinner></div>
           }

@@ -16,6 +16,18 @@ export class Artist {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }
 
+    getGenres(id: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}/genres`);
+    }
+
+    getDiscography(id: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}/discography`);
+    }
+
+    getTopSongs(id: number, page: number) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/${id}/top-songs?page=${page}`);
+    }
+
     getRecords(id: string) : Observable<any> {
         return this.http.get(`http://localhost:3000/records/artist/${id}`);
     }

@@ -4,10 +4,10 @@ const Request = {
   create: (username, type, targetId, data) => {
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO requests (username, type, target_id, name, artist_name, album_name, release_date, genres, language,
-                       lyrics, birth_date, country, bio, tracklist, duration, image)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                       lyrics, birth_date, country, bio, tracklist, duration, image, source)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const params = [username, type, targetId, data.name, data.artistName, data.albumName, data.releaseDate, data.genres, data.language,
-                      data.lyrics, data.birthDate, data.country, data.bio, data.tracklist, data.duration, data.image];
+                      data.lyrics, data.birthDate, data.country, data.bio, data.tracklist, data.duration, data.image, data.source || null];
       db.run(query, params, function (err) {
         if (err) reject(err);
         else resolve({ id: this.lastID, username, type, target_id: targetId, status: "pending", ...data });

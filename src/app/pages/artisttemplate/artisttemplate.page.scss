@@ -1,314 +1,264 @@
-.artist-content {
+.globalbg {
   --background: rgb(30, 30, 30);
 }
 
-.artist-hero {
-  position: relative;
+.loading {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+// ---------------------------------------------------------------- parte alta (bianca)
+
+.top-section {
   background: #ffffff;
-  text-align: center;
-  gap: 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    padding: 50px 40px;
-    gap: 35px;
-  }
+  padding: 48px 40px 40px;
+  color: #222222;
 }
 
-.image-container {
-  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.25);
-  border-radius: 12px;
-  overflow: hidden;
-  line-height: 0;
-  flex-shrink: 0;
+.artist-hero {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  flex-wrap: wrap;
 }
 
-.artist-main-img {
-  width: 200px;
-  height: 200px;
+.artist-img {
+  width: 240px;
+  height: 240px;
   object-fit: cover;
-
-  @media (min-width: 992px) {
-    width: 240px;
-    height: 240px;
-  }
+  border-radius: 12px;
+  background: #eeeeee;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
-.artist-info-card-overlay {
+// La scheda grigio chiaro con i dati, come nel template
+.artist-card {
   flex: 1;
-  width: 100%;
+  min-width: 260px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 24px 28px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+  align-items: flex-start;
+  gap: 8px;
+  padding: 28px 30px;
+  background: #f4f4f4;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
-.artist-title {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #121212;
-  margin: 0;
-  letter-spacing: -0.5px;
+.artist-name {
+  margin: 0 0 4px;
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #111111;
+}
 
-  @media (min-width: 992px) {
-    font-size: 3.2rem;
+.meta {
+  color: #555555;
+
+  b {
+    color: #222222;
   }
 }
 
-.artist-subtitle {
-  font-size: 0.95rem;
-  color: #4a4a4a;
-  margin: 0;
-  font-weight: 500;
+.genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 8px;
 }
 
-.artist-description {
-  margin-top: 4px;
-  p {
-    margin: 0;
-    color: #2c2c2c;
-    font-size: 0.95rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-weight: 500;
-
-    @media (min-width: 768px) {
-      justify-content: flex-start;
-    }
-  }
-}
-
-.label-badge {
-  background: rgba(0, 0, 0, 0.07);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.genre {
+  padding: 4px 10px;
+  border: 1px solid #bbbbbb;
+  color: #444444;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: rgb(88, 28, 28);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.favourite-btn {
-  align-self: flex-start;
-  margin-top: 6px;
-  --border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-
-  @media (max-width: 767px) {
-    align-self: center;
-  }
+.bio {
+  max-width: 900px;
+  margin: 28px 0 0;
+  color: #444444;
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
-.content-sections-wrapper {
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  max-width: 1400px;
-  margin: 0 auto;
+// ---------------------------------------------------------------- parte bassa (grigio scuro)
 
-  @media (min-width: 768px) {
-    padding: 50px 40px;
-  }
+.bottom-section {
+  padding: 24px 40px 40px;
+  color: #f2f2f2;
+}
+
+.section {
+  margin-top: 32px;
 }
 
 .section-title {
-  color: #ffffff;
+  margin: 0 0 18px;
   font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  position: relative;
-  letter-spacing: -0.5px;
-}
-
-.transparent-list {
-  background: transparent !important;
-  padding: 0;
+  font-weight: 800;
+  color: #ffffff;
 }
 
 .song-row {
-  --background: rgba(255, 255, 255, 0.02);
-  --background-hover: rgba(255, 255, 255, 0.07);
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --inner-padding-end: 0;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  transition: background-color 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 16px 8px 8px;
+  background: #1e1e1e;
+  cursor: pointer;
+
+  &:nth-child(odd) {
+    background: #262626;
+  }
 
   &:hover {
-    --background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(88, 28, 28, 0.3);
+    background: #333333;
   }
 }
 
-.song-index {
-  color: #a7a7a7;
-  font-size: 1rem;
-  width: 24px;
-  text-align: right;
-  margin-right: 15px;
+.rank {
+  min-width: 32px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #777777;
 }
 
-.song-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  img {
-    border-radius: 4px;
-  }
+.song-cover {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #333333;
 }
 
 .song-info {
-  h2 {
-    color: #ffffff !important;
-    font-size: 1rem !important;
-    font-weight: 600;
-  }
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.song-rating {
+.song-name {
+  font-weight: bold;
+  font-style: italic;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-album,
+.duration {
+  color: #999999;
+  font-size: 0.85rem;
+}
+
+.score {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #e0e0e0;
-  font-size: 0.95rem;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px 10px;
-  border-radius: 20px;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 70px;
+  font-weight: bold;
+  color: #ffffff;
 
-  .star-icon {
+  ion-icon {
     color: #ffc409;
-    font-size: 1.1rem;
   }
 }
 
-.releases-section {
-  margin-bottom: 40px;
+.no-rating {
+  color: #666666;
 }
 
-.releases-grid {
-  padding: 0;
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.album-col {
-  padding: 8px;
+// Discografia: schede scure con la copertina
+.albums {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
 }
 
-.album-card {
-  background: rgba(255, 255, 255, 0.03);
+.album {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: #262626;
+  border: 1px solid #333333;
   border-radius: 8px;
-  padding: 14px;
-  height: 100%;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  transition: background 0.2s, transform 0.2s;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-5px);
-    border-color: rgba(88, 28, 28, 0.4);
+    background: #2f2f2f;
+    transform: translateY(-3px);
   }
-}
-
-.album-img-wrapper {
-  position: relative;
-  width: 100%;
-  padding-top: 100%;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-  margin-bottom: 12px;
 }
 
 .album-cover {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background: #333333;
+}
+
+.album-name {
+  font-weight: bold;
+  color: #ffffff;
 }
 
 .album-meta {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.album-title {
-  color: #ffffff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.album-year {
-  color: #b3b3b3;
-  font-size: 0.8rem;
-  margin: 0;
-}
-
-.center-buttons {
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-}
-
-.load-more-btn {
-  --border-radius: 24px;
-  --font-weight: bold;
+  align-items: center;
+  gap: 10px;
+  color: #999999;
   font-size: 0.85rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  --border-color: rgb(88, 28, 28);
-  --color: #ffffff;
+}
 
-  &:hover {
-    --background: rgb(88, 28, 28);
-    --border-color: rgb(88, 28, 28);
+.album-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #ffffff;
+  font-weight: bold;
+
+  ion-icon {
+    color: #ffc409;
   }
 }
 
-.empty-state {
-  color: #b3b3b3;
-  font-style: italic;
-  padding: 30px 0;
-  width: 100%;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.01);
+.empty {
+  padding: 24px;
+  border: 1px dashed #3a3a3a;
   border-radius: 8px;
-  border: 1px dashed rgba(255, 255, 255, 0.05);
+  color: #999999;
+  font-style: italic;
+  text-align: center;
 }
 
-.artist-actions-wrapper {
+.artist-actions {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
-  padding: 8px 16px 16px 16px;
+  margin-top: 24px;
 }
 
 .artist-action-btn {
@@ -316,7 +266,23 @@
   font-weight: 600;
 }
 
-.artist-actions-wrapper {
-  flex-direction: column;
-  align-items: flex-start;
+@media (max-width: 700px) {
+  .top-section,
+  .bottom-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .artist-img {
+    width: 180px;
+    height: 180px;
+  }
+
+  .artist-name {
+    font-size: 2.2rem;
+  }
+
+  .duration {
+    display: none;
+  }
 }

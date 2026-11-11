@@ -1,97 +1,110 @@
 <app-navbar></app-navbar>
 
-@if (artista) {
-  <ion-content class="globalbg artist-content">
-    <div class="artist-hero">
-      <div class="image-container">
-        <img class="artist-main-img" [src]="artista.image || 'assets/shapes.svg'">
-      </div>
-      <div class="artist-info-card-overlay">
-        <h1 class="artist-title">{{ artista.artname }}</h1>
-        @if (artista.birth_date) {
-          <p class="artist-subtitle">
-            Birth / Foundation: {{ (artista.birth_date | date:'d MMMM y') }}
-          </p>
-        }
-        <ion-button
-          fill="outline"
-          size="small"
-          class="favourite-btn white-btn"
-          [class.active]="isFavourite"
-          (click)="toggleFavourite()">
-          <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
-          {{ isFavourite ? 'In favourites' : 'Add to favourites' }}
-        </ion-button>
-      </div>
-    </div>
-    <div class="content-sections-wrapper">
-      <div class="popular-section">
-        <h2 class="section-title">Popular Songs</h2>
-        <ion-list class="transparent-list">
-          @for (canzone of canzoniPopolari; track canzone.id; let idx = $index) {
-            <ion-item lines="none" (click)="vaiAllaCanzone(canzone.id)" button class="song-row">
-              <span class="song-index" slot="start">{{ idx + 1 }}</span>
-              <ion-avatar slot="start" class="song-avatar">
-                <img [src]="canzone.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'">
-              </ion-avatar>
-              <ion-label class="song-info">
-                <h2>{{ canzone.songname }}</h2>
-              </ion-label>
-              <div slot="end" class="song-rating">
-                <ion-icon name="star" class="star-icon"></ion-icon>
-                <span>{{ canzone.rating || '0.0' }}</span>
-              </div>
-            </ion-item>
-            } @empty {
-            <div class="empty-state">No popular songs found.</div>
+<ion-content class="globalbg">
+  @if (artista) {
+    <!-- Parte alta bianca: foto e scheda con i dati dell'artista -->
+    <div class="top-section theme-light">
+      <div class="artist-hero">
+        <img class="artist-img" [src]="getImmagine(artista.image, 'assets/default-avatar.svg')" />
+        <div class="artist-card">
+          <h1 class="artist-name">{{ artista.artname }}</h1>
+          @if (artista.birth_date) {
+            <span class="meta"><b>Birth / Foundation:</b> {{ artista.birth_date | date:'d MMMM y' }}</span>
           }
-        </ion-list>
-      </div>
-      <div class="releases-section">
-        <div class="releases-header-row">
-          <h2 class="section-title">All Releases</h2>
+          @if (artista.country) {
+            <span class="meta"><b>Country:</b> {{ artista.country }}</span>
+          }
+          @if (generi.length > 0) {
+            <div class="genres">
+              @for (g of generi; track g.id) {
+                <span class="genre">{{ g.name }}</span>
+              }
+            </div>
+          }
+          <ion-button fill="outline" size="small" class="square-btn" [class.filled]="isFavourite" (click)="toggleFavourite()">
+            <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
+            {{ isFavourite ? 'In favourites' : 'Add to favourites' }}
+          </ion-button>
         </div>
-        <ion-grid class="releases-grid">
-          <ion-row>
-            @for (album of albumMostrati; track album.id) {
-              <ion-col size="6" size-sm="4" size-md="3" size-lg="2" class="album-col">
-                <div class="album-card" (click)="vaiAllAlbum(album.id)">
-                  <div class="album-img-wrapper">
-                    <img [src]="album.image || 'https://ionicframework.com/docs/img/demos/avatar.svg'" class="album-cover">
-                  </div>
-                  <div class="album-meta">
-                    <h3 class="album-title">{{ album.recordname }}</h3>
-                    @if (album.release_date)
-                      {
-                      <p class="album-year">{{ album.release_date | date:'yyyy' }}</p>
-                    }
-                  </div>
-                </div>
-              </ion-col>
-              } @empty {
-              <div class="empty-state">No releases found for this artist.</div>
-            }
-          </ion-row>
-        </ion-grid>
-        @if (tuttiGliAlbum.length > limiteAlbum)
-          {
-          <div class="center-buttons">
-            <ion-button (click)="mostraAltriAlbum()" fill="outline" color="warning" class="load-more-btn">
-              Show More
+      </div>
+
+      @if (artista.bio) {
+        <p class="bio">{{ artista.bio }}</p>
+      }
+    </div>
+
+    <!-- Parte bassa grigia scura: top songs, discografia, commenti -->
+    <div class="bottom-section">
+      <!-- Le canzoni con il voto più alto, 10 alla volta -->
+      <section class="section">
+        <h2 class="section-title">Top Songs</h2>
+        <div class="song-list">
+          @for (song of topSongs; track song.id; let i = $index) {
+            <div class="song-row" (click)="vaiAllaCanzone(song.id)">
+              <span class="rank">{{ i + 1 }}</span>
+              <img class="song-cover" [src]="getImmagine(song.image || song.recordimage, 'assets/default-cover.svg')" />
+              <div class="song-info">
+                <span class="song-name">{{ song.songname }}</span>
+                <span class="song-album">{{ song.recordname }}</span>
+              </div>
+              @if (song.duration) {
+                <span class="duration">{{ song.duration }}</span>
+              }
+              <span class="score">
+                @if (song.rating > 0) {
+                  <ion-icon name="star"></ion-icon> {{ song.rating | number:'1.2-2' }}
+                } @else {
+                  <span class="no-rating">–</span>
+                }
+              </span>
+            </div>
+          } @empty {
+            <p class="empty">No songs yet.</p>
+          }
+        </div>
+        @if (topSongs.length < totaleCanzoni) {
+          <div class="load-more">
+            <ion-button fill="outline" class="square-btn" [disabled]="caricandoCanzoni" (click)="caricaAltreCanzoni()">
+              Load more
             </ion-button>
           </div>
         }
-      </div>
-      <div class="artist-actions-wrapper">
-        @if (artista) {
-          <app-contributors type="artist" [id]="artista.id"></app-contributors>
-        }
+      </section>
+
+      <!-- Tutti gli album dell'artista -->
+      <section class="section">
+        <h2 class="section-title">Discography</h2>
+        <div class="albums">
+          @for (album of discografia; track album.id) {
+            <div class="album" (click)="vaiAllAlbum(album.id)">
+              <img class="album-cover" [src]="getImmagine(album.image, 'assets/default-cover.svg')" />
+              <span class="album-name">{{ album.recordname }}</span>
+              <span class="album-meta">
+                {{ album.release_date ? album.release_date.substring(0, 4) : '' }}
+                @if (album.count) {
+                  <span class="album-rating"><ion-icon name="star"></ion-icon> {{ album.average | number:'1.2-2' }}</span>
+                }
+              </span>
+            </div>
+          } @empty {
+            <p class="empty">No records yet.</p>
+          }
+        </div>
+      </section>
+
+      <app-comments type="artist" [id]="artista.id"></app-comments>
+
+      <!-- Come nelle pagine canzone e album: contributors e Correct entry in basso a sinistra -->
+      <div class="artist-actions">
+        <app-contributors type="artist" [id]="artista.id"></app-contributors>
         <ion-button fill="outline" color="medium" size="small" class="artist-action-btn" (click)="vaiACorrectEntry()">
           <ion-icon slot="start" name="create-outline"></ion-icon>
           Correct entry
         </ion-button>
       </div>
     </div>
-    <app-footer></app-footer>
-  </ion-content>
-}
+  } @else {
+    <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
+  }
+  <app-footer></app-footer>
+</ion-content>

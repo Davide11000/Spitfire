@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonButton, IonIcon, IonTextarea, IonSpinner } from '@ionic/angular';
+import { IonButton, IonIcon, IonTextarea, IonSpinner, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { sendOutline, closeOutline, chevronBackOutline, chatbubblesOutline } from 'ionicons/icons';
+import { sendOutline, closeOutline, chevronBackOutline, chatbubblesOutline, banOutline } from 'ionicons/icons';
 import { Message } from '../../services/message';
 import { User } from '../../services/user';
 import { Auth } from '../../services/auth';
@@ -33,11 +33,13 @@ export class ChatComponent implements OnChanges, OnDestroy {
   public newText = '';
   public sending = false;
   public error = '';
+  public blocked = false;
 
   private timer: any = null;
 
-  constructor(private messageService : Message, private userService : User, private auth : Auth, private router : Router) {
-    addIcons({ sendOutline, closeOutline, chevronBackOutline, chatbubblesOutline });
+  constructor(private messageService : Message, private userService : User, private auth : Auth, private router : Router,
+              private alertC : AlertController) {
+    addIcons({ sendOutline, closeOutline, chevronBackOutline, chatbubblesOutline, banOutline });
   }
 
   ngOnChanges() {
@@ -46,9 +48,15 @@ export class ChatComponent implements OnChanges, OnDestroy {
     this.newText = '';
     this.error = '';
     this.photo = null;
+    this.blocked = false;
     this.stopTimer();
 
     if (!this.username) return;
+
+    this.messageService.isBlocked(this.username).subscribe({
+      next: (res) => { this.blocked = res.blocked; },
+      error: (err) => { console.error('Error checking the block', err); }
+    });
 
     this.userService.getUser(this.username).subscribe({
       next: (res) => { this.photo = res.foto_profilo; },
@@ -179,4 +187,31 @@ export class ChatComponent implements OnChanges, OnDestroy {
     });
   }
 
+
+  // Blocco: l'altro può continuare a scrivere, ma i suoi messaggi non arrivano (e non lo sa)
+  async toggleBlock() {
+    if (this.blocked) {
+      this.messageService.unblock(this.username).subscribe({
+        next: () => { this.blocked = false; },
+        error: (err) => { this.error = err.error.message || 'Error unblocking the user'; }
+      });
+      return;
+    }
+
+    const alert = await this.alertC.create({
+      header: 'Block @' + this.username + '?',
+      message: "You won't receive their messages anymore. They won't know you blocked them.",
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Block', role: 'destructive', handler: () => {
+          this.messageService.block(this.username).subscribe({
+            next: () => { this.blocked = true; },
+            error: (err) => { this.error = err.error.message || 'Error blocking the user'; }
+          });
+        } }
+      ]
+    });
+    await alert.present();
+  }
 }

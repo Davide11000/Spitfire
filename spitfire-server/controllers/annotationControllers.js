@@ -222,3 +222,13 @@ exports.rejectEdit = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+// Per la "Bar of the day" della Home: l'ultima annotazione approvata
+exports.getLatest = async (req, res) => {
+    try {
+        const annotation = await Annotation.findLatest();
+        res.json(annotation || null);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
