@@ -3,7 +3,7 @@
 <ion-content class="global theme-light">
   <div class="log">
     <ion-text class="ttl">
-      <h1 class="upper-text">Log in</h1>
+      <h1 class="upper-text">Login</h1>
     </ion-text>
     <div class="input">
       <ion-input label="Username or Email" type="text" label-placement="stacked" fill="outline" [(ngModel)]="id"></ion-input>
@@ -15,6 +15,7 @@
           <p>{{errorMessage}}</p>
         </ion-text>
       }
+      <a class="forgot" routerLink="/forgot-password">Forgot password?</a>
       <ion-button class="square-btn" fill="outline" (click)="onLogin()">Continue</ion-button>
       <ion-text>
         <p class="or">or</p>

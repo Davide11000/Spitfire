@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/userModel");
+const PasswordReset = require("../models/passwordResetModel");
+const { sendMail } = require("../utils/mailer");
 
 const SECRET = process.env.JWT_SECRET;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
@@ -52,7 +55,11 @@ exports.register = async (req, res) => {
 
     const user = await User.create(username, email, hashedPassword);
 
-    res.status(201).json(user);
+    const token = jwt.sign({ username: user.username, email: user.email, ruolo: "utente" }, SECRET, {
+      expiresIn: "1d"
+    });
+
+    res.status(201).json({ username: user.username, email: user.email, token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -162,6 +169,69 @@ exports.getProfile = async (req, res) => {
 
     res.json(safeUser);
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const email = (req.body.email || "").trim();
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "There is no account with this email" });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiresAt = Date.now() + 30 * 60 * 1000;
+
+    await PasswordReset.removeByUsername(user.username);
+    await PasswordReset.create(token, user.username, expiresAt);
+
+    const link = (process.env.FRONTEND_URL || "http://localhost:8100") + "/reset-password?token=" + token;
+    await sendMail(
+      user.email,
+      "Reset your Spitfire password",
+      "<p>Hi <b>" + user.username + "</b>,</p>" +
+        "<p>click the link below to choose a new password. It expires in 30 minutes.</p>" +
+        "<p><a href=\"" + link + "\">Reset my password</a></p>" +
+        "<p>If you didn't ask for it, just ignore this email.</p>"
+    );
+
+    res.json({ message: "We sent you a link to reset the password" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({ message: "Token and password are required" });
+    }
+
+    const reset = await PasswordReset.findByToken(token);
+    if (!reset || reset.expires_at < Date.now()) {
+      return res.status(400).json({ message: "This link is not valid or has expired" });
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.updatePassword(reset.username, hashedPassword);
+    await PasswordReset.removeByUsername(reset.username);
+
+    res.json({ message: "Password changed" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

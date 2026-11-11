@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { LoadingController} from '@ionic/angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { Auth } from '../../services/auth';
@@ -22,7 +22,7 @@ export class RegisterPage implements OnInit {
   public password = '';
   public errorMessage = '';
 
-  constructor(private auth : Auth, private loadingC : LoadingController) { }
+  constructor(private auth : Auth, private loadingC : LoadingController, private router : Router) { }
 
   ngOnInit() {
   }
@@ -43,6 +43,8 @@ export class RegisterPage implements OnInit {
     this.auth.register(this.username, this.email, this.password).subscribe({
       next: (res) => {
         loading.dismiss();
+        this.auth.saveToken(res.token);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         loading.dismiss();

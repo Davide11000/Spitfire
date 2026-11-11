@@ -262,6 +262,13 @@ db.exec(`
     FOREIGN KEY (blocked) REFERENCES users(username)
   );
 
+  CREATE TABLE IF NOT EXISTS password_resets (
+    token TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    expires_at INTEGER NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username)
+  );
+
   CREATE TABLE IF NOT EXISTS role_requests (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL,

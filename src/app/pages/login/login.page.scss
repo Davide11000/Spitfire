@@ -50,3 +50,22 @@ ion-input {
         transform: scale(1.1);
     }
 }
+.forgot {
+    align-self: flex-end;
+    margin-top: -0.5rem;
+    color: #777777;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        color: #222222;
+        text-decoration: underline;
+    }
+}
+
+.info {
+    color: #555555;
+    text-align: center;
+    margin: 0;
+}

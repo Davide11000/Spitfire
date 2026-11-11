@@ -17,6 +17,14 @@ export class Auth {
     return this.http.post(`${this.baseUrl}/register`, {username, email, password});
   }
   
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { token, password });
+  }
+
   getProfile(token: string): Observable<any>{
     return this.http.get(`${this.baseUrl}/profile`, {
       headers: {Authorization: `Bearer ${token}`}
