@@ -9,10 +9,10 @@
       <img class="avatar" [src]="getPhoto(photo)" />
       <b>{{ '@' + username }}</b>
     </div>
-    <button class="block-btn" [class.on]="blocked" (click)="toggleBlock()">
+    <ion-button class="plain block-btn" [class.on]="blocked" (click)="toggleBlock()"><span class="bc">
       <ion-icon name="ban-outline"></ion-icon>
       {{ blocked ? 'Unblock' : 'Block' }}
-    </button>
+    </span></ion-button>
     @if (closable) {
       <ion-button fill="clear" class="icon-btn" (click)="closed.emit()">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>

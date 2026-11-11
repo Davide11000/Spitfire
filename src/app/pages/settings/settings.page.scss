@@ -95,6 +95,7 @@
 }
 
 .option {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -211,4 +212,17 @@ ion-button.danger-btn {
       font-size: 1.2rem;
     }
   }
+}
+
+.back > .bc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option > .bc {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
 }

@@ -1,18 +1,18 @@
 @if (contributors.length > 0) {
   <div class="contributors">
-    <button class="toggle" (click)="open = !open">
+    <ion-button class="plain toggle" (click)="open = !open"><span class="bc">
       <ion-icon name="people-outline"></ion-icon>
       {{ contributors.length }} {{ contributors.length === 1 ? 'contributor' : 'contributors' }}
       <ion-icon [name]="open ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-    </button>
+    </span></ion-button>
 
     @if (open) {
       <div class="list">
         @for (c of contributors; track c.username) {
-          <button class="user" (click)="goToProfile(c.username)">
+          <ion-button class="plain user" (click)="goToProfile(c.username)"><span class="bc">
             <img [src]="getPhoto(c.foto_profilo)" />
             <span>{{ '@' + c.username }}</span>
-          </button>
+          </span></ion-button>
         }
       </div>
     }

@@ -1,5 +1,6 @@
 const Song = require("../models/songModel");
 const Genre = require("../models/genreModel");
+const Record = require("../models/recordModel");
 
 exports.create = async (req, res) => {
   try {
@@ -9,7 +10,12 @@ exports.create = async (req, res) => {
       return res.status(400).json({ message: "Name and recordid required"});
     }
     
-    const song = await Song.create(songname, recordid, image, language, lyrics);
+    const record = await Record.findById(recordid);
+    if (!record) {
+      return res.status(404).json({ message: "Record not found"});
+    }
+
+    const song = await Song.create(songname, recordid, record.artid, image, language, lyrics);
 
     if (genreIds) {
       for (const genreId of genreIds) {

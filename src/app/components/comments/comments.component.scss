@@ -224,7 +224,7 @@
     color: #fff;
   }
 
-  &:disabled {
+  &[disabled] {
     opacity: 0.3;
     cursor: default;
   }
@@ -351,4 +351,28 @@
     font-size: 1.1rem;
     color: #999;
   }
+}
+
+.action > .bc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-btn > .bc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-replies > .bc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toggle-title > .bc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

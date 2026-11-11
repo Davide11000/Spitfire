@@ -44,12 +44,12 @@
           <p class="bio">{{ user.bio }}</p>
         }
         <div class="stats">
-          <button class="stat" (click)="openFollowers()">
+          <ion-button class="plain stat" (click)="openFollowers()"><span class="bc">
             <b>{{ followers.length }}</b> Followers
-          </button>
-          <button class="stat" (click)="openFollowing()">
+          </span></ion-button>
+          <ion-button class="plain stat" (click)="openFollowing()"><span class="bc">
             <b>{{ following.length }}</b> Following
-          </button>
+          </span></ion-button>
         </div>
         <div class="actions">
           @if (!isOwnProfile) {
@@ -87,7 +87,7 @@
 
           <div class="card-grid">
             @for (playlist of playlists; track playlist.id) {
-              <button class="card clickable" (click)="openPlaylist(playlist)">
+              <ion-button class="plain card clickable" (click)="openPlaylist(playlist)"><span class="bc">
                 <div class="card-cover">
                   <img [src]="getCover(playlist.image)" />
                 </div>
@@ -97,7 +97,7 @@
                   }
                   {{ playlist.name }}
                 </div>
-              </button>
+              </span></ion-button>
             } @empty {
               <div class="empty-section">
                 <p>{{ isOwnProfile ? 'You have no playlists yet. Create one!' : 'No playlists yet.' }}</p>
@@ -200,15 +200,15 @@
           <div class="create-body">
             <div class="create-cover-box">
               <input #coverInput type="file" accept="image/*" hidden (change)="onCoverSelected($event)" />
-              <button class="create-cover" (click)="coverInput.click()">
+              <ion-button class="plain create-cover" (click)="coverInput.click()"><span class="bc">
                 <img [src]="newPlaylistPreview || 'assets/default-cover.svg'" />
                 <div class="cover-overlay">
                   <ion-icon name="camera-outline"></ion-icon>
                   <span>{{ newPlaylistImage ? 'Change' : 'Add a cover' }}</span>
                 </div>
-              </button>
+              </span></ion-button>
               @if (newPlaylistImage) {
-                <button class="remove-cover" (click)="removeCover()">Remove</button>
+                <ion-button class="plain remove-cover" (click)="removeCover()"><span class="bc">Remove</span></ion-button>
               }
             </div>
 
@@ -221,14 +221,14 @@
 
               <label class="create-label">Visibility</label>
               <div class="visibility-options">
-                <button class="visibility-option" [class.selected]="newPlaylistPublic" (click)="newPlaylistPublic = true">
+                <ion-button class="plain visibility-option" [class.selected]="newPlaylistPublic" (click)="newPlaylistPublic = true"><span class="bc">
                   <ion-icon name="globe-outline"></ion-icon>
                   <span><b>Public</b><br />Everyone can see it</span>
-                </button>
-                <button class="visibility-option" [class.selected]="!newPlaylistPublic" (click)="newPlaylistPublic = false">
+                </span></ion-button>
+                <ion-button class="plain visibility-option" [class.selected]="!newPlaylistPublic" (click)="newPlaylistPublic = false"><span class="bc">
                   <ion-icon name="lock-closed-outline"></ion-icon>
                   <span><b>Private</b><br />Only you can see it</span>
-                </button>
+                </span></ion-button>
               </div>
             </div>
           </div>

@@ -254,3 +254,53 @@ ion-button.white-btn {
     --color: #ffffff;
   }
 }
+
+ion-button.plain {
+  --background: transparent;
+  --background-hover: transparent;
+  --background-focused: transparent;
+  --background-activated: transparent;
+  --background-hover-opacity: 0;
+  --background-focused-opacity: 0;
+  --background-activated-opacity: 0;
+  --border-radius: 0;
+  --border-width: 0;
+  --box-shadow: none;
+  --ripple-color: transparent;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --color: currentColor;
+  margin: 0;
+  height: auto;
+  min-height: 0;
+  contain: none;
+  width: fit-content;
+  font-family: inherit;
+  font-size: calc(40px / 3);
+  font-weight: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: normal;
+  line-height: 1;
+
+  &::part(native) {
+    min-height: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    white-space: inherit;
+  }
+
+  &.button-disabled {
+    opacity: 1;
+  }
+
+  > .bc {
+    width: 100%;
+    text-align: inherit;
+  }
+}

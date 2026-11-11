@@ -202,7 +202,7 @@ async function replaceSongGenres(songId, genreIds) {
   await addSongGenres(songId, genreIds);
 }
 
-async function addTracks(recordId, tracklist, language, genreIds, username) {
+async function addTracks(recordId, artistId, tracklist, language, genreIds, username) {
   if (!tracklist) return;
 
   const songs = await Song.findByrecordid(recordId);
@@ -211,7 +211,7 @@ async function addTracks(recordId, tracklist, language, genreIds, username) {
     if (!songname.trim()) continue;
     if (songs.some(s => s.songname.toLowerCase() === songname.trim().toLowerCase())) continue;
 
-    const song = await Song.create(songname.trim(), recordId, null, language, null);
+    const song = await Song.create(songname.trim(), recordId, artistId, null, language, null);
     await Contribution.add("song", song.id, username);
     await addSongGenres(song.id, genreIds);
   }
@@ -234,7 +234,7 @@ async function applyCorrection(request) {
     if (request.genres) await replaceRecordGenres(entity.id, genreIds);
 
     const recordGenres = await Genre.findByRecord(entity.id);
-    await addTracks(entity.id, request.tracklist, record.language, recordGenres.map(g => g.id), request.username);
+    await addTracks(entity.id, entity.artid, request.tracklist, record.language, recordGenres.map(g => g.id), request.username);
     return record;
   }
 
@@ -286,7 +286,7 @@ async function applyRequest(request) {
       }
 
       await addRecordGenres(created.id, genreIds);
-      await addTracks(created.id, request.tracklist, request.language, genreIds, request.username);
+      await addTracks(created.id, artist.id, request.tracklist, request.language, genreIds, request.username);
     }
 
     if (request.target_id === null && request.type === "song") {
@@ -307,7 +307,7 @@ async function applyRequest(request) {
         created = await Song.update(existing.id, request.image || existing.image,
                                     request.language || existing.language, request.lyrics || existing.lyrics);
       } else {
-        created = await Song.create(request.name, record.id, request.image, request.language, request.lyrics);
+        created = await Song.create(request.name, record.id, artist.id, request.image, request.language, request.lyrics);
       }
 
       if (request.duration) await Song.setDuration(created.id, request.duration);

@@ -253,7 +253,7 @@
   font-size: 0.95rem;
   cursor: pointer;
 
-  &:disabled {
+  &[disabled] {
     color: #bbb;
     cursor: default;
   }
@@ -305,4 +305,24 @@
   .info {
     gap: 6px;
   }
+}
+
+.dropdown-btn > .bc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.dropdown-item > .bc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.page-link > .bc {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

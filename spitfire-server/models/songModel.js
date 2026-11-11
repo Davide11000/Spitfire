@@ -1,12 +1,12 @@
 const db = require("../db/db");
 
 const Song = {
-  create: (songname, recordid, image, language, lyrics) => {
+  create: (songname, recordid, artid, image, language, lyrics) => {
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO songs (songname, recordid, image, language, lyrics) VALUES (?, ?, ?, ?, ?)`;
-      db.run(query, [songname, recordid, image, language, lyrics], function (err) {
+      const query = `INSERT INTO songs (songname, recordid, artid, image, language, lyrics) VALUES (?, ?, ?, ?, ?, ?)`;
+      db.run(query, [songname, recordid, artid, image, language, lyrics], function (err) {
         if (err) reject(err);
-        else resolve({ id:this.lastID, songname, recordid, image, language, lyrics });
+        else resolve({ id:this.lastID, songname, recordid, artid, image, language, lyrics });
       });
     });
   },

@@ -44,3 +44,15 @@
     border-color: var(--ion-color-primary);
   }
 }
+
+.toggle > .bc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user > .bc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

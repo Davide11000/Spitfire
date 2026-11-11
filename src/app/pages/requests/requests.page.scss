@@ -258,3 +258,9 @@ ion-segment-button {
 .source-text {
   overflow-wrap: anywhere;
 }
+
+.toggle > .bc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

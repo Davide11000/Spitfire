@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular';
+import { IonContent, IonButton } from '@ionic/angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
@@ -10,7 +10,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
   styleUrls: ['./database-standards.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, RouterLink, NavbarComponent, FooterComponent]
+  imports: [IonButton, IonContent, RouterLink, NavbarComponent, FooterComponent]
 })
 export class DatabaseStandardsPage {
 

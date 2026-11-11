@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, IonSearchbar, IonSpinner } from '@ionic/angular';
+import { IonContent, IonIcon, IonSearchbar, IonSpinner, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { heart, flameOutline, timeOutline, musicalNotesOutline, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { Playlist } from '../../services/playlist';
@@ -13,7 +13,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./lists.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonIcon, IonSearchbar, IonSpinner, NgTemplateOutlet, NavbarComponent]
+  imports: [IonButton, IonContent, IonIcon, IonSearchbar, IonSpinner, NgTemplateOutlet, NavbarComponent]
 })
 export class ListsPage {
 

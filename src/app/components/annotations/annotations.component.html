@@ -57,20 +57,20 @@
 
       @if (activeAnnotation.status === 'approved') {
         <div class="votes">
-          <button class="vote" [class.on]="activeAnnotation.my_vote === 1" title="I like it" (click)="vote(activeAnnotation, 1)">
+          <ion-button class="plain vote" [class.on]="activeAnnotation.my_vote === 1" title="I like it" (click)="vote(activeAnnotation, 1)"><span class="bc">
             <ion-icon [name]="activeAnnotation.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
-          </button>
+          </span></ion-button>
           @if (activeAnnotation.score) {
             <span class="score" [class.positive]="activeAnnotation.score > 0" [class.negative]="activeAnnotation.score < 0">{{ getScore(activeAnnotation.score) }}</span>
           }
-          <button class="vote" [class.on]="activeAnnotation.my_vote === -1" title="I don't like it" (click)="vote(activeAnnotation, -1)">
+          <ion-button class="plain vote" [class.on]="activeAnnotation.my_vote === -1" title="I don't like it" (click)="vote(activeAnnotation, -1)"><span class="bc">
             <ion-icon [name]="activeAnnotation.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
-          </button>
+          </span></ion-button>
           @if (!editOpen) {
-            <button class="vote edit" (click)="openEdit(activeAnnotation)">
+            <ion-button class="plain vote edit" (click)="openEdit(activeAnnotation)"><span class="bc">
               <ion-icon name="create-outline"></ion-icon>
               Edit
-            </button>
+            </span></ion-button>
           }
         </div>
       }
@@ -148,7 +148,7 @@
       <label class="report-label">Why are you reporting it?</label>
       <div class="reason-chips">
         @for (m of reasons; track m) {
-          <button class="chip" [class.selected]="reportReason === m" (click)="chooseReason(m)">{{ m }}</button>
+          <ion-button class="plain chip" [class.selected]="reportReason === m" (click)="chooseReason(m)"><span class="bc">{{ m }}</span></ion-button>
         }
       </div>
 

@@ -18,7 +18,7 @@
       <h2 class="question">What are your favourite genres?</h2>
       <div class="chips">
         @for (g of genreList; track g) {
-          <button class="chip" [class.selected]="genres.includes(g)" (click)="toggle(genres, g)">{{ g }}</button>
+          <ion-button class="plain chip" [class.selected]="genres.includes(g)" (click)="toggle(genres, g)"><span class="bc">{{ g }}</span></ion-button>
         }
       </div>
     }
@@ -27,7 +27,7 @@
       <h2 class="question">Which era is your music from?</h2>
       <div class="chips">
         @for (e of eraList; track e) {
-          <button class="chip" [class.selected]="eras.includes(e)" (click)="toggle(eras, e)">{{ e }}s</button>
+          <ion-button class="plain chip" [class.selected]="eras.includes(e)" (click)="toggle(eras, e)"><span class="bc">{{ e }}s</span></ion-button>
         }
       </div>
     }
@@ -37,7 +37,7 @@
       <p class="hint">Optional: skip it if you have no preference.</p>
       <div class="chips">
         @for (l of langList; track l) {
-          <button class="chip" [class.selected]="langs.includes(l)" (click)="toggle(langs, l)">{{ l }}</button>
+          <ion-button class="plain chip" [class.selected]="langs.includes(l)" (click)="toggle(langs, l)"><span class="bc">{{ l }}</span></ion-button>
         }
       </div>
     }

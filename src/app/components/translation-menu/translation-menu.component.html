@@ -1,31 +1,31 @@
 <div class="menu-wrapper">
-  <button class="menu-btn" (click)="menuOpen = !menuOpen">
+  <ion-button class="plain menu-btn" (click)="menuOpen = !menuOpen"><span class="bc">
     <ion-icon name="language-outline"></ion-icon>
     <span>{{ current ? current.language : 'Translations' }}</span>
     <ion-icon class="caret" [name]="menuOpen ? 'caret-up' : 'caret-down'"></ion-icon>
-  </button>
+  </span></ion-button>
 
   @if (menuOpen) {
     <div class="backdrop" (click)="menuOpen = false"></div>
     <div class="menu">
-      <button class="item" [class.active]="!current" (click)="choose(null)">
+      <ion-button class="plain item" [class.active]="!current" (click)="choose(null)"><span class="bc">
         Original{{ originalLanguage ? ' (' + originalLanguage + ')' : '' }}
         @if (!current) {
           <ion-icon name="checkmark"></ion-icon>
         }
-      </button>
+      </span></ion-button>
       @for (t of translations; track t.language) {
-        <button class="item" [class.active]="current?.language === t.language" (click)="choose(t)">
+        <ion-button class="plain item" [class.active]="current?.language === t.language" (click)="choose(t)"><span class="bc">
           {{ t.language }}
           @if (current?.language === t.language) {
             <ion-icon name="checkmark"></ion-icon>
           }
-        </button>
+        </span></ion-button>
       }
-      <button class="item add" (click)="openAdd()">
+      <ion-button class="plain item add" (click)="openAdd()"><span class="bc">
         <ion-icon name="add-outline"></ion-icon>
         Add a translation
-      </button>
+      </span></ion-button>
     </div>
   }
 </div>

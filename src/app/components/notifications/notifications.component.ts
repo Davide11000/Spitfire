@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonIcon, IonSpinner } from '@ionic/angular';
+import { IonIcon, IonSpinner, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language } from 'ionicons/icons';
 import { Notification } from '../../services/notification';
@@ -10,7 +10,7 @@ import { Notification } from '../../services/notification';
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonIcon, IonSpinner],
+  imports: [IonButton, IonIcon, IonSpinner],
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
   @Output() openChat = new EventEmitter<string>();

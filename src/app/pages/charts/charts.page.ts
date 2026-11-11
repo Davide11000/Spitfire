@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel } from '@ionic/angular';
+import { IonContent, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { star, playSkipBack, playSkipForward, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { Chart } from '../../services/chart';
@@ -16,7 +16,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
   styleUrls: ['./charts.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel,
+  imports: [IonButton, IonContent, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel,
             FormsModule, DecimalPipe, NavbarComponent, FooterComponent]
 })
 export class ChartsPage {

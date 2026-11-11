@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonIcon } from '@ionic/angular';
+import { IonIcon, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { peopleOutline, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { Contribution } from '../../services/contribution';
@@ -10,7 +10,7 @@ import { Contribution } from '../../services/contribution';
   templateUrl: './contributors.component.html',
   styleUrls: ['./contributors.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonIcon],
+  imports: [IonButton, IonIcon],
 })
 export class ContributorsComponent implements OnChanges {
   @Input() type!: string;

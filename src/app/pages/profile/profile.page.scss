@@ -171,6 +171,7 @@ ion-button.square-btn.photo-btn {
 }
 
 .card {
+  width: 100%;
   background: none;
   border: none;
   padding: 0;
@@ -529,4 +530,15 @@ ion-button.square-btn.photo-btn {
       --color: #111111;
     }
   }
+}
+
+.card > .bc {
+  text-align: left;
+}
+
+.visibility-option > .bc {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
 }

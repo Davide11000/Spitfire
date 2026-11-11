@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { IonIcon, IonSearchbar } from '@ionic/angular';
+import { IonIcon, IonSearchbar, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { chatbubblesOutline } from 'ionicons/icons';
 import { Message } from '../../services/message';
@@ -13,7 +13,7 @@ import { ChatComponent } from '../chat/chat.component';
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonIcon, IonSearchbar, DatePipe, ChatComponent],
+  imports: [IonButton, IonIcon, IonSearchbar, DatePipe, ChatComponent],
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   @Input() openWith: string | null = null;

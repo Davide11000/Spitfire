@@ -12,19 +12,19 @@
     <div class="list">
       @if (searchText) {
         @for (user of searchResults; track user.username) {
-          <button class="item" (click)="openChat(user.username)">
+          <ion-button class="plain item" (click)="openChat(user.username)"><span class="bc">
             <img class="avatar" [src]="getPhoto(user.foto_profilo)" />
             <div class="item-info">
               <b>{{ '@' + user.username }}</b>
               <span class="preview">Start a chat</span>
             </div>
-          </button>
+          </span></ion-button>
         } @empty {
           <p class="empty-text">No users found</p>
         }
       } @else {
         @for (c of conversations; track c.other_user) {
-          <button class="item" [class.active]="c.other_user === selected" (click)="openChat(c.other_user)">
+          <ion-button class="plain item" [class.active]="c.other_user === selected" (click)="openChat(c.other_user)"><span class="bc">
             <img class="avatar" [src]="getPhoto(c.foto_profilo)" />
             <div class="item-info">
               <div class="item-top">
@@ -43,7 +43,7 @@
                 }
               </div>
             </div>
-          </button>
+          </span></ion-button>
         } @empty {
           <p class="empty-text">No chats yet. Search a user to start one!</p>
         }

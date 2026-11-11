@@ -6,7 +6,7 @@
 
     <nav class="index">
       @for (s of sections; track s.id) {
-        <button class="index-link" (click)="scrollTo(s.id)">{{ s.title }}</button>
+        <ion-button class="plain index-link" (click)="scrollTo(s.id)"><span class="bc">{{ s.title }}</span></ion-button>
       }
     </nav>
 

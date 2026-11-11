@@ -125,7 +125,7 @@
       <label class="pl-label">Your playlists</label>
       <div class="pl-list">
         @for (pl of userPlaylists; track pl.id) {
-          <button class="pl-item" (click)="selectPlaylist(pl)">
+          <ion-button class="plain pl-item" (click)="selectPlaylist(pl)"><span class="bc">
             <img [src]="getImage(pl.image)" />
             <span class="pl-name">
               @if (!pl.is_public) {
@@ -134,7 +134,7 @@
               {{ pl.name }}
             </span>
             <ion-icon class="pl-add" name="add-outline"></ion-icon>
-          </button>
+          </span></ion-button>
         } @empty {
           <p class="pl-empty">You don't have any playlists yet.</p>
         }

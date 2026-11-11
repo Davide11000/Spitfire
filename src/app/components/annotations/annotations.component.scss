@@ -379,3 +379,9 @@
 .report-cancel {
   --color: #ccc;
 }
+
+.vote > .bc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

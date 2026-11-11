@@ -16,10 +16,10 @@
         @if (playlist.description) {
           <p class="playlist-description">{{ playlist.description }}</p>
         }
-        <button class="like-btn" [class.liked]="playlist.liked" [class.disabled]="isOwner" (click)="toggleLike()">
+        <ion-button class="plain like-btn" [class.liked]="playlist.liked" [class.disabled]="isOwner" (click)="toggleLike()"><span class="bc">
           <ion-icon [name]="playlist.liked ? 'heart' : 'heart-outline'"></ion-icon>
           {{ playlist.likes }}
-        </button>
+        </span></ion-button>
         <div class="playlist-meta-row">
           <div class="songs-count">
             <b>{{ songs.length }} songs</b> saved

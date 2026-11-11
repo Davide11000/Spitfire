@@ -9,21 +9,21 @@
 
     <div class="tab-bar">
       <div class="dropdown">
-        <button class="dropdown-btn" (click)="isMenuOpen = !isMenuOpen">
+        <ion-button class="plain dropdown-btn" (click)="isMenuOpen = !isMenuOpen"><span class="bc">
           {{ tab === 'popular' ? 'Popular' : 'Recently updated' }}
           <ion-icon [name]="isMenuOpen ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-        </button>
+        </span></ion-button>
         @if (isMenuOpen) {
           <div class="dropdown-backdrop" (click)="isMenuOpen = false"></div>
           <div class="dropdown-menu">
-            <button class="dropdown-item" [class.active]="tab === 'recent'" (click)="selectTab('recent')">
+            <ion-button class="plain dropdown-item" [class.active]="tab === 'recent'" (click)="selectTab('recent')"><span class="bc">
               <ion-icon name="time-outline"></ion-icon>
               Recently updated
-            </button>
-            <button class="dropdown-item" [class.active]="tab === 'popular'" (click)="selectTab('popular')">
+            </span></ion-button>
+            <ion-button class="plain dropdown-item" [class.active]="tab === 'popular'" (click)="selectTab('popular')"><span class="bc">
               <ion-icon name="flame-outline"></ion-icon>
               Popular
-            </button>
+            </span></ion-button>
           </div>
         }
       </div>

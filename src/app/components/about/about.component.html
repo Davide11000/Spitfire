@@ -48,25 +48,25 @@
 
     @if (about.status === 'approved') {
       <div class="votes">
-        <button class="vote" [class.on]="about.my_vote === 1" title="I like it" (click)="vote(1)">
+        <ion-button class="plain vote" [class.on]="about.my_vote === 1" title="I like it" (click)="vote(1)"><span class="bc">
           <ion-icon [name]="about.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
-        </button>
+        </span></ion-button>
         @if (about.score) {
           <span class="score" [class.positive]="about.score > 0" [class.negative]="about.score < 0">{{ getScore(about.score) }}</span>
         }
-        <button class="vote" [class.on]="about.my_vote === -1" title="I don't like it" (click)="vote(-1)">
+        <ion-button class="plain vote" [class.on]="about.my_vote === -1" title="I don't like it" (click)="vote(-1)"><span class="bc">
           <ion-icon [name]="about.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
-        </button>
+        </span></ion-button>
         @if (!editing) {
-          <button class="vote edit" (click)="openEdit()">
+          <ion-button class="plain vote edit" (click)="openEdit()"><span class="bc">
             <ion-icon name="create-outline"></ion-icon>
             Edit
-          </button>
+          </span></ion-button>
         }
         @if (canModerate) {
-          <button class="vote delete" title="Delete about" (click)="onDelete()">
+          <ion-button class="plain vote delete" title="Delete about" (click)="onDelete()"><span class="bc">
             <ion-icon name="trash-outline"></ion-icon>
-          </button>
+          </span></ion-button>
         }
       </div>
     }

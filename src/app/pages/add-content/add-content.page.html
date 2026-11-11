@@ -96,10 +96,10 @@
         @if (type !== 'song') {
           <div class="field">
             <label class="field-label">{{ type === 'artist' ? 'Birth / Foundation date' : 'Release date' }}</label>
-            <button class="date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true">
+            <ion-button class="plain date-btn" [class.empty]="!getDate()" [class.active]="isDateOpen" (click)="isDateOpen = true"><span class="bc">
               <ion-icon name="calendar-outline"></ion-icon>
               {{ getDate() ? formatDate(getDate()) : 'Choose a date' }}
-            </button>
+            </span></ion-button>
           </div>
         }
 

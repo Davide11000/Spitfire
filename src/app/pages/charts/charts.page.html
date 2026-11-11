@@ -12,32 +12,32 @@
       </ion-segment>
 
       <div class="dropdown">
-        <button class="dropdown-btn" (click)="toggleMenu('year')">
+        <ion-button class="plain dropdown-btn" (click)="toggleMenu('year')"><span class="bc">
           {{ year || 'All time' }}
           <ion-icon [name]="openMenu === 'year' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-        </button>
+        </span></ion-button>
         @if (openMenu === 'year') {
           <div class="dropdown-backdrop" (click)="openMenu = ''"></div>
           <div class="dropdown-menu">
-            <button class="dropdown-item" [class.active]="year === ''" (click)="chooseYear('')">All time</button>
+            <ion-button class="plain dropdown-item" [class.active]="year === ''" (click)="chooseYear('')"><span class="bc">All time</span></ion-button>
             @for (y of years; track y) {
-              <button class="dropdown-item" [class.active]="year === y" (click)="chooseYear(y)">{{ y }}</button>
+              <ion-button class="plain dropdown-item" [class.active]="year === y" (click)="chooseYear(y)"><span class="bc">{{ y }}</span></ion-button>
             }
           </div>
         }
       </div>
 
       <div class="dropdown">
-        <button class="dropdown-btn" (click)="toggleMenu('genre')">
+        <ion-button class="plain dropdown-btn" (click)="toggleMenu('genre')"><span class="bc">
           {{ genre || 'All genres' }}
           <ion-icon [name]="openMenu === 'genre' ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-        </button>
+        </span></ion-button>
         @if (openMenu === 'genre') {
           <div class="dropdown-backdrop" (click)="openMenu = ''"></div>
           <div class="dropdown-menu">
-            <button class="dropdown-item" [class.active]="genre === ''" (click)="chooseGenre('')">All genres</button>
+            <ion-button class="plain dropdown-item" [class.active]="genre === ''" (click)="chooseGenre('')"><span class="bc">All genres</span></ion-button>
             @for (g of genres; track g.id) {
-              <button class="dropdown-item" [class.active]="genre === g.name" (click)="chooseGenre(g.name)">{{ g.name }}</button>
+              <ion-button class="plain dropdown-item" [class.active]="genre === g.name" (click)="chooseGenre(g.name)"><span class="bc">{{ g.name }}</span></ion-button>
             }
           </div>
         }
@@ -78,19 +78,19 @@
 
       @if (totalPages > 1) {
         <div class="pagination">
-          <button class="page-link" [disabled]="page === 1" (click)="goToPage(page - 1)">
+          <ion-button class="plain page-link" [disabled]="page === 1" (click)="goToPage(page - 1)"><span class="bc">
             <ion-icon name="play-skip-back"></ion-icon> Prev
-          </button>
+          </span></ion-button>
           @for (p of getPageButtons(); track $index) {
             @if (p === 0) {
               <span class="dots">...</span>
             } @else {
-              <button class="page-num" [class.active]="p === page" (click)="goToPage(p)">{{ p }}</button>
+              <ion-button class="plain page-num" [class.active]="p === page" (click)="goToPage(p)"><span class="bc">{{ p }}</span></ion-button>
             }
           }
-          <button class="page-link" [disabled]="page === totalPages" (click)="goToPage(page + 1)">
+          <ion-button class="plain page-link" [disabled]="page === totalPages" (click)="goToPage(page + 1)"><span class="bc">
             Next <ion-icon name="play-skip-forward"></ion-icon>
-          </button>
+          </span></ion-button>
         </div>
       }
     }

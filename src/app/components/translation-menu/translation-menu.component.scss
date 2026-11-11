@@ -14,7 +14,7 @@
   font-size: 1rem;
   cursor: pointer;
 
-  span {
+  .bc > span {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
@@ -137,4 +137,22 @@
 
 .tr-cancel {
   --color: #ccc;
+}
+
+.item > .bc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+}
+
+.item.add > .bc {
+  justify-content: flex-start;
+}
+
+.menu-btn > .bc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

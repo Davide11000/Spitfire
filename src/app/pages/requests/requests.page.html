@@ -126,10 +126,10 @@
 
           @if (request.lyrics) {
             <div class="block">
-              <button class="toggle" (click)="toggleLyrics(request)">
+              <ion-button class="plain toggle" (click)="toggleLyrics(request)"><span class="bc">
                 <ion-icon [name]="request.showLyrics ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
                 {{ request.showLyrics ? 'Hide lyrics' : 'Show lyrics' }}
-              </button>
+              </span></ion-button>
               @if (request.showLyrics) {
                 <p class="long-text lyrics">{{ request.lyrics }}</p>
               }
