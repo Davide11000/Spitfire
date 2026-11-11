@@ -22,18 +22,18 @@ import { User } from '../../services/user';
 })
 export class ArtisttemplatePage implements OnInit {
 
-  public artistaId: number | null = null;
-  public artista: any = null;
-  public utenteLoggatoUid = '';
+  public artistId: number | null = null;
+  public artist: any = null;
+  public myUsername = '';
   public isFavourite = false;
 
-  public generi: any[] = [];
-  public discografia: any[] = [];
+  public genres: any[] = [];
+  public discography: any[] = [];
 
   public topSongs: any[] = [];
-  public totaleCanzoni = 0;
-  public paginaCanzoni = 1;
-  public caricandoCanzoni = false;
+  public totalSongs = 0;
+  public songsPage = 1;
+  public loadingSongs = false;
 
   constructor(private route : ActivatedRoute, private router : Router, private auth : Auth,
               private artistService : Artist, private userService : User) {
@@ -43,104 +43,102 @@ export class ArtisttemplatePage implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
-      this.artistaId = id !== null ? Number(id) : null;
-      this.caricaTutto();
+      this.artistId = id !== null ? Number(id) : null;
+      this.loadArtist();
     });
   }
 
-  // Ionic tiene in memoria la pagina: ricarico i dati ogni volta che si entra
   ionViewWillEnter() {
-    this.caricaTutto();
+    this.loadArtist();
   }
 
-  caricaTutto() {
-    if (this.artistaId === null) return;
-    const id = this.artistaId;
-    this.utenteLoggatoUid = this.auth.getUsernameFromToken() || '';
+  loadArtist() {
+    if (this.artistId === null) return;
+    const id = this.artistId;
+    this.myUsername = this.auth.getUsernameFromToken() || '';
 
     this.artistService.getArtist(id).subscribe({
-      next: (res) => { this.artista = res; },
+      next: (res) => { this.artist = res; },
       error: () => { this.router.navigate(['/home']); }
     });
 
     this.artistService.getGenres(id).subscribe({
-      next: (res) => { this.generi = res; },
+      next: (res) => { this.genres = res; },
       error: (err) => console.error(err)
     });
 
     this.artistService.getDiscography(id).subscribe({
-      next: (res) => { this.discografia = res; },
+      next: (res) => { this.discography = res; },
       error: (err) => console.error(err)
     });
 
     this.topSongs = [];
-    this.paginaCanzoni = 1;
-    this.caricaCanzoni();
-    this.controllaSeIsFavourite();
+    this.songsPage = 1;
+    this.loadSongs();
+    this.checkFavourite();
   }
 
-  caricaCanzoni() {
-    if (this.artistaId === null) return;
+  loadSongs() {
+    if (this.artistId === null) return;
 
-    this.caricandoCanzoni = true;
-    this.artistService.getTopSongs(this.artistaId, this.paginaCanzoni).subscribe({
+    this.loadingSongs = true;
+    this.artistService.getTopSongs(this.artistId, this.songsPage).subscribe({
       next: (res) => {
-        // Pagina 1: sostituisco (la pagina può caricarsi due volte all'apertura); dopo: aggiungo in fondo
         this.topSongs = res.page === 1 ? res.songs : [...this.topSongs, ...res.songs];
-        this.totaleCanzoni = res.total;
-        this.caricandoCanzoni = false;
+        this.totalSongs = res.total;
+        this.loadingSongs = false;
       },
       error: (err) => {
         console.error(err);
-        this.caricandoCanzoni = false;
+        this.loadingSongs = false;
       }
     });
   }
 
-  caricaAltreCanzoni() {
-    this.paginaCanzoni++;
-    this.caricaCanzoni();
+  loadMoreSongs() {
+    this.songsPage++;
+    this.loadSongs();
   }
 
-  getImmagine(image: string | null, fallback: string): string {
+  getImage(image: string | null, fallback: string): string {
     if (!image) return fallback;
     return 'http://localhost:3000' + image;
   }
 
-  controllaSeIsFavourite() {
+  checkFavourite() {
     this.isFavourite = false;
-    if (!this.utenteLoggatoUid || this.artistaId === null) return;
+    if (!this.myUsername || this.artistId === null) return;
 
-    this.userService.getFavouriteArtists(this.utenteLoggatoUid).subscribe({
-      next: (res) => { this.isFavourite = res.some((a: any) => a.id === this.artistaId); },
+    this.userService.getFavouriteArtists(this.myUsername).subscribe({
+      next: (res) => { this.isFavourite = res.some((a: any) => a.id === this.artistId); },
       error: (err) => console.error(err)
     });
   }
 
   toggleFavourite() {
-    if (!this.utenteLoggatoUid) {
+    if (!this.myUsername) {
       this.router.navigate(['/login']);
       return;
     }
-    if (this.artistaId === null) return;
+    if (this.artistId === null) return;
 
-    const richiesta = this.isFavourite ? this.userService.removeFavouriteArtist(this.artistaId) : this.userService.addFavouriteArtist(this.artistaId);
-    richiesta.subscribe({
+    const request = this.isFavourite ? this.userService.removeFavouriteArtist(this.artistId) : this.userService.addFavouriteArtist(this.artistId);
+    request.subscribe({
       next: () => { this.isFavourite = !this.isFavourite; },
       error: (err) => console.error(err)
     });
   }
 
-  vaiAllAlbum(id: number) {
+  goToAlbum(id: number) {
     this.router.navigate(['/records', id]);
   }
 
-  vaiAllaCanzone(id: number) {
+  goToSong(id: number) {
     this.router.navigate(['/songs', id]);
   }
 
-  vaiACorrectEntry() {
-    if (this.artistaId === null) return;
-    this.router.navigate(['/add-content'], { queryParams: { correct: 'artist', id: this.artistaId } });
+  goToCorrectEntry() {
+    if (this.artistId === null) return;
+    this.router.navigate(['/add-content'], { queryParams: { correct: 'artist', id: this.artistId } });
   }
 }

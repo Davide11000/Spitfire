@@ -223,7 +223,6 @@ exports.rejectEdit = async (req, res) => {
     }
 };
 
-// Per la "Bar of the day" della Home: l'ultima annotazione approvata
 exports.getLatest = async (req, res) => {
     try {
         const annotation = await Annotation.findLatest();

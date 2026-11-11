@@ -43,6 +43,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/discover/discover.page').then(m => m.DiscoverPage)
   },
   {
+    path: 'database-standards',
+    loadComponent: () => import('./pages/database-standards/database-standards.page').then(m => m.DatabaseStandardsPage)
+  },
+  {
     path: 'charts',
     loadComponent: () => import('./pages/charts/charts.page').then(m => m.ChartsPage)
   },

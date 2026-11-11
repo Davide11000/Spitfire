@@ -12,6 +12,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ChatComponent } from '../../components/chat/chat.component';
 import { MessagesComponent } from '../../components/messages/messages.component';
 import { NotificationsComponent } from '../../components/notifications/notifications.component';
+import { isLightColor } from '../../constants/profile-colors';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +24,7 @@ import { NotificationsComponent } from '../../components/notifications/notificat
 })
 export class ProfilePage implements OnInit {
 
-  public user : any = null; //Salvo in questa variabile i dati dell'utente
+  public user : any = null;
   public isOwnProfile : boolean = false;
   public targetUsername: string | null = null;
   public errorMessage = '';
@@ -36,7 +37,6 @@ export class ProfilePage implements OnInit {
 
   public playlists: any[] = [];
 
-  // Finestra per creare una nuova playlist
   public isCreateOpen = false;
   public newPlaylistName = '';
   public newPlaylistPublic = true;
@@ -45,19 +45,15 @@ export class ProfilePage implements OnInit {
   public newPlaylistPreview = '';
   public createError = '';
   public creating = false;
-  // Playlist da aprire appena la finestra ha finito di chiudersi
   private playlistToOpen: number | null = null;
 
-  // Preferiti
   public favouriteSongs: any[] = [];
   public favouriteRecords: any[] = [];
   public favouriteArtists: any[] = [];
 
-  // Modal con la lista di follower / following
   public isModalOpen = false;
   public modalTitle = '';
   public modalUsers: any[] = [];
-  // Profilo da aprire appena la modal ha finito di chiudersi
   private profileToOpen: string | null = null;
 
   public isChatOpen = false;
@@ -71,13 +67,11 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    // Uso subscribe perché passando da un profilo all'altro la pagina non viene ricreata, cambia solo il parametro
     this.route.paramMap.subscribe(params => {
       const myUsername = this.auth.getUsernameFromToken();
 
       this.targetUsername = params.get("username");
 
-      // Se l'URL è solo /profile apro il mio profilo
       if (!this.targetUsername) {
         this.targetUsername = myUsername;
       }
@@ -92,8 +86,6 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  // Ionic chiama questa funzione ogni volta che si torna sulla pagina (ngOnInit invece parte solo la prima volta):
-  // ricarico le playlist, così dopo averne eliminata una non resta nella lista
   ionViewWillEnter() {
     this.isActive = true;
 
@@ -137,15 +129,15 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  apriCanzone(id: number) {
+  goToSong(id: number) {
     this.router.navigate(['/songs', id]);
   }
 
-  apriAlbum(id: number) {
+  goToAlbum(id: number) {
     this.router.navigate(['/records', id]);
   }
 
-  apriArtista(id: number) {
+  goToArtist(id: number) {
     this.router.navigate(['/artists', id]);
   }
 
@@ -156,7 +148,6 @@ export class ProfilePage implements OnInit {
     this.userService.getUser(username).subscribe({
       next: (res) => { this.user = res; },
       error: (err) => {
-        // Se il profilo che non esiste è il mio, il token è vecchio: logout e vado al login
         if (username === myUsername) {
           this.auth.logout();
           this.router.navigate(['/login']);
@@ -184,7 +175,6 @@ export class ProfilePage implements OnInit {
     this.loadFavourites(username);
   }
 
-  // Se l'immagine non c'è uso quella di default
   getPhoto(photo: string | null): string {
     if (!photo) return 'assets/default-avatar.svg';
     return 'http://localhost:3000' + photo;
@@ -195,7 +185,6 @@ export class ProfilePage implements OnInit {
     return 'http://localhost:3000' + image;
   }
 
-  // La canzone usa la sua immagine, se non ce l'ha quella dell'album
   getSongCover(song: any): string {
     if (song.image) return this.getCover(song.image);
     return this.getCover(song.recordimage);
@@ -287,14 +276,11 @@ export class ProfilePage implements OnInit {
     this.isModalOpen = true;
   }
 
-  // Prima chiudo la modal, poi cambio pagina in onModalClosed():
-  // se cambiassi pagina subito, la modal resterebbe aperta sopra il nuovo profilo
   goToProfile(username: string) {
     this.profileToOpen = username;
     this.isModalOpen = false;
   }
 
-  // Chiamata quando la modal ha finito di chiudersi (didDismiss)
   onModalClosed() {
     this.isModalOpen = false;
 
@@ -309,8 +295,6 @@ export class ProfilePage implements OnInit {
     this.router.navigate(['/playlist', playlist.id]);
   }
 
-  // NUOVA PLAYLIST
-
   onCreatePlaylist() {
     this.newPlaylistName = '';
     this.newPlaylistPublic = true;
@@ -321,8 +305,6 @@ export class ProfilePage implements OnInit {
     this.isCreateOpen = true;
   }
 
-  // Chiamata quando la finestra "New playlist" ha finito di chiudersi (didDismiss):
-  // se la playlist è stata creata apro la sua pagina, se si è premuto Cancel non succede niente
   onCreateClosed() {
     this.isCreateOpen = false;
 
@@ -336,7 +318,7 @@ export class ProfilePage implements OnInit {
   onCoverSelected(event: any) {
     this.createError = '';
     const file = event.target.files[0];
-    event.target.value = ''; // così si può riscegliere lo stesso file
+    event.target.value = '';
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
@@ -345,7 +327,7 @@ export class ProfilePage implements OnInit {
     }
 
     this.newPlaylistImage = file;
-    this.newPlaylistPreview = URL.createObjectURL(file); // anteprima nel browser
+    this.newPlaylistPreview = URL.createObjectURL(file);
   }
 
   removeCover() {
@@ -375,7 +357,6 @@ export class ProfilePage implements OnInit {
       next: (res) => {
         this.creating = false;
         this.playlists.push(res);
-        // Chiudo la finestra: la pagina della playlist si apre in onCreateClosed()
         this.playlistToOpen = res.id;
         this.isCreateOpen = false;
       },
@@ -389,7 +370,7 @@ export class ProfilePage implements OnInit {
   onPhotoSelected(event: any) {
     this.photoError = '';
     const file = event.target.files[0];
-    event.target.value = ''; // svuoto l'input, così si può riscegliere lo stesso file
+    event.target.value = '';
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
@@ -412,4 +393,7 @@ export class ProfilePage implements OnInit {
     });
   }
 
+  hasDarkColor(): boolean {
+    return !!this.user?.profile_color && !isLightColor(this.user.profile_color);
+  }
 }

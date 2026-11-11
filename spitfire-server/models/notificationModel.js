@@ -76,7 +76,6 @@ const Notification = {
         });
     },
 
-    // Notifica collegata a una canzone, un album o un artista (es. richiesta accettata)
     createForContent : (username, type, fromUser, contentType, contentId, text) => {
         return new Promise((resolve, reject) => {
             const query = `INSERT INTO notifications (username, type, from_user, content_type, content_id, text) VALUES (?, ?, ?, ?, ?, ?)`;

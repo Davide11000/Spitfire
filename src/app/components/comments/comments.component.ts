@@ -20,7 +20,6 @@ export class CommentsComponent implements OnChanges {
   @Input() type!: string;
   @Input() id!: number | string;
   @Input() title = 'Comments';
-  // Se true la sezione parte chiusa e si apre con la freccetta (es. "Suggest an improvement")
   @Input() collapsible = false;
   public open = false;
 
@@ -196,7 +195,6 @@ export class CommentsComponent implements OnChanges {
     });
   }
 
-  // Mi piace = +1, non mi piace = -1; cliccando di nuovo lo stesso voto lo tolgo
   vote(comment: any, value: number) {
     if (!this.myUsername) {
       this.goToLogin();

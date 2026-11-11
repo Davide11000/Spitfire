@@ -23,15 +23,15 @@ export class AboutComponent implements OnChanges {
   public about: any = null;
   public loading = true;
 
-  public mioNome: string | null = null;
+  public myUsername: string | null = null;
   public canModerate = false;
 
-  public scrivendo = false;
-  public modificando = false;
-  public testo = '';
-  public errore = '';
-  public messaggio = '';
-  public inviando = false;
+  public writing = false;
+  public editing = false;
+  public text = '';
+  public errorMessage = '';
+  public infoMessage = '';
+  public sending = false;
 
   constructor(private aboutService : About, private auth : Auth, private userService : User, private router : Router,
               private alertC : AlertController) {
@@ -41,24 +41,24 @@ export class AboutComponent implements OnChanges {
   ngOnChanges() {
     if (this.recordId === null || this.recordId === undefined) return;
 
-    this.mioNome = this.auth.getUsernameFromToken();
+    this.myUsername = this.auth.getUsernameFromToken();
     this.canModerate = false;
-    this.scrivendo = false;
-    this.modificando = false;
-    this.errore = '';
-    this.messaggio = '';
+    this.writing = false;
+    this.editing = false;
+    this.errorMessage = '';
+    this.infoMessage = '';
 
-    if (this.mioNome) {
-      this.userService.getUserRole(this.mioNome).subscribe({
+    if (this.myUsername) {
+      this.userService.getUserRole(this.myUsername).subscribe({
         next: (res) => { this.canModerate = res.ruolo === 'admin' || res.ruolo === 'moderatore'; },
         error: (err) => console.error(err)
       });
     }
 
-    this.carica();
+    this.load();
   }
 
-  carica() {
+  load() {
     this.loading = true;
     this.aboutService.getByRecord(this.recordId).subscribe({
       next: (res) => {
@@ -72,61 +72,61 @@ export class AboutComponent implements OnChanges {
     });
   }
 
-  vaiAlLogin() {
+  goToLogin() {
     this.router.navigate(['/login']);
   }
 
-  onTesto(event: any) {
-    this.testo = event.detail.value;
-    this.errore = '';
+  onTextInput(event: any) {
+    this.text = event.detail.value;
+    this.errorMessage = '';
   }
 
-  apriScrittura() {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  openWrite() {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
-    this.testo = '';
-    this.messaggio = '';
-    this.scrivendo = true;
+    this.text = '';
+    this.infoMessage = '';
+    this.writing = true;
   }
 
-  invia() {
-    if (!this.testo.trim()) {
-      this.errore = 'Write something about the record';
+  send() {
+    if (!this.text.trim()) {
+      this.errorMessage = 'Write something about the record';
       return;
     }
 
-    this.inviando = true;
-    this.aboutService.create(this.recordId, this.testo).subscribe({
+    this.sending = true;
+    this.aboutService.create(this.recordId, this.text).subscribe({
       next: (res) => {
-        this.inviando = false;
-        this.scrivendo = false;
-        this.messaggio = res.status === 'pending' ? 'Thanks! A moderator will review it soon.' : '';
-        this.carica();
+        this.sending = false;
+        this.writing = false;
+        this.infoMessage = res.status === 'pending' ? 'Thanks! A moderator will review it soon.' : '';
+        this.load();
       },
       error: (err) => {
-        this.inviando = false;
-        this.errore = err.error.message || 'Error sending the about';
+        this.sending = false;
+        this.errorMessage = err.error.message || 'Error sending the about';
       }
     });
   }
 
-  approva() {
+  approve() {
     this.aboutService.approve(this.about.id).subscribe({
-      next: () => this.carica(),
-      error: (err) => { this.errore = err.error.message || 'Error approving the about'; }
+      next: () => this.load(),
+      error: (err) => { this.errorMessage = err.error.message || 'Error approving the about'; }
     });
   }
 
-  rifiuta() {
+  reject() {
     this.aboutService.reject(this.about.id).subscribe({
-      next: () => this.carica(),
-      error: (err) => { this.errore = err.error.message || 'Error rejecting the about'; }
+      next: () => this.load(),
+      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting the about'; }
     });
   }
 
-  async elimina() {
+  async onDelete() {
     const alert = await this.alertC.create({
       header: 'Delete about?',
       message: 'The about, its votes and its suggestions will be deleted.',
@@ -135,8 +135,8 @@ export class AboutComponent implements OnChanges {
         { text: 'Cancel', role: 'cancel' },
         { text: 'Delete', role: 'destructive', handler: () => {
           this.aboutService.delete(this.about.id).subscribe({
-            next: () => this.carica(),
-            error: (err) => { this.errore = err.error.message || 'Error deleting the about'; }
+            next: () => this.load(),
+            error: (err) => { this.errorMessage = err.error.message || 'Error deleting the about'; }
           });
         } }
       ]
@@ -144,15 +144,14 @@ export class AboutComponent implements OnChanges {
     await alert.present();
   }
 
-  // Mi piace = +1, non mi piace = -1; cliccando di nuovo lo stesso voto lo tolgo
-  vota(valore: number) {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  vote(value: number) {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
 
-    const nuovo = this.about.my_vote === valore ? 0 : valore;
-    this.aboutService.vote(this.about.id, nuovo).subscribe({
+    const newValue = this.about.my_vote === value ? 0 : value;
+    this.aboutService.vote(this.about.id, newValue).subscribe({
       next: (res) => {
         this.about.score = res.score;
         this.about.my_vote = res.my_vote;
@@ -161,53 +160,53 @@ export class AboutComponent implements OnChanges {
     });
   }
 
-  getPunteggio(score: number): string {
+  getScore(score: number): string {
     if (score > 0) return '+' + score;
     return String(score);
   }
 
-  apriModifica() {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  openEdit() {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
-    this.testo = this.about.text;
-    this.messaggio = '';
-    this.modificando = true;
+    this.text = this.about.text;
+    this.infoMessage = '';
+    this.editing = true;
   }
 
-  inviaModifica() {
-    if (!this.testo.trim()) {
-      this.errore = 'The about cannot be empty';
+  sendEdit() {
+    if (!this.text.trim()) {
+      this.errorMessage = 'The about cannot be empty';
       return;
     }
 
-    this.inviando = true;
-    this.aboutService.proposeEdit(this.about.id, this.testo).subscribe({
+    this.sending = true;
+    this.aboutService.proposeEdit(this.about.id, this.text).subscribe({
       next: (res) => {
-        this.inviando = false;
-        this.modificando = false;
-        this.messaggio = res.status === 'pending' ? 'Edit sent! A moderator will review it soon.' : '';
-        this.carica();
+        this.sending = false;
+        this.editing = false;
+        this.infoMessage = res.status === 'pending' ? 'Edit sent! A moderator will review it soon.' : '';
+        this.load();
       },
       error: (err) => {
-        this.inviando = false;
-        this.errore = err.error.message || 'Error sending the edit';
+        this.sending = false;
+        this.errorMessage = err.error.message || 'Error sending the edit';
       }
     });
   }
 
-  approvaModifica(e: any) {
+  approveEdit(e: any) {
     this.aboutService.approveEdit(e.id).subscribe({
-      next: () => this.carica(),
-      error: (err) => { this.errore = err.error.message || 'Error approving the edit'; }
+      next: () => this.load(),
+      error: (err) => { this.errorMessage = err.error.message || 'Error approving the edit'; }
     });
   }
 
-  rifiutaModifica(e: any) {
+  rejectEdit(e: any) {
     this.aboutService.rejectEdit(e.id).subscribe({
-      next: () => this.carica(),
-      error: (err) => { this.errore = err.error.message || 'Error rejecting the edit'; }
+      next: () => this.load(),
+      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting the edit'; }
     });
   }
 }

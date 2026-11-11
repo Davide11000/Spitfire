@@ -5,14 +5,12 @@ const authMiddleware = require("../middleware/authMiddleware");
 const optionalAuthMiddleware = require("../middleware/optionalAuthMiddleware");
 const playlistUploadMiddleware = require("../middleware/playlistUploadMiddleware");
 
-// Creazione: i dati arrivano come form-data, perché insieme può esserci la copertina
 router.post("/", authMiddleware, playlistUploadMiddleware, playlistController.create);
 router.post("/songs", authMiddleware, playlistController.addSong);
 router.delete("/songs", authMiddleware, playlistController.removeSong);
 router.patch("/:playlistId/visibility", authMiddleware, playlistController.setVisibility);
 router.delete("/:playlistId", authMiddleware, playlistController.deletePlaylist);
 
-// optionalAuth: il proprietario vede anche le playlist private
 router.get("/public/popular", playlistController.getPopular);
 router.get("/public/recent", playlistController.getRecent);
 router.get("/public/search", playlistController.searchPublic);

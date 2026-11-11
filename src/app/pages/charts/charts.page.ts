@@ -40,7 +40,6 @@ export class ChartsPage {
     addIcons({ star, playSkipBack, playSkipForward, chevronDownOutline, chevronUpOutline });
   }
 
-  // Ricarico a ogni ingresso: i voti possono essere cambiati
   ionViewWillEnter() {
     this.chartService.getYears().subscribe({
       next: (res) => { this.years = res; },
@@ -106,7 +105,6 @@ export class ChartsPage {
     this.loadChart(page);
   }
 
-  // Pagine da mostrare: la prima, l'ultima e quelle vicine alla pagina attuale; nei buchi metto "..." (0)
   getPageButtons(): number[] {
     const buttons: number[] = [];
 

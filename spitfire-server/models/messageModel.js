@@ -1,7 +1,6 @@
 const db = require("../db/db");
 
 const Message = {
-    // hidden = 1: il destinatario aveva bloccato il mittente, quindi il messaggio lo vede solo chi l'ha scritto
     create : (sender, receiver, text, hidden) => {
         return new Promise((resolve, reject) => {
             const query = `INSERT INTO messages (sender, receiver, text, hidden) VALUES (?, ?, ?, ?)`;

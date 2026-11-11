@@ -22,22 +22,17 @@ import { Song } from '../../services/song';
 })
 export class AddContentPage implements OnInit {
 
-  // I generi arrivano dal server (tabella genres), così l'elenco è uno solo per tutta l'app
   public genreList: any[] = [];
 
   public languageList = ['English', 'Italian', 'Spanish', 'French', 'German', 'Portuguese', 'Japanese', 'Korean',
                          'Instrumental', 'Other'];
 
-  // Menu di genere e lingua: stessa larghezza del campo e classe per lo stile scuro (in global.scss)
   public selectOptions = { cssClass: 'dark-select', size: 'cover' };
 
-  // Le date si possono scegliere fino a oggi
   public today = new Date().toISOString().substring(0, 10);
 
-  // Cosa sta richiedendo l'utente: 'song', 'record' o 'artist'
   public type = 'song';
 
-  // Campi del modulo (non tutti servono per ogni tipo)
   public name = '';
   public artistName = '';
   public albumName = '';
@@ -54,10 +49,8 @@ export class AddContentPage implements OnInit {
   public image: File | null = null;
   public imagePreview = '';
 
-  // Finestra per scegliere la data (uscita o nascita)
   public isDateOpen = false;
 
-  // Suggerimenti mentre si scrive artista e album
   public artistSuggestions: any[] = [];
   public albumSuggestions: any[] = [];
 
@@ -155,7 +148,6 @@ export class AddContentPage implements OnInit {
     this.errorMessage = '';
   }
 
-  // Mentre l'utente scrive l'artista, propongo quelli che esistono già
   onArtistInput(event: any) {
     this.artistName = event.detail.value;
 
@@ -189,7 +181,6 @@ export class AddContentPage implements OnInit {
     this.artistSuggestions = [];
   }
 
-  // Scegliendo un album compilo anche il suo artista
   chooseAlbum(album: any) {
     this.albumName = album.recordname;
     this.artistName = album.artname;
@@ -197,22 +188,17 @@ export class AddContentPage implements OnInit {
     this.artistSuggestions = [];
   }
 
-  // DATA
-
-  // La data scelta: per l'artista è la nascita, per canzoni e album l'uscita
   getDate(): string {
     if (this.type === 'artist') return this.birthDate;
     return this.releaseDate;
   }
 
-  // Mostra la data come GG/MM/AAAA
   formatDate(date: string): string {
     const parts = date.split('-');
     return parts[2] + '/' + parts[1] + '/' + parts[0];
   }
 
   onDateChange(event: any) {
-    // Il valore arriva come "AAAA-MM-GG" (a volte con l'ora dopo): tengo solo la data
     const date = event.detail.value.substring(0, 10);
 
     if (this.type === 'artist') this.birthDate = date;
@@ -220,8 +206,6 @@ export class AddContentPage implements OnInit {
 
     this.isDateOpen = false;
   }
-
-  // TRACKLIST
 
   addTrack() {
     this.tracks.push('');
@@ -235,8 +219,6 @@ export class AddContentPage implements OnInit {
     this.tracks[index] = event.detail.value;
   }
 
-  // IMMAGINE
-
   onImageSelected(event: any) {
     const file = event.target.files[0];
     event.target.value = '';
@@ -248,7 +230,7 @@ export class AddContentPage implements OnInit {
     }
 
     this.image = file;
-    this.imagePreview = URL.createObjectURL(file); // anteprima nel browser
+    this.imagePreview = URL.createObjectURL(file);
   }
 
   removeImage() {
@@ -256,14 +238,11 @@ export class AddContentPage implements OnInit {
     this.imagePreview = '';
   }
 
-  // CORREZIONE
-
   getImageUrl(image: string | null): string {
     if (!image) return '';
     return 'http://localhost:3000' + image;
   }
 
-  // Uso !== null perché anche 0 è un id valido
   isCorrection(): boolean {
     return this.correctionId !== null;
   }
@@ -405,8 +384,6 @@ export class AddContentPage implements OnInit {
     return changes;
   }
 
-  // INVIO
-
   isFormValid(): boolean {
     if (!this.name.trim()) return false;
     if (this.isCorrection()) return true;
@@ -459,7 +436,6 @@ export class AddContentPage implements OnInit {
         this.sending = false;
         this.loadMyRequests();
 
-        // L'admin non passa per le richieste: vado direttamente alla pagina creata/corretta
         if (res.status === 'accepted') {
           this.resetForm();
           this.successMessage = '';

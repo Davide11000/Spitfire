@@ -80,6 +80,23 @@
       }
     </section>
 
+    <section class="box">
+      <h2 class="box-title">Profile color</h2>
+      <p class="box-hint">The background color of your profile page. Everyone who visits your profile will see it.</p>
+      <div class="colors">
+        <button class="color default" [class.selected]="!profileColor" title="Default" (click)="chooseProfileColor(null)">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        @for (c of profileColors; track c.value) {
+          <button class="color" [class.selected]="profileColor === c.value" [style.background]="c.value" [title]="c.name"
+                  (click)="chooseProfileColor(c.value)"></button>
+        }
+      </div>
+      @if (colorError) {
+        <p class="error">{{ colorError }}</p>
+      }
+    </section>
+
     <section class="box danger">
       <h2 class="box-title">Delete account</h2>
       <p class="box-text">

@@ -15,7 +15,7 @@
       </p>
     </div>
 
-    <ion-segment [value]="filter" (ionChange)="onFilterChange($event)" class="filter-segment">
+    <ion-segment [value]="filter" [scrollable]="true" (ionChange)="onFilterChange($event)" class="filter-segment">
       <ion-segment-button value="all">
         <ion-label>All ({{ requests.length }})</ion-label>
       </ion-segment-button>

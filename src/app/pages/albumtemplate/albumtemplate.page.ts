@@ -47,14 +47,14 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   albumId: string | null = null;
   album: any = null;
   tracklist: any[] = [];
-  generi: any[] = [];
-  mioUsername: string | null = null;
-  isPreferito: boolean = false;
-  utenteLoggatoUid: string | null = null;
-  mioNome: string = 'Utente';
+  genres: any[] = [];
+  myUsername: string | null = null;
+  isFavourite: boolean = false;
+  loggedUserId: string | null = null;
+  myName: string = 'User';
   isAdmin: boolean = false;
   isModerator: boolean = false;
-  public stileSfondoCard: string = DEFAULT_HEADER;
+  public headerBackground: string = DEFAULT_HEADER;
 
   private adminSub!: Subscription;
   private moderatorSub!: Subscription;
@@ -64,35 +64,35 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-    this.mioUsername = this.auth.getUsernameFromToken();
+    this.myUsername = this.auth.getUsernameFromToken();
 
     if (this.albumId) {
-      this.caricaDettagliAlbum(this.albumId);
-      this.controllaPreferito();
+      this.loadRecord(this.albumId);
+      this.checkFavourite();
     }
   }
 
-  controllaPreferito() {
-    this.isPreferito = false;
-    if (!this.mioUsername || !this.albumId) return;
+  checkFavourite() {
+    this.isFavourite = false;
+    if (!this.myUsername || !this.albumId) return;
 
-    this.user.getFavouriteRecords(this.mioUsername).subscribe({
-      next: (res) => { this.isPreferito = res.some((r: any) => r.id === Number(this.albumId)); },
+    this.user.getFavouriteRecords(this.myUsername).subscribe({
+      next: (res) => { this.isFavourite = res.some((r: any) => r.id === Number(this.albumId)); },
       error: (err) => console.error(err)
     });
   }
 
-  togglePreferito() {
-    if (!this.mioUsername) {
+  toggleFavourite() {
+    if (!this.myUsername) {
       this.router.navigate(['/login']);
       return;
     }
 
     const id = Number(this.albumId);
-    const richiesta = this.isPreferito ? this.user.removeFavouriteRecord(id) : this.user.addFavouriteRecord(id);
+    const request = this.isFavourite ? this.user.removeFavouriteRecord(id) : this.user.addFavouriteRecord(id);
 
-    richiesta.subscribe({
-      next: () => { this.isPreferito = !this.isPreferito; },
+    request.subscribe({
+      next: () => { this.isFavourite = !this.isFavourite; },
       error: (err) => console.error(err)
     });
   }
@@ -105,14 +105,14 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     if (token) {
       this.auth.getProfile(token).subscribe({
         next: (res) => {
-          this.utenteLoggatoUid = res.id;
-          this.mioNome = res.displayName || "Utente";
+          this.loggedUserId = res.id;
+          this.myName = res.displayName || "User";
         },
         error: (err) => console.error(err)
       });
 
-      if (this.utenteLoggatoUid) {
-        this.user.getUserRole(this.utenteLoggatoUid).subscribe({
+      if (this.loggedUserId) {
+        this.user.getUserRole(this.loggedUserId).subscribe({
           next: (res: any) => {
             if (res.ruolo === "admin") {
               this.isAdmin = true;
@@ -127,19 +127,6 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
       }
     }
 
-
-    /*this.authService.user$.subscribe(user => {
-      if (user) {
-        this.utenteLoggatoUid = user.uid;
-        this.mioNome = user.displayName || 'Utente';
-      } else {
-        this.utenteLoggatoUid = null;
-      }
-      this.cdr.detectChanges();
-    });
-
-    this.adminSub = this.authService.isAdmin$.subscribe(v => { this.isAdmin = v; this.cdr.detectChanges(); });
-    this.moderatorSub = this.authService.isModerator$.subscribe(v => { this.isModerator = v; this.cdr.detectChanges(); });*/
   }
 
   ngOnDestroy() {
@@ -148,7 +135,7 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     if (this.moderatorSub) this.moderatorSub.unsubscribe();
   }
 
-  async caricaDettagliAlbum(id: string) {
+  async loadRecord(id: string) {
     this.record.getRecord(id).subscribe({
       next: (res) => {
         this.album = res;
@@ -157,56 +144,32 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
           error: (err) => console.error(err)
         });
         this.genre.getRecordGenres(parseInt(id)).subscribe({
-          next: (res) => { this.generi = res; },
+          next: (res) => { this.genres = res; },
           error: (err) => console.error(err)
         });
-        //this.tracklist = this.album.tracklist || this.album.canzoni || [];
-        this.estraiColoriCopertina();
+        this.extractCoverColors();
         this.cdr.detectChanges();
       },
       error: (err) => console.error(err)
     });
-    /*try {
-      const docRef = doc(this.firestore, 'albums', id);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        this.album = docSnap.data();
-        this.tracklist = this.album.tracklist || this.album.canzoni || [];
-        this.estraiColoriCopertina();
-        this.cdr.detectChanges();
-      } else {
-        await this.router.navigate(['/home']);
-      }
-    } catch (err) {
-      console.error("Errore nel recupero dell'album da Firestore:", err);
-      await this.router.navigate(['/home']);
-    }*/
   }
 
-  vaiAllaCanzone(songId: number) {
+  goToSong(songId: number) {
     if (songId) {
       this.router.navigate(['/songs/', songId]);
     }
   }
 
-  async vaiAllArtista(id: number) {
+  async goToArtist(id: number) {
     this.artist.getArtist(id).subscribe({
       next: (res) => {
         this.router.navigate(['/artists/', res.id]);
       },
       error: (err) => console.error(err)
     });
-    /*if (!nomeArtista) return;
-    const nomeInMinuscolo = nomeArtista.toLowerCase().trim();
-    const q = query(collection(this.firestore, 'artists'), where('nome_lowercase', '==', nomeInMinuscolo));
-    const snap = await getDocs(q);
-    if (!snap.empty) {
-      this.router.navigate(['/artisttemplate', snap.docs[0].id]);
-    }*/
   }
 
-  vaiACorrectEntry() {
+  goToCorrectEntry() {
     if (!this.albumId) return;
     this.router.navigate(['/add-content'], { queryParams: { correct: 'record', id: this.albumId } });
   }
@@ -216,9 +179,9 @@ export class AlbumtemplatePage implements OnInit, OnDestroy {
     return 'http://localhost:3000' + this.album.image;
   }
 
-  async estraiColoriCopertina() {
+  async extractCoverColors() {
     if (!this.album || !this.album.image) return;
 
-    this.stileSfondoCard = await getCoverGradient(this.getCover());
+    this.headerBackground = await getCoverGradient(this.getCover());
   }
 }

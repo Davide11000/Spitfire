@@ -184,7 +184,6 @@
   }
 }
 
-/* Tasti del proprietario: visibilità ed eliminazione */
 .owner-actions {
   display: flex;
   gap: 10px;
@@ -253,6 +252,31 @@
 }
 
 @media (max-width: 700px) {
+  .playlist-cover {
+    float: none;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 16px;
+  }
+
+  .playlist-info {
+    padding: 0;
+  }
+
+  .playlist-name-wrap {
+    font-size: x-large;
+    overflow-wrap: anywhere;
+  }
+
+  .playlist-meta-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .owner-actions {
+    flex-wrap: wrap;
+  }
+
   .track-row {
     gap: 12px;
   }

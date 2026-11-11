@@ -1,7 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 
-// Come uploadMiddleware, ma per le copertine delle playlist
 const storage = multer.diskStorage({
     destination: "uploads/playlists",
     filename: (req, file, cb) => {
@@ -19,5 +18,4 @@ const upload = multer({
     }
 });
 
-// Il file arriva nel campo "image" (è facoltativo)
 module.exports = upload.single("image");

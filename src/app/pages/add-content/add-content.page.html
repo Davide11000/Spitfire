@@ -29,7 +29,6 @@
       </ion-segment>
 
       <div class="form">
-        <!-- Immagine: copertina per canzoni e album, foto per l'artista -->
         <div class="image-row">
           <div class="image-box">
             @if (imagePreview) {
@@ -50,7 +49,6 @@
           </div>
         </div>
 
-        <!-- Nome: c'è per tutti e tre i tipi -->
         <div class="field">
           <label class="field-label">
             @if (type === 'song') { Song title * }
@@ -60,7 +58,6 @@
           <ion-input class="field-input" fill="outline" [(ngModel)]="name" placeholder="Write the name here"></ion-input>
         </div>
 
-        <!-- Artista: per canzoni e album -->
         @if (type === 'song' || type === 'record') {
           <div class="field">
             <label class="field-label">Artist {{ isCorrection() ? '' : '*' }}</label>
@@ -77,7 +74,6 @@
           </div>
         }
 
-        <!-- Album: solo per le canzoni -->
         @if (type === 'song') {
           <div class="field">
             <label class="field-label">Record {{ isCorrection() ? '' : '*' }}</label>
@@ -97,7 +93,6 @@
           </div>
         }
 
-        <!-- Data: uscita per gli album, nascita per l'artista -->
         @if (type !== 'song') {
           <div class="field">
             <label class="field-label">{{ type === 'artist' ? 'Birth / Foundation date' : 'Release date' }}</label>
@@ -108,7 +103,6 @@
           </div>
         }
 
-        <!-- Genere e lingua: per canzoni e album -->
         @if (type === 'song' || type === 'record') {
           <div class="field-row">
             <div class="field">
@@ -130,7 +124,6 @@
           </div>
         }
 
-        <!-- Testo: solo per le canzoni -->
         @if (type === 'song') {
           <div class="field">
             <label class="field-label">Lyrics <span class="optional">(if the song has lyrics)</span></label>
@@ -142,7 +135,6 @@
           </div>
         }
 
-        <!-- Tracklist: solo per gli album, una canzone per campo -->
         @if (type === 'record') {
           <div class="field">
             <label class="field-label">Tracklist @if (isCorrection()) { <span class="optional">(you can add songs)</span> }</label>
@@ -164,7 +156,6 @@
           </div>
         }
 
-        <!-- Campi dell'artista -->
         @if (type === 'artist') {
           <div class="field">
             <label class="field-label">Country</label>
@@ -176,7 +167,6 @@
           </div>
         }
 
-        <!-- Fonte: serve all'admin per verificare quello che è stato proposto -->
         <div class="field">
           <label class="field-label">Source</label>
           <ion-input class="field-input" fill="outline" [(ngModel)]="source" placeholder="e.g. a link to Wikipedia, the official site or the record credits"></ion-input>
@@ -202,7 +192,6 @@
     <div class="card">
       <div class="requests-title"><b>My requests</b></div>
 
-      <!-- Le richieste scorrono dentro la scheda -->
       <div class="requests-list">
       @for (request of myRequests; track request.id) {
         <div class="request-row">
@@ -235,7 +224,6 @@
     </div>
   </div>
 
-  <!-- Finestra con le liste di giorno, mese e anno -->
   <ion-modal class="date-modal" [isOpen]="isDateOpen" (didDismiss)="isDateOpen = false">
     <ng-template>
       <ion-datetime

@@ -24,14 +24,12 @@ export class NavbarComponent implements OnInit {
   public role = '';
   public isMenuOpen = false;
 
-  // Ricerca
   public searchText = '';
   public foundSongs: any[] = [];
   public foundRecords: any[] = [];
   public foundArtists: any[] = [];
   public foundUsers: any[] = [];
 
-  // Posizione della tendina dei risultati: sotto la barra di ricerca e larga come lei
   public resultsLeft = 0;
   public resultsWidth = 0;
 
@@ -45,8 +43,6 @@ export class NavbarComponent implements OnInit {
     this.checkLogin();
     this.notificationService.startPolling();
 
-    // Ionic tiene in memoria le pagine già aperte, quindi ngOnInit non riparte dopo il login o il logout:
-    // ricontrollo a ogni cambio di pagina
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.checkLogin();
@@ -74,7 +70,6 @@ export class NavbarComponent implements OnInit {
         this.role = res.ruolo;
       },
       error: (err) => {
-        // L'account del token non esiste più (es. database ricreato): faccio il logout
         if (err.status === 404) {
           this.auth.logout();
           this.isLoggedIn = false;
@@ -85,7 +80,6 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  // Se l'utente non ha la foto uso quella di default
   getPhoto(): string {
     if (!this.photo) return 'assets/default-avatar.svg';
     return 'http://localhost:3000' + this.photo;
@@ -95,13 +89,11 @@ export class NavbarComponent implements OnInit {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  // Se l'immagine non c'è uso quella di default
   getImage(image: string | null): string {
     if (!image) return 'assets/default-cover.svg';
     return 'http://localhost:3000' + image;
   }
 
-  // La canzone usa la sua immagine, se non ce l'ha quella dell'album
   getSongImage(song: any): string {
     if (song.image) return this.getImage(song.image);
     return this.getImage(song.recordimage);
@@ -110,7 +102,6 @@ export class NavbarComponent implements OnInit {
   onSearch(event: any, searchBox: HTMLElement) {
     this.searchText = event.detail.value;
 
-    // La barra cambia posto a seconda dello schermo: leggo dove si trova adesso
     const box = searchBox.getBoundingClientRect();
     this.resultsLeft = box.left;
     this.resultsWidth = box.width;
@@ -151,7 +142,6 @@ export class NavbarComponent implements OnInit {
     this.foundUsers = [];
   }
 
-  // Foto profilo di un utente trovato nella ricerca
   getUserPhoto(photo: string | null): string {
     if (!photo) return 'assets/default-avatar.svg';
     return 'http://localhost:3000' + photo;

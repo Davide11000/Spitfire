@@ -1,6 +1,5 @@
 const db = require("../db/db");
 
-// Per ogni tipo: la tabella dei voti, la colonna con l'id e la tabella dove salvo la media
 const tables = {
   song: { ratings: "song_ratings", column: "song_id", target: "songs" },
   record: { ratings: "record_ratings", column: "record_id", target: "records" }
@@ -52,7 +51,6 @@ const Rating = {
     });
   },
 
-  // Salvo la media anche nella colonna rating di songs/records (serve per le classifiche)
   updateAverage: (type, id, average) => {
     const t = tables[type];
     return new Promise((resolve, reject) => {

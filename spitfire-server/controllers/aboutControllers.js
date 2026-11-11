@@ -8,7 +8,6 @@ function isModerator(user) {
     return !!user && (user.ruolo === "admin" || user.ruolo === "moderatore");
 }
 
-// Le notifiche dell'about portano alla pagina dell'album (content_type = record)
 async function notifyModerators(fromUser, type, recordId, albumName) {
     const moderators = await User.findModerators();
 
@@ -37,7 +36,6 @@ exports.getByRecord = async (req, res) => {
 
         const active = await About.findActive("record", req.params.id);
 
-        // Quello in attesa lo vedono solo l'autore e i moderatori
         if (!active || (active.status === "pending" && !moderator && active.username !== username)) {
             return res.json(null);
         }
@@ -167,7 +165,6 @@ exports.proposeEdit = async (req, res) => {
             return res.status(400).json({ message: "Change the text before sending the edit" });
         }
 
-        // Admin e moderatori modificano subito
         if (isModerator(req.user)) {
             await About.createEdit(about.id, username, text.trim(), "approved");
             await About.updateText(about.id, text.trim());

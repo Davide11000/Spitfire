@@ -22,27 +22,27 @@ export class AnnotationsComponent implements OnChanges {
   @Input() lyrics: string | null = null;
   @Input() openId: number | null = null;
 
-  public testo = '';
-  public annotazioni: any[] = [];
-  public segmenti: any[] = [];
+  public lyricsText = '';
+  public annotations: any[] = [];
+  public segments: any[] = [];
 
-  public mioNome: string | null = null;
+  public myUsername: string | null = null;
   public canModerate = false;
 
-  public selezione: any = null;
-  public aperta: any = null;
-  public nuovoTesto = '';
-  public modificaAperta = false;
-  public testoModifica = '';
-  public errore = '';
-  public messaggio = '';
-  public inviando = false;
+  public selection: any = null;
+  public activeAnnotation: any = null;
+  public newText = '';
+  public editOpen = false;
+  public editText = '';
+  public errorMessage = '';
+  public infoMessage = '';
+  public sending = false;
 
-  public segnalazioneAperta = false;
-  public motivo = '';
-  public erroreSegnalazione = '';
-  public segnalando = false;
-  public motivi = ['Wrong meaning', 'Spam', 'Offensive language', 'Copied from elsewhere', 'Off topic'];
+  public isReportOpen = false;
+  public reportReason = '';
+  public reportError = '';
+  public reporting = false;
+  public reasons = ['Wrong meaning', 'Spam', 'Offensive language', 'Copied from elsewhere', 'Off topic'];
 
   constructor(private annotationService : Annotation, private auth : Auth, private userService : User, private router : Router,
               private alertC : AlertController, private reportService : Report, private toastC : ToastController) {
@@ -50,158 +50,158 @@ export class AnnotationsComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    this.testo = (this.lyrics || '').replace(/\r\n/g, '\n');
-    this.mioNome = this.auth.getUsernameFromToken();
+    this.lyricsText = (this.lyrics || '').replace(/\r\n/g, '\n');
+    this.myUsername = this.auth.getUsernameFromToken();
     this.canModerate = false;
 
-    if (this.mioNome) {
-      this.userService.getUserRole(this.mioNome).subscribe({
+    if (this.myUsername) {
+      this.userService.getUserRole(this.myUsername).subscribe({
         next: (res) => { this.canModerate = res.ruolo === 'admin' || res.ruolo === 'moderatore'; },
         error: (err) => console.error(err)
       });
     }
 
-    this.caricaAnnotazioni();
+    this.loadAnnotations();
   }
 
-  caricaAnnotazioni() {
+  loadAnnotations() {
     if (!this.songId) return;
 
     this.annotationService.getBySong(this.songId).subscribe({
       next: (res) => {
-        this.annotazioni = res;
-        this.costruisciSegmenti();
+        this.annotations = res;
+        this.buildSegments();
 
-        const daAprire = this.aperta ? this.aperta.id : this.openId;
-        if (daAprire) {
-          const a = this.annotazioni.find(x => x.id === Number(daAprire));
-          if (a) this.aperta = a;
+        const toOpen = this.activeAnnotation ? this.activeAnnotation.id : this.openId;
+        if (toOpen) {
+          const a = this.annotations.find(x => x.id === Number(toOpen));
+          if (a) this.activeAnnotation = a;
         }
       },
       error: (err) => console.error(err)
     });
   }
 
-  costruisciSegmenti() {
-    this.segmenti = [];
-    let posizione = 0;
+  buildSegments() {
+    this.segments = [];
+    let position = 0;
 
-    const valide = this.annotazioni
-      .filter(a => this.testo.substring(a.start_index, a.end_index) === a.selected_text)
+    const valid = this.annotations
+      .filter(a => this.lyricsText.substring(a.start_index, a.end_index) === a.selected_text)
       .sort((a, b) => a.start_index - b.start_index);
 
-    for (const a of valide) {
-      if (a.start_index < posizione) continue;
-      if (a.start_index > posizione) {
-        this.segmenti.push({ testo: this.testo.substring(posizione, a.start_index), annotazione: null });
+    for (const a of valid) {
+      if (a.start_index < position) continue;
+      if (a.start_index > position) {
+        this.segments.push({ lyricsText: this.lyricsText.substring(position, a.start_index), annotation: null });
       }
-      this.segmenti.push({ testo: a.selected_text, annotazione: a });
-      posizione = a.end_index;
+      this.segments.push({ lyricsText: a.selected_text, annotation: a });
+      position = a.end_index;
     }
 
-    if (posizione < this.testo.length) {
-      this.segmenti.push({ testo: this.testo.substring(posizione), annotazione: null });
+    if (position < this.lyricsText.length) {
+      this.segments.push({ lyricsText: this.lyricsText.substring(position), annotation: null });
     }
   }
 
-  onSelezione(box: HTMLElement) {
+  onSelection(box: HTMLElement) {
     const sel = window.getSelection();
     if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
 
     const range = sel.getRangeAt(0);
     if (!box.contains(range.startContainer) || !box.contains(range.endContainer)) return;
 
-    const prima = document.createRange();
-    prima.selectNodeContents(box);
-    prima.setEnd(range.startContainer, range.startOffset);
+    const before = document.createRange();
+    before.selectNodeContents(box);
+    before.setEnd(range.startContainer, range.startOffset);
 
-    let start = prima.toString().length;
+    let start = before.toString().length;
     let end = start + range.toString().length;
 
-    while (start < end && /\s/.test(this.testo[start])) start++;
-    while (end > start && /\s/.test(this.testo[end - 1])) end--;
+    while (start < end && /\s/.test(this.lyricsText[start])) start++;
+    while (end > start && /\s/.test(this.lyricsText[end - 1])) end--;
     if (start >= end) return;
 
-    this.selezione = { start, end, testo: this.testo.substring(start, end) };
-    this.aperta = null;
-    this.nuovoTesto = '';
-    this.errore = '';
-    this.messaggio = '';
+    this.selection = { start, end, lyricsText: this.lyricsText.substring(start, end) };
+    this.activeAnnotation = null;
+    this.newText = '';
+    this.errorMessage = '';
+    this.infoMessage = '';
   }
 
-  apriAnnotazione(a: any) {
-    this.aperta = a;
-    this.selezione = null;
-    this.modificaAperta = false;
-    this.errore = '';
-    this.messaggio = '';
+  openAnnotation(a: any) {
+    this.activeAnnotation = a;
+    this.selection = null;
+    this.editOpen = false;
+    this.errorMessage = '';
+    this.infoMessage = '';
   }
 
-  chiudi() {
-    this.aperta = null;
-    this.selezione = null;
-    this.modificaAperta = false;
-    this.errore = '';
-    this.messaggio = '';
+  close() {
+    this.activeAnnotation = null;
+    this.selection = null;
+    this.editOpen = false;
+    this.errorMessage = '';
+    this.infoMessage = '';
     window.getSelection()?.removeAllRanges();
   }
 
-  vaiAlLogin() {
+  goToLogin() {
     this.router.navigate(['/login']);
   }
 
-  vaiAlProfilo(username: string | null) {
+  goToProfile(username: string | null) {
     if (username) this.router.navigate(['/profile', username]);
   }
 
-  getFoto(foto: string | null): string {
-    if (!foto) return 'assets/default-avatar.svg';
-    return 'http://localhost:3000' + foto;
+  getPhoto(photo: string | null): string {
+    if (!photo) return 'assets/default-avatar.svg';
+    return 'http://localhost:3000' + photo;
   }
 
-  onNuovoTesto(event: any) {
-    this.nuovoTesto = event.detail.value;
-    this.errore = '';
+  onNewTextInput(event: any) {
+    this.newText = event.detail.value;
+    this.errorMessage = '';
   }
 
-  inviaAnnotazione() {
-    if (!this.nuovoTesto.trim()) {
-      this.errore = 'Write your annotation first';
+  sendAnnotation() {
+    if (!this.newText.trim()) {
+      this.errorMessage = 'Write your annotation first';
       return;
     }
 
-    this.inviando = true;
-    this.annotationService.create(this.songId, this.selezione.start, this.selezione.end, this.nuovoTesto).subscribe({
+    this.sending = true;
+    this.annotationService.create(this.songId, this.selection.start, this.selection.end, this.newText).subscribe({
       next: (res) => {
-        this.inviando = false;
-        this.selezione = null;
-        this.aperta = { id: res.id };
-        this.messaggio = res.status === 'pending' ? 'Annotation sent! A moderator will review it soon.' : '';
+        this.sending = false;
+        this.selection = null;
+        this.activeAnnotation = { id: res.id };
+        this.infoMessage = res.status === 'pending' ? 'Annotation sent! A moderator will review it soon.' : '';
         window.getSelection()?.removeAllRanges();
-        this.caricaAnnotazioni();
+        this.loadAnnotations();
       },
       error: (err) => {
-        this.inviando = false;
-        this.errore = err.error.message || 'Error saving the annotation';
+        this.sending = false;
+        this.errorMessage = err.error.message || 'Error saving the annotation';
       }
     });
   }
 
-  approva(a: any) {
+  approve(a: any) {
     this.annotationService.approve(a.id).subscribe({
-      next: () => { this.messaggio = 'Annotation approved'; this.caricaAnnotazioni(); },
-      error: (err) => { this.errore = err.error.message || 'Error approving'; }
+      next: () => { this.infoMessage = 'Annotation approved'; this.loadAnnotations(); },
+      error: (err) => { this.errorMessage = err.error.message || 'Error approving'; }
     });
   }
 
-  rifiuta(a: any) {
+  reject(a: any) {
     this.annotationService.reject(a.id).subscribe({
-      next: () => { this.aperta = null; this.caricaAnnotazioni(); },
-      error: (err) => { this.errore = err.error.message || 'Error rejecting'; }
+      next: () => { this.activeAnnotation = null; this.loadAnnotations(); },
+      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting'; }
     });
   }
 
-  async elimina(a: any) {
+  async onDelete(a: any) {
     const alert = await this.alertC.create({
       header: 'Delete annotation?',
       message: 'The annotation, its votes and its suggestions will be deleted.',
@@ -210,8 +210,8 @@ export class AnnotationsComponent implements OnChanges {
         { text: 'Cancel', role: 'cancel' },
         { text: 'Delete', role: 'destructive', handler: () => {
           this.annotationService.delete(a.id).subscribe({
-            next: () => { this.chiudi(); this.caricaAnnotazioni(); },
-            error: (err) => { this.errore = err.error.message || 'Error deleting the annotation'; }
+            next: () => { this.close(); this.loadAnnotations(); },
+            error: (err) => { this.errorMessage = err.error.message || 'Error deleting the annotation'; }
           });
         } }
       ]
@@ -219,14 +219,14 @@ export class AnnotationsComponent implements OnChanges {
     await alert.present();
   }
 
-  vota(a: any, valore: number) {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  vote(a: any, value: number) {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
 
-    const nuovo = a.my_vote === valore ? 0 : valore;
-    this.annotationService.vote(a.id, nuovo).subscribe({
+    const newValue = a.my_vote === value ? 0 : value;
+    this.annotationService.vote(a.id, newValue).subscribe({
       next: (res) => {
         a.score = res.score;
         a.my_vote = res.my_vote;
@@ -235,51 +235,51 @@ export class AnnotationsComponent implements OnChanges {
     });
   }
 
-  getPunteggio(score: number): string {
+  getScore(score: number): string {
     if (score > 0) return '+' + score;
     return String(score);
   }
 
-  puoSegnalare(a: any): boolean {
-    return a.status === 'approved' && a.username !== this.mioNome;
+  canReport(a: any): boolean {
+    return a.status === 'approved' && a.username !== this.myUsername;
   }
 
-  apriSegnalazione() {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  openReport() {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
 
-    this.motivo = '';
-    this.erroreSegnalazione = '';
-    this.segnalazioneAperta = true;
+    this.reportReason = '';
+    this.reportError = '';
+    this.isReportOpen = true;
   }
 
-  chiudiSegnalazione() {
-    this.segnalazioneAperta = false;
+  closeReport() {
+    this.isReportOpen = false;
   }
 
-  scegliMotivo(motivo: string) {
-    this.motivo = motivo;
-    this.erroreSegnalazione = '';
+  chooseReason(reportReason: string) {
+    this.reportReason = reportReason;
+    this.reportError = '';
   }
 
-  onMotivo(event: any) {
-    this.motivo = event.detail.value;
-    this.erroreSegnalazione = '';
+  onReasonInput(event: any) {
+    this.reportReason = event.detail.value;
+    this.reportError = '';
   }
 
-  inviaSegnalazione() {
-    if (!this.motivo.trim()) {
-      this.erroreSegnalazione = 'Please write the reason of the report';
+  sendReport() {
+    if (!this.reportReason.trim()) {
+      this.reportError = 'Please write the reason of the report';
       return;
     }
 
-    this.segnalando = true;
-    this.reportService.reportAnnotation(this.aperta.id, this.motivo).subscribe({
+    this.reporting = true;
+    this.reportService.reportAnnotation(this.activeAnnotation.id, this.reportReason).subscribe({
       next: async (res) => {
-        this.segnalando = false;
-        this.segnalazioneAperta = false;
+        this.reporting = false;
+        this.isReportOpen = false;
 
         const toast = await this.toastC.create({
           message: 'Thanks! Your report has been sent to the moderators.',
@@ -291,51 +291,51 @@ export class AnnotationsComponent implements OnChanges {
         await toast.present();
       },
       error: (err) => {
-        this.segnalando = false;
-        this.erroreSegnalazione = err.error.message || 'Error sending the report';
+        this.reporting = false;
+        this.reportError = err.error.message || 'Error sending the report';
       }
     });
   }
 
-  apriModifica(a: any) {
-    if (!this.mioNome) {
-      this.vaiAlLogin();
+  openEdit(a: any) {
+    if (!this.myUsername) {
+      this.goToLogin();
       return;
     }
 
-    this.testoModifica = a.text;
-    this.modificaAperta = true;
-    this.errore = '';
-    this.messaggio = '';
+    this.editText = a.text;
+    this.editOpen = true;
+    this.errorMessage = '';
+    this.infoMessage = '';
   }
 
-  onTestoModifica(event: any) {
-    this.testoModifica = event.detail.value;
-    this.errore = '';
+  onEditTextInput(event: any) {
+    this.editText = event.detail.value;
+    this.errorMessage = '';
   }
 
-  inviaModifica(a: any) {
-    this.annotationService.proposeEdit(a.id, this.testoModifica).subscribe({
+  sendEdit(a: any) {
+    this.annotationService.proposeEdit(a.id, this.editText).subscribe({
       next: (res) => {
-        this.modificaAperta = false;
-        this.messaggio = res.status === 'pending' ? 'Edit sent! A moderator will review it soon.' : 'Annotation updated';
-        this.caricaAnnotazioni();
+        this.editOpen = false;
+        this.infoMessage = res.status === 'pending' ? 'Edit sent! A moderator will review it soon.' : 'Annotation updated';
+        this.loadAnnotations();
       },
-      error: (err) => { this.errore = err.error.message || 'Error sending the edit'; }
+      error: (err) => { this.errorMessage = err.error.message || 'Error sending the edit'; }
     });
   }
 
-  approvaModifica(e: any) {
+  approveEdit(e: any) {
     this.annotationService.approveEdit(e.id).subscribe({
-      next: () => { this.messaggio = 'Edit approved'; this.caricaAnnotazioni(); },
-      error: (err) => { this.errore = err.error.message || 'Error approving the edit'; }
+      next: () => { this.infoMessage = 'Edit approved'; this.loadAnnotations(); },
+      error: (err) => { this.errorMessage = err.error.message || 'Error approving the edit'; }
     });
   }
 
-  rifiutaModifica(e: any) {
+  rejectEdit(e: any) {
     this.annotationService.rejectEdit(e.id).subscribe({
-      next: () => { this.caricaAnnotazioni(); },
-      error: (err) => { this.errore = err.error.message || 'Error rejecting the edit'; }
+      next: () => { this.loadAnnotations(); },
+      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting the edit'; }
     });
   }
 }

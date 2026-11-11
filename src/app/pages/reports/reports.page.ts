@@ -71,7 +71,6 @@ export class ReportsPage implements OnInit {
     });
   }
 
-  // Raggruppo le segnalazioni per annotazione
   loadAnnotationReports() {
     this.reportService.getAnnotationReports().subscribe({
       next: (res) => {

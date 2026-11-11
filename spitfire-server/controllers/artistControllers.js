@@ -81,7 +81,6 @@ exports.getDiscography = async (req, res) => {
   }
 };
 
-// Top songs a pagine di 10 (il "Load more" chiede la pagina successiva)
 exports.getTopSongs = async (req, res) => {
   try {
     const limit = 10;

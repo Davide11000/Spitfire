@@ -16,14 +16,11 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: "Playlist name is required"});
         }
 
-        // I dati arrivano come form-data (per via dell'immagine), quindi isPublic è il testo "true" o "false".
-        // Se manca, la playlist è pubblica
         let isPublic = true;
         if (req.body.isPublic === "false" || req.body.isPublic === false) {
             isPublic = false;
         }
 
-        // La copertina è facoltativa: se c'è, multer l'ha già salvata in uploads/playlists
         let image = null;
         if (req.file) {
             image = "/uploads/playlists/" + req.file.filename;
@@ -140,14 +137,12 @@ exports.deletePlaylist = async (req, res) => {
       return res.status(403).json({ message: "You are not the owner of this playlist" });
     }
 
-    // Prima tolgo le canzoni (tabella playlist_songs), poi la playlist
     await Playlist.removeAllSongs(playlistId);
     await Playlist.removeAllLikes(playlistId);
     await Notification.removeByPlaylist(playlistId);
     await Comment.removeByTarget("playlist", playlistId);
     const result = await Playlist.delete(playlistId);
 
-    // Cancello dal disco la copertina, se c'era
     if (playlist.image) {
       fs.unlink("." + playlist.image, () => {});
     }
@@ -168,7 +163,6 @@ exports.getSongs = async (req, res) => {
       return res.status(404).json({ message: "Playlist not found" });
     }
 
-    // Una playlist privata la può vedere solo il suo proprietario
     if (!playlist.is_public && (!req.user || req.user.username !== playlist.username)) {
       return res.status(403).json({ message: "This playlist is private" });
     }
@@ -186,7 +180,6 @@ exports.getUserPlaylists = async (req, res) => {
     const username = req.params.username;
     let playlists;
 
-    // Il proprietario vede tutte le sue playlist, gli altri solo quelle pubbliche
     if (req.user && req.user.username === username) {
       playlists = await Playlist.findByUsername(username);
     } else {
@@ -209,7 +202,6 @@ exports.getPlaylistById = async (req, res) => {
       return res.status(404).json({ message: "Playlist not found" });
     }
 
-    // Una playlist privata la può vedere solo il suo proprietario
     if (!playlist.is_public && (!req.user || req.user.username !== playlist.username)) {
       return res.status(403).json({ message: "This playlist is private" });
     }

@@ -2,8 +2,6 @@ const db = require("../db/db");
 
 const Favourite = {
 
-  // ARTISTI
-
   addArtist: (username, artistId) => {
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO favourite_artists (username, artist_id) VALUES (?, ?)`;
@@ -36,8 +34,6 @@ const Favourite = {
       });
     });
   },
-
-  // ALBUM
 
   addRecord: (username, recordId) => {
     return new Promise((resolve, reject) => {
@@ -72,8 +68,6 @@ const Favourite = {
       });
     });
   },
-
-  // CANZONI
 
   addSong: (username, songId) => {
     return new Promise((resolve, reject) => {

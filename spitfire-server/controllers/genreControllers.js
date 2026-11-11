@@ -11,8 +11,6 @@ exports.getAll = async (req, res) => {
   }
 };
 
-// ALBUM
-
 exports.getRecordGenres = async (req, res) => {
   try {
     const recordId = req.params.recordId;
@@ -80,8 +78,6 @@ exports.removeGenreFromRecord = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// CANZONI
 
 exports.getSongGenres = async (req, res) => {
   try {

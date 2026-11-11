@@ -18,9 +18,6 @@ function get(query, params) {
   });
 }
 
-// In classifica entrano solo gli album/canzoni con almeno un voto.
-// Ordine: media più alta, a parità di media chi ha più voti.
-// Il filtro per anno usa la data di uscita dell'album (anche per le canzoni), quello per genere i generi collegati
 const Chart = {
   getRecords: (year, genre, limit, offset) => {
     return all(`SELECT records.id, records.recordname AS name, records.image, records.release_date,
@@ -72,7 +69,6 @@ const Chart = {
                                             WHERE song_genres.song_id = songs.id AND genres.name = ?))`, [year, year, genre, genre]);
   },
 
-  // Gli anni in cui è uscito almeno un album, dal più recente
   getYears: () => {
     return all(`SELECT DISTINCT substr(release_date, 1, 4) AS year
                 FROM records

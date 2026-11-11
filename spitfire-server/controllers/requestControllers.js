@@ -31,7 +31,6 @@ function getEntityName(type, entity) {
   return entity.artname;
 }
 
-// L'admin non passa per le richieste: quello che invia viene applicato subito
 async function sendOrApply(req, res, result, name, notificationType) {
   if (req.user.ruolo === "admin") {
     const request = await Request.findById(result.id);
@@ -50,7 +49,6 @@ exports.create = async (req, res) => {
   try {
     const username = req.user.username;
     const { type, targetId, name, artistName, albumName, releaseDate, genres, language, lyrics, birthDate, country, bio, tracklist, duration, source } = req.body;
-    // È una correzione se c'è targetId (anche 0 è un id valido)
     const isCorrection = targetId !== undefined && targetId !== "";
 
     if (type === "translation") {
@@ -246,8 +244,6 @@ async function applyCorrection(request) {
   return song;
 }
 
-// Applica una richiesta: crea o corregge la canzone/album/artista o salva la traduzione.
-// Restituisce l'elemento creato/modificato, oppure null se la pagina da correggere non esiste più
 async function applyRequest(request) {
   let created;
 

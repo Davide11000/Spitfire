@@ -168,3 +168,47 @@ ion-button.danger-btn {
   --color: #444444;
   text-transform: none;
 }
+
+.box-hint {
+  margin: 0 0 14px;
+  color: #777777;
+  font-size: 0.9rem;
+}
+
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #cccccc;
+  cursor: pointer;
+  transition: transform 0.15s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.selected {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px #222222;
+  }
+
+  &.default {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eeeeee;
+    color: #777777;
+
+    ion-icon {
+      font-size: 1.2rem;
+    }
+  }
+}

@@ -30,23 +30,23 @@ import { getCoverGradient, DEFAULT_HEADER } from '../../utils/cover-color';
 export class SongtemplatePage implements OnInit {
 
   public songId: string | null = null;
-  public canzone: any = null;
-  public generi: any[] = [];
-  public testoFormattato: string = '';
-  public caricamentoTesto: boolean = false;
-  public stileSfondoHeader: string = DEFAULT_HEADER;
+  public currentSong: any = null;
+  public genres: any[] = [];
+  public formattedLyrics: string = '';
+  public loadingLyrics: boolean = false;
+  public headerBackground: string = DEFAULT_HEADER;
 
-  public isModalPlaylistAperto: boolean = false;
+  public isPlaylistModalOpen: boolean = false;
   public userPlaylists: any[] = [];
-  public mioNome: string | null = null;
-  public isPreferito: boolean = false;
-  public annotazioneDaAprire: number | null = null;
-  public traduzioneScelta: any = null;
+  public myUsername: string | null = null;
+  public isFavourite: boolean = false;
+  public annotationToOpen: number | null = null;
+  public selectedTranslation: any = null;
 
-  public nuovaPlaylistNome: string = '';
-  public nuovaPlaylistDescrizione: string = '';
-  public erroreModal: string = '';
-  public creando: boolean = false;
+  public newPlaylistName: string = '';
+  public newPlaylistDescription: string = '';
+  public modalError: string = '';
+  public creating: boolean = false;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -66,66 +66,66 @@ export class SongtemplatePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.mioNome = this.auth.getUsernameFromToken();
-    const annotazione = this.route.snapshot.queryParamMap.get('annotation');
-    this.annotazioneDaAprire = annotazione ? Number(annotazione) : null;
+    this.myUsername = this.auth.getUsernameFromToken();
+    const annotation = this.route.snapshot.queryParamMap.get('annotation');
+    this.annotationToOpen = annotation ? Number(annotation) : null;
 
     if (this.songId) {
-      this.caricaDettagliCanzone(this.songId);
-      this.controllaPreferito();
+      this.loadSong(this.songId);
+      this.checkFavourite();
     }
   }
 
-  controllaPreferito() {
-    this.isPreferito = false;
-    if (!this.mioNome || !this.songId) return;
+  checkFavourite() {
+    this.isFavourite = false;
+    if (!this.myUsername || !this.songId) return;
 
-    this.user.getFavouriteSongs(this.mioNome).subscribe({
-      next: (res) => { this.isPreferito = res.some((s: any) => s.id === Number(this.songId)); },
+    this.user.getFavouriteSongs(this.myUsername).subscribe({
+      next: (res) => { this.isFavourite = res.some((s: any) => s.id === Number(this.songId)); },
       error: (err) => console.error(err)
     });
   }
 
-  togglePreferito() {
-    if (!this.mioNome) {
+  toggleFavourite() {
+    if (!this.myUsername) {
       this.router.navigate(['/login']);
       return;
     }
 
     const id = Number(this.songId);
-    const richiesta = this.isPreferito ? this.user.removeFavouriteSong(id) : this.user.addFavouriteSong(id);
+    const request = this.isFavourite ? this.user.removeFavouriteSong(id) : this.user.addFavouriteSong(id);
 
-    richiesta.subscribe({
+    request.subscribe({
       next: () => {
-        this.isPreferito = !this.isPreferito;
-        this.mostraToast(this.isPreferito ? 'Added to your favourites' : 'Removed from your favourites');
+        this.isFavourite = !this.isFavourite;
+        this.showToast(this.isFavourite ? 'Added to your favourites' : 'Removed from your favourites');
       },
       error: (err) => console.error(err)
     });
   }
 
-  getImmagine(image: string | null): string {
+  getImage(image: string | null): string {
     if (!image) return 'assets/default-cover.svg';
     return 'http://localhost:3000' + image;
   }
 
-  getCopertina(): string {
-    if (this.canzone.image) return this.getImmagine(this.canzone.image);
-    return this.getImmagine(this.canzone.recordimage);
+  getCover(): string {
+    if (this.currentSong.image) return this.getImage(this.currentSong.image);
+    return this.getImage(this.currentSong.recordimage);
   }
 
-  caricaDettagliCanzone(id: string) {
-    this.canzone = null;
-    this.traduzioneScelta = null;
-    this.testoFormattato = '';
-    this.caricamentoTesto = true;
+  loadSong(id: string) {
+    this.currentSong = null;
+    this.selectedTranslation = null;
+    this.formattedLyrics = '';
+    this.loadingLyrics = true;
 
     this.song.getSongbyId(parseInt(id)).subscribe({
       next: (res) => {
-        this.canzone = res;
-        this.testoFormattato = this.canzone.lyrics || 'Lyrics not available for this song.';
-        this.caricamentoTesto = false;
-        this.estraiColoriCopertina();
+        this.currentSong = res;
+        this.formattedLyrics = this.currentSong.lyrics || 'Lyrics not available for this song.';
+        this.loadingLyrics = false;
+        this.extractCoverColors();
       },
       error: (err) => {
         console.error(err);
@@ -134,31 +134,31 @@ export class SongtemplatePage implements OnInit {
     });
 
     this.genre.getSongGenres(parseInt(id)).subscribe({
-      next: (res) => { this.generi = res; },
+      next: (res) => { this.genres = res; },
       error: (err) => console.error(err)
     });
   }
 
-  vaiACorrectEntry() {
+  goToCorrectEntry() {
     if (!this.songId) return;
     this.router.navigate(['/add-content'], { queryParams: { correct: 'song', id: this.songId } });
   }
 
-  vaiAllAlbum(idAlbum: number) {
-    if (idAlbum) {
-      this.router.navigate(['/records', idAlbum]);
+  goToAlbum(recordId: number) {
+    if (recordId) {
+      this.router.navigate(['/records', recordId]);
     }
   }
 
-  vaiAllArtista(id: number) {
+  goToArtist(id: number) {
     if (id) {
       this.router.navigate(['/artists', id]);
     }
   }
 
-  async mostraToast(messaggio: string) {
+  async showToast(infoMessage: string) {
     const toast = await this.toastController.create({
-      message: messaggio,
+      message: infoMessage,
       icon: 'checkmark-circle',
       duration: 2500,
       position: 'bottom',
@@ -167,74 +167,74 @@ export class SongtemplatePage implements OnInit {
     await toast.present();
   }
 
-  apriModalPlaylist() {
-    if (!this.mioNome) {
+  openPlaylistModal() {
+    if (!this.myUsername) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.nuovaPlaylistNome = '';
-    this.nuovaPlaylistDescrizione = '';
-    this.erroreModal = '';
+    this.newPlaylistName = '';
+    this.newPlaylistDescription = '';
+    this.modalError = '';
 
-    this.playlist.getUserPlaylists(this.mioNome).subscribe({
+    this.playlist.getUserPlaylists(this.myUsername).subscribe({
       next: (res) => { this.userPlaylists = res; },
       error: (err) => console.error(err)
     });
 
-    this.isModalPlaylistAperto = true;
+    this.isPlaylistModalOpen = true;
   }
 
-  chiudiModalPlaylist() {
-    this.isModalPlaylistAperto = false;
+  closePlaylistModal() {
+    this.isPlaylistModalOpen = false;
   }
 
-  onNomeInput(event: any) {
-    this.nuovaPlaylistNome = event.detail.value;
-    this.erroreModal = '';
+  onNameInput(event: any) {
+    this.newPlaylistName = event.detail.value;
+    this.modalError = '';
   }
 
-  onDescrizioneInput(event: any) {
-    this.nuovaPlaylistDescrizione = event.detail.value;
+  onDescriptionInput(event: any) {
+    this.newPlaylistDescription = event.detail.value;
   }
 
-  selezionaPlaylist(pl: any) {
+  selectPlaylist(pl: any) {
     if (!this.songId) return;
-    this.erroreModal = '';
+    this.modalError = '';
 
     this.playlist.addSong(pl.id, parseInt(this.songId)).subscribe({
       next: () => {
-        this.isModalPlaylistAperto = false;
-        this.mostraToast('Added to "' + pl.name + '"');
+        this.isPlaylistModalOpen = false;
+        this.showToast('Added to "' + pl.name + '"');
       },
       error: (err) => {
-        this.erroreModal = err.error.message || 'Error adding the song';
+        this.modalError = err.error.message || 'Error adding the song';
       }
     });
   }
 
-  creaEAggiungi() {
-    if (!this.nuovaPlaylistNome.trim()) {
-      this.erroreModal = 'Please write a name for the playlist';
+  createAndAdd() {
+    if (!this.newPlaylistName.trim()) {
+      this.modalError = 'Please write a name for the playlist';
       return;
     }
 
-    this.creando = true;
-    this.playlist.createPlaylist(this.nuovaPlaylistNome.trim(), true, null, this.nuovaPlaylistDescrizione).subscribe({
+    this.creating = true;
+    this.playlist.createPlaylist(this.newPlaylistName.trim(), true, null, this.newPlaylistDescription).subscribe({
       next: (res) => {
-        this.creando = false;
-        this.selezionaPlaylist(res);
+        this.creating = false;
+        this.selectPlaylist(res);
       },
       error: (err) => {
-        this.creando = false;
-        this.erroreModal = err.error.message || 'Error creating the playlist';
+        this.creating = false;
+        this.modalError = err.error.message || 'Error creating the playlist';
       }
     });
   }
 
-  async estraiColoriCopertina() {
-    if (!this.canzone || (!this.canzone.image && !this.canzone.recordimage)) return;
+  async extractCoverColors() {
+    if (!this.currentSong || (!this.currentSong.image && !this.currentSong.recordimage)) return;
 
-    this.stileSfondoHeader = await getCoverGradient(this.getCopertina());
+    this.headerBackground = await getCoverGradient(this.getCover());
   }
 }

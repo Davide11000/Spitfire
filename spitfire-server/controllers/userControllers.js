@@ -71,7 +71,6 @@ exports.uploadPhoto = async (req, res) => {
 
     const result = await User.updatePhoto(username, photo);
 
-    // Cancello dal disco la foto vecchia, se c'era
     if (user.foto_profilo) {
       fs.unlink("." + user.foto_profilo, () => {});
     }
@@ -205,6 +204,24 @@ exports.getUserRole = async (req, res) => {
     }
     
     res.json(role);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const PROFILE_COLORS = ["#c62828", "#ef6c00", "#f9a825", "#2e7d32", "#00897b", "#4fc3f7",
+                        "#1565c0", "#6a1b9a", "#f48fb1", "#6d4c41", "#78909c", "#e6d3a3"];
+
+exports.updateProfileColor = async (req, res) => {
+  try {
+    const color = req.body.color || null;
+
+    if (color !== null && !PROFILE_COLORS.includes(color)) {
+      return res.status(400).json({ message: "Invalid color" });
+    }
+
+    const result = await User.updateProfileColor(req.user.username, color);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

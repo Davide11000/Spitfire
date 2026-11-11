@@ -50,7 +50,6 @@ exports.getFollowers = async (req, res) => {
 
         res.json(followers);
 
-
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -63,7 +62,6 @@ exports.getFollowing = async (req, res) => {
         const followers = await Follow.findFollowing(userUsername);
 
         res.json(followers);
-
 
     } catch (err) {
         res.status(500).json({ error: err.message });

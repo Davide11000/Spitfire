@@ -1,0 +1,149 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg theme-light">
+  <div class="standards-page">
+    <h1 class="page-title">DATABASE STANDARDS</h1>
+
+    <nav class="index">
+      @for (s of sections; track s.id) {
+        <button class="index-link" (click)="scrollTo(s.id)">{{ s.title }}</button>
+      }
+    </nav>
+
+    <section class="block" id="requests">
+      <h2 class="block-title">Requests</h2>
+
+      <div class="rule">
+        <h3>Cite reliable sources</h3>
+        <p>
+          Provide reliable sources from well known and established websites (e.g. Wikipedia, Last.fm, Bandcamp)
+          or from verified quotes by the artists themselves. Always cite your sources in the <b>Source</b> field of the request.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Keep it relevant</h3>
+        <p>
+          Please avoid inserting superfluous information in your request. Stick strictly to information relevant
+          to the artist's career, influences and artistic choices.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Incomplete artist requests</h3>
+        <p>
+          Incomplete artist requests can be accepted in case the available information about them is scarce or unverifiable,
+          but at least <b>1 record</b> must be provided to justify the artist's inclusion in the database.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Prefer records over artists</h3>
+        <p>
+          Unless strictly necessary, it is preferable to submit a request for a record from a new artist rather than one
+          for the artist themselves, as a page for them will be automatically created.
+        </p>
+      </div>
+    </section>
+
+    <section class="block" id="lyrics">
+      <h2 class="block-title">Lyrics</h2>
+      <p class="block-intro">
+        Lyrics should be a faithful transcription of what is actually sung, so that everyone can read, annotate
+        and translate them in the same way.
+      </p>
+
+      <div class="rule">
+        <h3>Transcribe exactly what is sung</h3>
+        <p>
+          Write the words as they are performed, not as they appear in other versions. Use standard spelling,
+          unless the artist clearly pronounces a word in an unusual way on purpose (e.g. <i>gonna</i>, <i>'cause</i>).
+          If you can't understand a word, write <b>[?]</b> instead of guessing.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Use section headers</h3>
+        <p>Divide the song into sections, with a header in square brackets on its own line and an empty line between sections:</p>
+        <pre class="example">[Intro]
+[Verse 1]
+[Pre-Chorus]
+[Chorus]
+[Bridge]
+[Outro]</pre>
+        <p>If more artists perform, add who sings each part: <b>[Verse 2: Artist name]</b>.</p>
+      </div>
+
+      <div class="rule">
+        <h3>One line per sung line</h3>
+        <p>
+          Every line of the lyrics should match a line as it is sung. Start each line with a capital letter and don't end it
+          with a comma or a full stop; question and exclamation marks are fine.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Write out repetitions</h3>
+        <p>
+          Don't use shortcuts like <i>"x2"</i> or <i>"(Repeat chorus)"</i>: write every line every time it is sung,
+          so that each part can be annotated.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Background vocals and ad-libs</h3>
+        <p>Put background vocals and ad-libs in round brackets, on the same line as the main vocals:</p>
+        <pre class="example">I've been waiting all night (All night)</pre>
+      </div>
+
+      <div class="rule">
+        <h3>Nothing that isn't sung</h3>
+        <p>
+          Don't add credits, timestamps, descriptions or comments inside the lyrics. Information about the song goes in the
+          other fields, and explanations go in the annotations.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Original language only</h3>
+        <p>
+          Lyrics must be in the language they are sung in, without censoring or changing words. Translations are added
+          separately, with <b>Translations → Add a translation</b> on the song page.
+        </p>
+      </div>
+    </section>
+
+    <section class="block" id="annotations">
+      <h2 class="block-title">Annotations</h2>
+
+      <div class="rule">
+        <h3>Explain, don't repeat</h3>
+        <p>
+          An annotation should add something the lyrics don't say: the meaning of a line, a reference, a story behind it.
+          Don't simply rewrite the line with other words.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Back it up</h3>
+        <p>
+          When you write about facts (interviews, events, samples), mention where they come from. Personal interpretations
+          are welcome, as long as they are presented as such.
+        </p>
+      </div>
+
+      <div class="rule">
+        <h3>Improve, don't duplicate</h3>
+        <p>
+          If a part of the lyrics already has an annotation, use <b>Edit</b> or <b>Suggest an improvement</b> instead of
+          writing a new one.
+        </p>
+      </div>
+    </section>
+
+    <p class="outro">
+      Ready to contribute? Go to <a routerLink="/add-content">Add content</a>.
+    </p>
+  </div>
+  <app-footer></app-footer>
+</ion-content>

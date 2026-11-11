@@ -10,7 +10,6 @@ export class Playlist {
   private http = inject(HttpClient);
   private auth = inject(Auth);
 
-  // I dati vanno mandati come FormData perché insieme può esserci la copertina (facoltativa)
   createPlaylist(name : string, isPublic : boolean = true, image : File | null = null, description : string = ''): Observable<any> {
     const token = this.auth.getToken();
     const formData = new FormData();
@@ -63,7 +62,6 @@ export class Playlist {
   }
 
   getSongs(playlistId : number): Observable<any> {
-    // Mando il token così, se sono il proprietario, vedo anche le playlist private
     const token = this.auth.getToken();
 
     return this.http.get(`${this.baseUrl}/${playlistId}/songs`, {
@@ -72,7 +70,6 @@ export class Playlist {
   }
 
   getUserPlaylists(username: string): Observable<any> {
-    // Mando il token così, se sono il proprietario, vedo anche le playlist private
     const token = this.auth.getToken();
 
     return this.http.get(`${this.baseUrl}/user/${username}`, {
@@ -81,7 +78,6 @@ export class Playlist {
   }
 
   getPlaylistById(playlistId: number): Observable<any> {
-    // Mando il token così, se sono il proprietario, vedo anche le playlist private
     const token = this.auth.getToken();
 
     return this.http.get(`${this.baseUrl}/${playlistId}`, {

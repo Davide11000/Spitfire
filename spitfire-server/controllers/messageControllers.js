@@ -3,7 +3,6 @@ const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
 const Follow = require("../models/followModel");
 
-// Il campo hidden non deve mai uscire: chi è bloccato non deve poterlo scoprire
 function withoutHidden(message) {
     if (message) delete message.hidden;
     return message;
@@ -39,8 +38,6 @@ exports.send = async (req, res) => {
             }
         }
 
-        // Se il destinatario ha bloccato il mittente, il messaggio viene salvato nascosto e senza notifica:
-        // il mittente lo vede comunque inviato, così non capisce di essere bloccato
         const blocked = await Message.isBlocked(receiver, sender);
         const result = await Message.create(sender, receiver, text.trim(), blocked);
 

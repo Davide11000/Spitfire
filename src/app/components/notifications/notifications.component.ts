@@ -173,7 +173,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'artist') this.router.navigate(['/artists', id]);
   }
 
-  // Porta alla pagina dove si trova il commento
   goToComment(notification: any) {
     if (notification.target_type === 'playlist') this.router.navigate(['/playlist', notification.target_id]);
     if (notification.target_type === 'song') this.router.navigate(['/songs', notification.target_id]);

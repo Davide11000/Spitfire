@@ -1,7 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 
-// Come uploadMiddleware, ma per le immagini allegate alle richieste (copertine e foto artisti)
 const storage = multer.diskStorage({
     destination: "uploads/requests",
     filename: (req, file, cb) => {
@@ -19,5 +18,4 @@ const upload = multer({
     }
 });
 
-// Il file arriva nel campo "image"
 module.exports = upload.single("image");

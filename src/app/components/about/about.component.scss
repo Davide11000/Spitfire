@@ -1,4 +1,3 @@
-// La sezione sta nella parte bianca della pagina album: testi scuri
 .about {
   margin-top: 32px;
   padding: 20px 24px;
@@ -160,13 +159,11 @@
   margin-top: 8px;
 }
 
-// Commenti e contributors sono pensati per lo sfondo scuro: qui li scurisco
 .about ::ng-deep {
   .section-title {
     color: #222;
   }
 
-  // I suggerimenti allineati a sinistra sotto il testo, non centrati
   .comments-section {
     max-width: 900px;
     margin: 24px 0 0;

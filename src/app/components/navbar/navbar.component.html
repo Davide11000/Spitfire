@@ -3,7 +3,6 @@
     <b>SPITFIRE</b>
   </ion-title>
 
-  <!-- Schermo grande: tasti delle pagine -->
   <ion-buttons slot="end" class="ion-hide-lg-down btn-wrapper">
     <ion-button routerLink="/home">Home</ion-button>
     <ion-button routerLink="/lists">Playlists</ion-button>
@@ -28,7 +27,6 @@
     </ion-searchbar>
   </div>
 
-  <!-- Loggato: foto profilo (su tutti gli schermi). Non loggato: Sign In (su schermo piccolo sta nell'hamburger) -->
   <ion-buttons slot="end">
     @if (isLoggedIn) {
       <div class="avatar-wrapper" routerLink="/profile">
@@ -46,7 +44,6 @@
     }
   </ion-buttons>
 
-  <!-- Schermo piccolo: menu hamburger -->
   <ion-buttons slot="end" class="ion-hide-lg-up">
     <ion-button class="menu-btn" (click)="toggleMenu()">
       <ion-icon slot="icon-only" [name]="isMenuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
@@ -54,7 +51,6 @@
   </ion-buttons>
 </ion-toolbar>
 
-<!-- Schermo piccolo: tendina con gli stessi tasti -->
 @if (isMenuOpen) {
   <div class="mobile-menu ion-hide-lg-up">
     <ion-button fill="clear" expand="full" routerLink="/home">Home</ion-button>
@@ -74,7 +70,6 @@
   </div>
 }
 
-<!-- Risultati della ricerca, allineati sotto la barra di ricerca -->
 @if (searchText) {
   <div class="search-results" [style.left.px]="resultsLeft" [style.width.px]="resultsWidth">
     @if (foundSongs.length === 0 && foundRecords.length === 0 && foundArtists.length === 0 && foundUsers.length === 0) {

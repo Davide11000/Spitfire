@@ -9,5 +9,4 @@ router.delete("/:username/follow", authMiddleware, followController.unfollow);
 router.get("/:username/followers", followController.getFollowers);
 router.get("/:username/following", followController.getFollowing);
 
-
 module.exports = router;

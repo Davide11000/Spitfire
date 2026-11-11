@@ -25,7 +25,6 @@ export class HomePage {
   public loadingRecent = true;
   public loadingTop = true;
 
-  // Quanti album chiedo: "Load more" aumenta il numero e ricarica la lista
   public recentLimit = 5;
   public topLimit = 5;
 
@@ -33,7 +32,6 @@ export class HomePage {
     addIcons({ star, timeOutline, chevronForwardOutline });
   }
 
-  // Ricarico ogni volta che si entra nella Home: possono esserci album o annotazioni nuove
   ionViewWillEnter() {
     this.loadRecent();
     this.loadTop();

@@ -25,7 +25,6 @@
   gap: 8px;
 }
 
-// Un po' più piccoli dei tasti normali, per stare sotto la foto
 ion-button.square-btn.photo-btn {
   height: 36px;
   --padding-start: 12px;
@@ -110,8 +109,6 @@ ion-button.square-btn.photo-btn {
   text-transform: none;
 }
 
-/* Sotto i dati utente: due colonne affiancate (playlist | preferiti), della stessa altezza
-   (quella della più alta). Su schermo piccolo diventano una sotto l'altra */
 .profile-columns {
   clear: both;
   display: grid;
@@ -162,7 +159,6 @@ ion-button.square-btn.photo-btn {
   margin-bottom: 12px;
 }
 
-/* Griglia di copertine (playlist, album, artisti) */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -181,7 +177,6 @@ ion-button.square-btn.photo-btn {
   color: #222222;
   text-align: left;
 
-  /* Solo le playlist sono cliccabili per ora */
   &.clickable {
     cursor: pointer;
 
@@ -236,7 +231,6 @@ ion-button.square-btn.photo-btn {
   }
 }
 
-/* Canzoni preferite: elenco */
 .song-list {
   display: flex;
   flex-direction: column;
@@ -278,7 +272,6 @@ ion-button.square-btn.photo-btn {
   margin: 0;
 }
 
-/* Finestra con follower / following */
 .modal-toolbar {
   --background: #f5f5f5;
   --color: #222222;
@@ -298,7 +291,6 @@ ion-button.square-btn.photo-btn {
   font-weight: bold;
 }
 
-/* Finestra "New playlist" */
 .create-modal {
   --width: 560px;
   --height: auto;
@@ -337,7 +329,6 @@ ion-button.square-btn.photo-btn {
   flex-shrink: 0;
 }
 
-/* Copertina cliccabile: passando sopra compare "Add a cover" */
 .create-cover {
   position: relative;
   width: 160px;
@@ -417,7 +408,6 @@ ion-button.square-btn.photo-btn {
   --highlight-color-valid: var(--ion-color-primary);
 }
 
-/* Le due scelte Public / Private */
 .visibility-options {
   display: flex;
   gap: 10px;
@@ -494,7 +484,49 @@ ion-button.square-btn.photo-btn {
 @media (max-width: 768px) {
   .top-actions {
     position: static;
-    justify-content: flex-end;
+    justify-content: center;
     margin-bottom: 16px;
+  }
+
+  .photo-block {
+    float: none;
+    margin: 0 auto 12px;
+  }
+
+  .profile-photo {
+    width: 150px;
+    height: 150px;
+  }
+
+  .profile-info {
+    align-items: center;
+    text-align: center;
+    padding: 0;
+  }
+
+  .stats,
+  .actions {
+    justify-content: center;
+  }
+}
+
+.profile-header.on-dark {
+  > .profile-info,
+  > .profile-info .bio,
+  > .profile-info .stat,
+  > .profile-info .stat b {
+    color: #ffffff;
+  }
+
+  > .top-actions ion-button.square-btn,
+  > .photo-block ion-button.square-btn,
+  > .profile-info ion-button.square-btn {
+    --border-color: #ffffff;
+    --color: #ffffff;
+
+    &.filled {
+      --background: #ffffff;
+      --color: #111111;
+    }
   }
 }

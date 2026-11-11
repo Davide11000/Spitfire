@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { IonFooter, IonToolbar, IonTitle, IonButtons, IonLabel, IonIcon, IonButton, IonContent, IonGrid, IonRow, IonCol } from "@ionic/angular";
+import { RouterLink } from '@angular/router';
+import { IonLabel, IonIcon, IonGrid, IonRow, IonCol } from "@ionic/angular";
 import { addIcons } from 'ionicons';
 import { logoInstagram, logoFacebook, mailOutline, logoTwitter } from 'ionicons/icons';
 
@@ -7,7 +8,7 @@ import { logoInstagram, logoFacebook, mailOutline, logoTwitter } from 'ionicons/
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
-  imports: [IonLabel, IonIcon, IonGrid, IonRow, IonCol],
+  imports: [IonLabel, IonIcon, IonGrid, IonRow, IonCol, RouterLink],
 })
 export class FooterComponent  implements OnInit {
 

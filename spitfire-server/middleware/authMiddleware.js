@@ -5,7 +5,6 @@ const SECRET = process.env.JWT_SECRET;
 
 module.exports = async (req, res, next) => {
 
-
     const authHeader = req.headers["authorization"];
 
     if (!authHeader) {

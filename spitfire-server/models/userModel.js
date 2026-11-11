@@ -91,6 +91,16 @@ const User = {
     });
   },
 
+  updateProfileColor: (username, color) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET profile_color = ? WHERE username = ?`;
+      db.run(query, [color, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, profile_color: color });
+      });
+    });
+  },
+
   deleteAccount: async (username) => {
     const run = (query, params) => {
       return new Promise((resolve, reject) => {
@@ -138,8 +148,6 @@ const User = {
     });
   },
 
-  // Cerca gli utenti il cui username contiene il testo
-  // (restituisco solo username e foto: email e password non devono uscire)
   search: (text) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT username, foto_profilo FROM users WHERE username LIKE ?`;

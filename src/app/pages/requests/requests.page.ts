@@ -145,8 +145,6 @@ export class RequestsPage implements OnInit {
     });
   }
 
-
-  // Se la fonte è un indirizzo web la mostro come link cliccabile
   isLink(source: string): boolean {
     return /^https?:\/\//i.test(source);
   }

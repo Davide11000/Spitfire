@@ -6,7 +6,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(Auth);
   const router = inject(Router);
 
-  // Controlla anche che il token non sia scaduto
   const username = auth.getUsernameFromToken();
 
   if (!username) {

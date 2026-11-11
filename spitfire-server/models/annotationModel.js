@@ -80,7 +80,6 @@ const Annotation = {
         }
     },
 
-    // Punteggio: ogni mi piace vale +1, ogni non mi piace -1
     getScore : (id) => {
         return get(`SELECT COALESCE(SUM(value), 0) AS score FROM annotation_votes WHERE annotation_id = ?`, [id]);
     },

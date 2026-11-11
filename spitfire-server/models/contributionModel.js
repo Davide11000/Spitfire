@@ -25,7 +25,6 @@ const Contribution = {
         });
     },
 
-    // Chi ha scritto l'about più chi ha una modifica approvata
     findByAbout : (aboutId) => {
         return new Promise((resolve, reject) => {
             const query = `SELECT users.username, users.foto_profilo FROM abouts

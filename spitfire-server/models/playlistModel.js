@@ -117,7 +117,6 @@ const Playlist = {
         });
     },
 
-    // Toglie dalla playlist tutte le sue canzoni (serve prima di eliminarla)
     removeAllSongs : (playlistId) => {
         return new Promise((resolve, reject) => {
             const query = `DELETE FROM playlist_songs WHERE playlist_id = ?`;

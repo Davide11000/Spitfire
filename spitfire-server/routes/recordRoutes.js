@@ -14,5 +14,4 @@ router.get("/discover", recordController.getDiscoverRecords);
 router.get("/languages", recordController.getLanguages);
 router.get("/:id", recordController.getRecordByID);
 
-
 module.exports = router;

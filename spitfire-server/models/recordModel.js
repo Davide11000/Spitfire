@@ -74,7 +74,6 @@ const Record = {
     });
   },
 
-  // Cerca gli album il cui nome contiene il testo
   search: (text) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT records.*, artists.artname
@@ -144,7 +143,6 @@ const Record = {
     })
   },
 
-  // Tutti gli album con artista, generi (separati da virgola) e media dei voti
   findAllWithGenres: () => {
     return new Promise((resolve, reject) => {
       const query = `SELECT records.id, records.recordname, records.image, records.release_date, records.language,

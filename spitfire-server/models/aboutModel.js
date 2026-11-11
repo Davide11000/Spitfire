@@ -27,7 +27,6 @@ function get(query, params) {
     });
 }
 
-// L'about di un album: un solo testo per album, con voti, modifiche proposte e commenti
 const About = {
     create : (targetType, targetId, username, text, status) => {
         return run(`INSERT INTO abouts (target_type, target_id, username, text, status) VALUES (?, ?, ?, ?, ?)`,
@@ -38,7 +37,6 @@ const About = {
         return get(`SELECT * FROM abouts WHERE id = ?`, [id]);
     },
 
-    // L'about approvato o quello in attesa (ancora da approvare); i rifiutati non contano
     findActive : (targetType, targetId) => {
         return get(`SELECT * FROM abouts WHERE target_type = ? AND target_id = ? AND status IN ('approved', 'pending')`,
                    [targetType, targetId]);

@@ -41,7 +41,6 @@ const Song = {
     });
   },
 
-  // Cerca le canzoni il cui nome contiene il testo
   search: (text) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT songs.id, songs.songname, songs.recordid, songs.image, artists.artname, records.image AS recordimage

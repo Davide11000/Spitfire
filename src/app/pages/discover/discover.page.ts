@@ -18,7 +18,6 @@ import { Genre } from '../../services/genre';
   imports: [IonContent, IonButton, IonIcon, IonSpinner, DecimalPipe, NavbarComponent, FooterComponent]
 })
 export class DiscoverPage {
-  // Passi: 1 generi, 2 epoche, 3 lingue, 4 risultati
   public step = 1;
 
   public genreList: string[] = [];
@@ -49,7 +48,6 @@ export class DiscoverPage {
     });
   }
 
-  // Aggiunge o toglie un valore dalla lista (scelta multipla)
   toggle(list: any[], value: any) {
     const index = list.indexOf(value);
     if (index === -1) list.push(value);

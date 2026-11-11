@@ -1,8 +1,6 @@
 const multer = require("multer");
 const path = require("path");
 
-// Salva le foto in uploads/profiles con il nome username-ora.estensione
-// (l'ora serve a dare a ogni foto nuova un nome diverso, così il browser non mostra quella vecchia)
 const storage = multer.diskStorage({
     destination: "uploads/profiles",
     filename: (req, file, cb) => {
@@ -20,5 +18,4 @@ const upload = multer({
     }
 });
 
-// Il file arriva nel campo "photo"
 module.exports = upload.single("photo");

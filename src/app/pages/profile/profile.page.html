@@ -2,8 +2,7 @@
 
 <ion-content class="globalbg theme-light">
   @if (user) {
-    <div class="profile-header">
-      <!-- Foto con, sotto, i link per cambiarla o toglierla (solo sul proprio profilo) -->
+    <div class="profile-header" [style.background]="user.profile_color || null" [class.on-dark]="hasDarkColor()">
       <div class="photo-block">
         <div class="profile-photo">
           <img [src]="getPhoto(user.foto_profilo)" />
@@ -25,7 +24,6 @@
         }
       </div>
 
-      <!-- Settings e Logout in alto a destra -->
       @if (isOwnProfile) {
         <div class="top-actions">
           <ion-button fill="outline" class="square-btn" (click)="goToSettings()">
@@ -74,10 +72,8 @@
         }
       </div>
 
-      <!-- Due colonne sotto i dati dell'utente: playlist a sinistra, preferiti a destra -->
       <div class="profile-columns">
 
-        <!-- COLONNA SINISTRA: PLAYLIST -->
         <div class="column">
           <div class="section-title-row">
             <b class="column-title">Playlists</b>
@@ -110,7 +106,6 @@
           </div>
         </div>
 
-        <!-- COLONNA DESTRA: PREFERITI (per ora non cliccabili: mancano le pagine di canzone, album e artista) -->
         <div class="column">
           <div class="section-title-row">
             <b class="column-title">Favourites</b>
@@ -120,7 +115,7 @@
             <b class="subsection-title">Songs</b>
             <div class="song-list">
               @for (song of favouriteSongs; track song.id) {
-                <div class="song-row clickable" (click)="apriCanzone(song.id)">
+                <div class="song-row clickable" (click)="goToSong(song.id)">
                   <img class="song-cover" [src]="getSongCover(song)" />
                   <div class="song-info">
                     <span class="song-name">{{ song.songname }}</span>
@@ -137,7 +132,7 @@
             <b class="subsection-title">Records</b>
             <div class="card-grid small">
               @for (record of favouriteRecords; track record.id) {
-                <div class="card clickable" (click)="apriAlbum(record.id)">
+                <div class="card clickable" (click)="goToAlbum(record.id)">
                   <div class="card-cover">
                     <img [src]="getCover(record.image)" />
                   </div>
@@ -154,7 +149,7 @@
             <b class="subsection-title">Artists</b>
             <div class="card-grid small">
               @for (artist of favouriteArtists; track artist.id) {
-                <div class="card artist-card clickable" (click)="apriArtista(artist.id)">
+                <div class="card artist-card clickable" (click)="goToArtist(artist.id)">
                   <div class="card-cover round">
                     <img [src]="getPhoto(artist.image)" />
                   </div>
@@ -192,7 +187,6 @@
       </ng-template>
     </ion-modal>
 
-    <!-- Finestra per creare una nuova playlist -->
     <ion-modal class="create-modal" [isOpen]="isCreateOpen" (didDismiss)="onCreateClosed()">
       <ng-template>
         <div class="create-box">
@@ -204,7 +198,6 @@
           </div>
 
           <div class="create-body">
-            <!-- Copertina facoltativa: cliccando si sceglie l'immagine -->
             <div class="create-cover-box">
               <input #coverInput type="file" accept="image/*" hidden (change)="onCoverSelected($event)" />
               <button class="create-cover" (click)="coverInput.click()">

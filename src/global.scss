@@ -170,10 +170,6 @@ ion-button.white-btn {
   }
 }
 
-/* ----------------------------------------------------------------------------
- * Pagine chiare (sfondo bianco, testi scuri), come Charts.
- * Le pagine canzone e album restano scure. Si attiva mettendo "theme-light" su ion-content.
- * -------------------------------------------------------------------------- */
 .theme-light {
   --background: #ffffff;
   --color: #222222;
@@ -185,7 +181,6 @@ ion-button.white-btn {
   --ion-placeholder-color: #888888;
   color: #222222;
 
-  // Bottoni squadrati: neri invece che bianchi
   ion-button.square-btn {
     --border-color: #222222;
     --color: #222222;
@@ -214,7 +209,6 @@ ion-button.white-btn {
     --icon-color: #888888;
   }
 
-  // Componenti pensati per lo sfondo scuro: qui scuriscono i testi
   app-comments {
     .comments-section, .section-title, .comment-text, .username {
       color: #222222;

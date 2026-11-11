@@ -26,7 +26,6 @@ export class PlaylistPage implements OnInit {
   public errorMessage = '';
   public actionError = '';
 
-  // Modal per aggiungere le canzoni
   public isAddOpen = false;
   public searchResults: any[] = [];
   public searching = false;
@@ -52,13 +51,11 @@ export class PlaylistPage implements OnInit {
     });
   }
 
-  // Se l'immagine non c'è uso quella di default
   getImage(image: string | null): string {
     if (!image) return 'assets/default-cover.svg';
     return 'http://localhost:3000' + image;
   }
 
-  // La canzone usa la sua immagine, se non ce l'ha quella dell'album
   getSongImage(song: any): string {
     if (song.image) return this.getImage(song.image);
     return this.getImage(song.recordimage);
@@ -106,7 +103,6 @@ export class PlaylistPage implements OnInit {
     });
   }
 
-  // Chiede conferma, poi elimina la playlist e torna al profilo
   async onDeletePlaylist() {
     const alert = await this.alertC.create({
       header: 'Delete playlist?',

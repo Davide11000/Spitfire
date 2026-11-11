@@ -51,7 +51,6 @@ const Artist = {
     });
   },
 
-  // Cerca gli artisti il cui nome contiene il testo
   search: (text) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM artists WHERE artname LIKE ?`;

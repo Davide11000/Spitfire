@@ -1,7 +1,3 @@
-// Riempie il database con dati di prova: utenti, artisti, album, canzoni, voti, playlist, commenti...
-// Uso: spegnere il server, poi "npm run seed" (dalla cartella spitfire-server), poi riaccendere il server.
-// Gli utenti "test" e "mario" vengono tenuti così come sono; tutto il resto viene cancellato e ricreato.
-// Prima di cancellare, il database vecchio viene copiato in backups/.
 
 const fs = require("fs");
 const path = require("path");
@@ -11,8 +7,6 @@ const sqlite3 = require("sqlite3");
 process.chdir(__dirname);
 const DB_FILE = "./database.sqlite";
 const PASSWORD = "password123";
-
-// ---------------------------------------------------------------- dati
 
 const users = [
   { username: "giulia", email: "giulia@spitfire.it", ruolo: "moderatore", bio: "Moderatrice. Vivo di vinili e caffè." },
@@ -47,7 +41,6 @@ const artists = [
   { name: "Amy Winehouse", birth: "1983-09-14", country: "United Kingdom", bio: "English singer and songwriter known for her soul and jazz influenced voice." }
 ];
 
-// mean = voto medio "di base" dell'album, usato per generare voti credibili
 const albums = [
   { title: "Pink Moon", artist: "Nick Drake", date: "1972-02-25", lang: "English", genres: ["Folk"], mean: 4.1, tracks: [
     ["Pink Moon", "2:04"], ["Place to Be", "2:43"], ["Road", "2:01"], ["Which Will", "2:58"], ["Horn", "1:23"],
@@ -170,7 +163,6 @@ const annotationTexts = [
   "Questa immagine torna anche in altre canzoni dello stesso disco."
 ];
 
-
 const aboutTexts = {
   "The Dark Side of the Moon": "The eighth studio album by Pink Floyd, released in March 1973. It is a concept album about the pressures of modern life: time, money, conflict and mental illness. The songs flow into each other without breaks, and the record is famous for its use of tape loops, synthesizers and spoken voices recorded from the people who worked at Abbey Road Studios.",
   "OK Computer": "Radiohead's third album, released in 1997. The band moved away from the guitar rock of The Bends towards a colder, more experimental sound, with themes of alienation, technology and consumerism. It was recorded largely in a 15th-century mansion in Somerset.",
@@ -182,9 +174,6 @@ const aboutTexts = {
   "What's Going On": "Marvin Gaye's eleventh album, released in May 1971. Told from the point of view of a Vietnam veteran coming home, it talks about war, poverty and the environment. It was one of the first Motown albums produced by the artist himself."
 };
 
-// ---------------------------------------------------------------- utilità
-
-// Numeri "casuali" sempre uguali a ogni esecuzione, così il seed dà sempre lo stesso risultato
 let seed = 42;
 function random() {
   seed = (seed + 0x6D2B79F5) | 0;
@@ -242,8 +231,6 @@ Ogni riga qui è solo un esempio
 E la canzone continua fino alla fine`;
 }
 
-// ---------------------------------------------------------------- database
-
 function openDb(file) {
   return new sqlite3.Database(file);
 }
@@ -265,14 +252,12 @@ function allOn(db, query, params = []) {
 }
 
 async function main() {
-  // 1. Leggo test e mario dal database vecchio
   let keep = [];
   if (fs.existsSync(DB_FILE)) {
     const old = openDb(DB_FILE);
     keep = await allOn(old, `SELECT * FROM users WHERE username IN ('test', 'mario')`).catch(() => []);
     await new Promise(r => old.close(r));
 
-    // 2. Backup
     fs.mkdirSync("backups", { recursive: true });
     const stamp = new Date().toISOString().replace(/[-:]/g, "").replace("T", "-").substring(0, 13);
     fs.copyFileSync(DB_FILE, `backups/database-${stamp}.sqlite`);
@@ -280,7 +265,6 @@ async function main() {
     fs.unlinkSync(DB_FILE);
   }
 
-  // 3. Database nuovo: le tabelle le crea db.js
   const db = require("./db/db");
   for (let i = 0; i < 100; i++) {
     const rows = await allOn(db, `SELECT name FROM sqlite_master WHERE name = 'annotation_edits'`);
@@ -291,7 +275,6 @@ async function main() {
   const run = (q, p) => runOn(db, q, p);
   await run("BEGIN");
 
-  // ---- utenti
   const hash = await bcrypt.hash(PASSWORD, 10);
   for (const name of ["test", "mario"]) {
     const u = keep.find(k => k.username === name);
@@ -309,7 +292,6 @@ async function main() {
   }
   const everyone = ["test", "mario", ...users.map(u => u.username)];
 
-  // ---- follow (con notifiche)
   for (const follower of everyone) {
     const others = everyone.filter(u => u !== follower);
     for (const following of pickSome(others, 3 + Math.floor(random() * 5))) {
@@ -320,11 +302,9 @@ async function main() {
     }
   }
 
-  // ---- generi
   const genreRows = await allOn(db, `SELECT id, name FROM genres`);
   const genreId = (name) => genreRows.find(g => g.name === name).id;
 
-  // ---- artisti (Nick Drake c'è già con id 0, lo aggiorno)
   const artistIds = {};
   for (const a of artists) {
     if (a.name === "Nick Drake") {
@@ -336,7 +316,6 @@ async function main() {
     }
   }
 
-  // ---- album e canzoni (Pink Moon e le prime due canzoni ci sono già con id 0 e 0/1)
   const allSongs = [];
   const albumRows = [];
   for (const al of albums) {
@@ -373,7 +352,6 @@ async function main() {
     albumRows.push({ id: recordId, title: al.title, mean: al.mean, artid });
   }
 
-  // ---- voti (ogni utente vota circa il 70% degli album e il 25% delle canzoni)
   for (const u of everyone) {
     for (const al of albumRows) {
       if (random() < 0.7) await run(`INSERT INTO record_ratings (record_id, username, rating) VALUES (?, ?, ?)`, [al.id, u, makeRating(al.mean)]);
@@ -385,14 +363,12 @@ async function main() {
   await run(`UPDATE records SET rating = COALESCE((SELECT ROUND(AVG(rating), 2) FROM record_ratings WHERE record_id = records.id), 0)`);
   await run(`UPDATE songs SET rating = COALESCE((SELECT ROUND(AVG(rating), 2) FROM song_ratings WHERE song_id = songs.id), 0)`);
 
-  // ---- preferiti
   for (const u of everyone) {
     for (const a of pickSome(Object.values(artistIds), 2 + Math.floor(random() * 3))) await run(`INSERT INTO favourite_artists (username, artist_id) VALUES (?, ?)`, [u, a]);
     for (const r of pickSome(albumRows, 2 + Math.floor(random() * 3))) await run(`INSERT INTO favourite_records (username, record_id) VALUES (?, ?)`, [u, r.id]);
     for (const s of pickSome(allSongs, 3 + Math.floor(random() * 4))) await run(`INSERT INTO favourite_songs (username, song_id) VALUES (?, ?)`, [u, s.id]);
   }
 
-  // ---- playlist con canzoni e cuori
   for (let i = 0; i < playlistNames.length; i++) {
     const owner = everyone[i % everyone.length];
     const [name, description] = playlistNames[i];
@@ -401,7 +377,7 @@ async function main() {
       [name, owner, description, i === 4 ? 0 : 1, created, created]);
     for (const s of pickSome(allSongs, 6 + Math.floor(random() * 8))) await run(`INSERT INTO playlist_songs (playlist_id, song_id) VALUES (?, ?)`, [playlistId, s.id]);
 
-    if (i === 4) continue; // privata: niente cuori
+    if (i === 4) continue;
     for (const liker of pickSome(everyone.filter(u => u !== owner), Math.floor(random() * 7))) {
       await run(`INSERT INTO playlist_likes (playlist_id, username) VALUES (?, ?)`, [playlistId, liker]);
       const days = Math.floor(random() * 25);
@@ -410,7 +386,6 @@ async function main() {
     }
   }
 
-  // ---- commenti, risposte e voti ai commenti
   for (let i = 0; i < 45; i++) {
     const onAlbum = random() < 0.5;
     const targetType = onAlbum ? "record" : "song";
@@ -438,7 +413,6 @@ async function main() {
     }
   }
 
-  // ---- annotazioni (approvate con voti, più due in attesa)
   const annotatedSongs = pickSome(allSongs, 12);
   const lines = ["A line you can select to write an annotation", "Another line about the night and the city", "Sing it again and again",
                  "Every line here is only an example"];
@@ -466,7 +440,6 @@ async function main() {
     }
   }
 
-  // ---- about degli album (approvati con voti, più uno in attesa)
   for (const [title, text] of Object.entries(aboutTexts)) {
     const album = albumRows.find(a => a.title === title);
     const author = pick(everyone);
@@ -484,12 +457,10 @@ async function main() {
       [m, pendingAlbum.id, daysAgo(0)]);
   }
 
-  // ---- traduzioni in italiano per qualche canzone
   for (const s of pickSome(allSongs, 6)) {
     await run(`INSERT INTO lyrics (language, lyrics, songid) VALUES ('Italian', ?, ?)`, [makeItalianLyrics(s.name), s.id]);
   }
 
-  // ---- richieste: una accettata (con notifica) e tre in attesa per l'admin
   const inRainbows = albumRows.find(a => a.title === "In Rainbows");
   await run(`INSERT INTO requests (username, type, name, artist_name, release_date, language, status, created_at) VALUES ('luca', 'record', 'In Rainbows', 'Radiohead', '2007-10-10', 'English', 'accepted', ?)`, [daysAgo(20)]);
   await run(`INSERT INTO notifications (username, type, from_user, content_type, content_id, text, is_read, created_at) VALUES ('luca', 'request_accepted', 'test', 'record', ?, 'In Rainbows', 1, ?)`,
@@ -508,7 +479,6 @@ async function main() {
     [translated.id, "[Verso 1]\nEste es un texto de ejemplo para \"Karma Police\"\nUna traducción para probar las solicitudes", daysAgo(0)]);
   await run(`INSERT INTO notifications (username, type, from_user, text, created_at) VALUES ('test', 'new_translation', 'elena', 'Karma Police (Spanish)', ?)`, [daysAgo(0)]);
 
-  // ---- messaggi
   const chats = [
     ["mario", "giulia", ["Ciao! Hai sentito il nuovo album?", "Sì! Mi piace un sacco", "Stasera lo riascolto"]],
     ["luca", "mario", ["Ti ho aggiunto una playlist rap", "Grazie, ora la ascolto", "Fammi sapere!"]],

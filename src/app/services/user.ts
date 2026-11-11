@@ -26,7 +26,6 @@ export class User {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }
 
-    // La foto viene mandata come form-data nel campo "photo"
     uploadPhoto(file: File) : Observable<any> {
         const token = this.auth.getToken();
         const formData = new FormData();
@@ -69,6 +68,14 @@ export class User {
         });
     }
 
+    updateProfileColor(color: string | null) : Observable<any> {
+        const token = this.auth.getToken();
+
+        return this.http.put(`${this.baseUrl}/me/profile-color`, {color}, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+    }
+
     deleteAccount(password: string) : Observable<any> {
         const token = this.auth.getToken();
 
@@ -85,8 +92,6 @@ export class User {
             headers: { Authorization: `Bearer ${token}` }
         });
     }
-
-    // PREFERITI
 
     getFavouriteArtists(username: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/${username}/favourites/artists`);

@@ -1,10 +1,8 @@
 .globalbg {
-  // Stesso sfondo della Home: collage delle copertine con un velo nero
   --background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url('/assets/images/home-collage.jpg') top center / 100% auto repeat-y;
 }
 
-/* Contenitore centrato */
 .add-content {
   display: flex;
   flex-direction: column;
@@ -35,7 +33,6 @@
   margin-bottom: 24px;
 }
 
-// Barra Song / Album / Artist: squadrata e marcata come i bottoni del sito
 .type-segment {
   --background: #ffffff;
   border: 2px solid #222222;
@@ -73,7 +70,6 @@
   flex: 1;
 }
 
-/* Anno e genere affiancati */
 .field-row {
   display: flex;
   gap: 16px;
@@ -93,8 +89,6 @@
   --color: #222222;
   --placeholder-color: #777777;
   --border-radius: 0;
-  /* Bordo rosso quando il campo è selezionato (vale per input, textarea e select).
-     Ionic altrimenti usa il verde per i campi già compilati ("valid") */
   --highlight-color-focused: var(--ion-color-primary);
   --highlight-color-valid: var(--ion-color-primary);
 }
@@ -168,7 +162,6 @@
   margin-top: 8px;
 }
 
-/* Pulsante che apre la scelta della data, con lo stesso aspetto dei campi */
 .date-btn {
   display: flex;
   align-items: center;
@@ -191,7 +184,6 @@
     border-color: #222222;
   }
 
-  /* Rosso quando è selezionato o quando la finestra della data è aperta, come gli altri campi */
   &:focus,
   &.active {
     outline: none;
@@ -199,7 +191,6 @@
   }
 }
 
-/* Tracklist: numero, campo e tasto per togliere la canzone */
 .track-row {
   display: flex;
   align-items: center;
@@ -297,18 +288,28 @@
   margin: 0;
 }
 
-/* Finestra piccola per le liste di giorno, mese e anno */
 .date-modal {
   --width: 340px;
   --height: auto;
   --border-radius: 16px;
 }
 
-/* Liste di giorno, mese e anno con i colori scuri della pagina */
 .date-picker {
   --background: #f4f4f4;
   --background-rgb: 31, 31, 31;
   --wheel-highlight-background: #e5e5e5;
   --wheel-fade-background-rgb: 31, 31, 31;
   color: #222222;
+}
+
+@media (max-width: 576px) {
+  .card {
+    padding: 22px 16px;
+  }
+
+  .type-segment ion-segment-button {
+    min-width: 0;
+    letter-spacing: 0.04em;
+    font-size: 0.72rem;
+  }
 }

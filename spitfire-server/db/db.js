@@ -8,7 +8,6 @@ const db = new sqlite3.Database("./database.sqlite",
 
 console.log("db.js");
 
-// Creazione tabelle se non esistono
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     username TEXT PRIMARY KEY,
@@ -17,7 +16,8 @@ db.exec(`
     ruolo TEXT DEFAULT 'utente',
     foto_profilo TEXT,
     bio TEXT,
-    who_can_message TEXT NOT NULL DEFAULT 'everyone'
+    who_can_message TEXT NOT NULL DEFAULT 'everyone',
+    profile_color TEXT
   );
 
   CREATE TABLE IF NOT EXISTS artists (
@@ -81,7 +81,6 @@ db.exec(`
     FOREIGN KEY (genre_id) REFERENCES genres(id)
   );
 
-  -- Generi che sto aggiungendo manualmente poi si valutano
   INSERT OR IGNORE INTO genres (name) VALUES
     ('Pop'), ('Rock'), ('Hip-Hop'), ('Rap'), ('Soul'), ('Funk'), ('Jazz'), ('Blues'),
     ('Electronic'), ('Dance'), ('Metal'), ('Punk'), ('Indie'), ('Folk'), ('Country'), ('Reggae');

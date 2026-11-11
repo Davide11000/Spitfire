@@ -110,7 +110,6 @@ const Comment = {
         await run(`DELETE FROM comments WHERE target_type = ? AND target_id = ?`);
     },
 
-    // Tolgo il voto vecchio e, se il valore non è 0, salvo quello nuovo (1 = mi piace, -1 = non mi piace)
     setVote : (id, username, value) => {
         return new Promise((resolve, reject) => {
             db.run(`DELETE FROM comment_likes WHERE comment_id = ? AND username = ?`, [id, username], function (err) {

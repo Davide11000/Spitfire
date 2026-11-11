@@ -187,8 +187,6 @@ export class ChatComponent implements OnChanges, OnDestroy {
     });
   }
 
-
-  // Blocco: l'altro può continuare a scrivere, ma i suoi messaggi non arrivano (e non lo sa)
   async toggleBlock() {
     if (this.blocked) {
       this.messageService.unblock(this.username).subscribe({

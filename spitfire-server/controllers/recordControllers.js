@@ -25,7 +25,6 @@ exports.create = async (req, res) => {
 
     const record = await Record.create(recordname, artId, image, releaseDate, language);
 
-    // genreIds è un elenco di id dei generi, es. [2, 3]: per ognuno creo il collegamento
     if (genreIds) {
       for (const genreId of genreIds) {
         await Genre.addToRecord(record.id, genreId);
@@ -116,9 +115,6 @@ exports.getTopRecords = async (req, res) => {
   }
 };
 
-// Discover: consiglia 5 album in base a generi, epoche (decenni) e lingue scelte.
-// Ogni album riceve un punteggio: +3 per ogni genere in comune, +2 se è dell'epoca giusta, +1 se è nella lingua giusta.
-// Servono almeno un genere in comune; a parità di punteggio vince l'album con il voto medio più alto.
 exports.getDiscoverRecords = async (req, res) => {
   try {
     const split = (value) => (value || "").split(",").map(v => v.trim()).filter(v => v);
@@ -154,7 +150,6 @@ exports.getDiscoverRecords = async (req, res) => {
   }
 };
 
-// Le lingue degli album presenti nel database (per le scelte di Discover)
 exports.getLanguages = async (req, res) => {
   try {
     const rows = await Record.findLanguages();

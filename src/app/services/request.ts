@@ -10,7 +10,6 @@ export class Request {
     private http = inject(HttpClient);
     private auth = inject(Auth);
 
-    // I dati vanno mandati come FormData perché insieme può esserci l'immagine
     sendRequest(formData: FormData) : Observable<any> {
         const token = this.auth.getToken();
 

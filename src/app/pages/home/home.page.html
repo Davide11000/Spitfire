@@ -11,7 +11,6 @@
 
   <div class="page-container">
 
-    <!-- Gli ultimi album aggiunti -->
     <section class="section-wrapper">
       <h2 class="section-title">
         <ion-icon name="time-outline"></ion-icon> Recently Added Records
@@ -49,7 +48,6 @@
       }
     </section>
 
-    <!-- Bar of the day: l'ultima annotazione approvata -->
     @if (barOfTheDay) {
       <section class="section-wrapper">
         <div class="bar-box" (click)="goToBar()">
@@ -72,7 +70,6 @@
       </section>
     }
 
-    <!-- Gli album con il voto più alto -->
     <section class="section-wrapper last">
       <h2 class="section-title">
         <ion-icon name="star"></ion-icon> Top Rated

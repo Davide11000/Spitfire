@@ -32,9 +32,6 @@ const Genre = {
     });
   },
 
-  // ALBUM
-
-  // Generi di un album
   findByRecord: (recordId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT genres.*
@@ -48,7 +45,6 @@ const Genre = {
     });
   },
 
-  // Album di un genere
   findRecords: (genreId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT records.*, artists.artname
@@ -93,9 +89,6 @@ const Genre = {
     });
   },
 
-  // CANZONI
-
-  // Generi di una canzone
   findBySong: (songId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT genres.*
@@ -109,7 +102,6 @@ const Genre = {
     });
   },
 
-  // Canzoni di un genere
   findSongs: (genreId) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT songs.id, songs.songname, songs.recordid, songs.image, artists.artname, records.image AS recordimage

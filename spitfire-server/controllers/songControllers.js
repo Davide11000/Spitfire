@@ -1,7 +1,6 @@
 const Song = require("../models/songModel");
 const Genre = require("../models/genreModel");
 
-
 exports.create = async (req, res) => {
   try {
     const {songname, recordid, image, language, lyrics, genreIds} = req.body;
@@ -12,7 +11,6 @@ exports.create = async (req, res) => {
     
     const song = await Song.create(songname, recordid, image, language, lyrics);
 
-    // genreIds è un elenco di id dei generi, es. [2, 3]: per ognuno creo il collegamento
     if (genreIds) {
       for (const genreId of genreIds) {
         await Genre.addToSong(song.id, genreId);

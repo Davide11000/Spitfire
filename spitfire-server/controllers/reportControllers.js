@@ -115,7 +115,6 @@ exports.getPendingAnnotationReports = async (req, res) => {
     }
 };
 
-// Segnalazione giusta: elimino l'annotazione (con voti, modifiche, commenti e segnalazioni)
 exports.acceptAnnotationReport = async (req, res) => {
     try {
         const report = await Report.findAnnotationReportById(req.params.id);

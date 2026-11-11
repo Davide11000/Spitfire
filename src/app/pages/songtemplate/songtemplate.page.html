@@ -2,63 +2,63 @@
 
 <ion-content class="globalbg">
 
-  @if (canzone) {
-    <div [style.background]="stileSfondoHeader" class="song-header-section">
-      <ion-img [src]="getCopertina()"></ion-img>
+  @if (currentSong) {
+    <div [style.background]="headerBackground" class="song-header-section">
+      <ion-img [src]="getCover()"></ion-img>
 
       <div class="song-info-card">
         <div class="song-header-details">
           <div class="song-title">
-            <b>{{ canzone.songname }}</b>
+            <b>{{ currentSong.songname }}</b>
           </div>
-          @if (canzone.artname) {
-            <div class="song-artist" (click)="vaiAllArtista(canzone.artist_id)">
-              {{ canzone.artname }}
+          @if (currentSong.artname) {
+            <div class="song-artist" (click)="goToArtist(currentSong.artist_id)">
+              {{ currentSong.artname }}
             </div>
           }
 
-          @if (generi.length > 0) {
+          @if (genres.length > 0) {
             <div class="song-meta">
               <b>Genres:</b>
-              @for (g of generi; track g.id) {
+              @for (g of genres; track g.id) {
                 {{ g.name }}{{ $last ? '' : ', ' }}
               }
             </div>
           }
 
-          @if (canzone.language) {
+          @if (currentSong.language) {
             <div class="song-meta">
-              <b>Language:</b> {{ canzone.language }}
+              <b>Language:</b> {{ currentSong.language }}
             </div>
           }
 
-          @if (canzone.duration) {
+          @if (currentSong.duration) {
             <div class="song-meta">
-              <b>Duration:</b> {{ canzone.duration }}
+              <b>Duration:</b> {{ currentSong.duration }}
             </div>
           }
 
-          @if (canzone.recordname) {
+          @if (currentSong.recordname) {
             <div class="song-meta">
               <b>Record:</b>
-              <span class="link-album" (click)="vaiAllAlbum(canzone.recordid)">
-                {{ canzone.recordname }}
+              <span class="link-album" (click)="goToAlbum(currentSong.recordid)">
+                {{ currentSong.recordname }}
               </span>
             </div>
           }
 
           <div class="header-buttons">
-            <ion-button fill="outline" size="small" (click)="apriModalPlaylist()" class="add-playlist-btn white-btn">
+            <ion-button fill="outline" size="small" (click)="openPlaylistModal()" class="add-playlist-btn white-btn">
               <ion-icon slot="start" name="add-outline"></ion-icon>
               Add to a playlist
             </ion-button>
-            <ion-button fill="outline" size="small" (click)="togglePreferito()" class="add-playlist-btn white-btn" [class.active]="isPreferito">
-              <ion-icon slot="start" [name]="isPreferito ? 'heart' : 'heart-outline'"></ion-icon>
-              {{ isPreferito ? 'In favourites' : 'Add to favourites' }}
+            <ion-button fill="outline" size="small" (click)="toggleFavourite()" class="add-playlist-btn white-btn" [class.active]="isFavourite">
+              <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
+              {{ isFavourite ? 'In favourites' : 'Add to favourites' }}
             </ion-button>
           </div>
 
-          <app-rating-stars type="song" [id]="canzone.id"></app-rating-stars>
+          <app-rating-stars type="song" [id]="currentSong.id"></app-rating-stars>
         </div>
       </div>
     </div>
@@ -67,19 +67,19 @@
   }
 
   <div class="light-section">
-    @if (caricamentoTesto) {
+    @if (loadingLyrics) {
       <div class="lyrics-loading">
         <ion-spinner color="medium"></ion-spinner>
         <p>Loading lyrics...</p>
       </div>
-    } @else if (canzone) {
+    } @else if (currentSong) {
       <div class="translation-bar">
-        <app-translation-menu [songId]="canzone.id" [songName]="canzone.songname" [originalLanguage]="canzone.language" (selected)="traduzioneScelta = $event"></app-translation-menu>
+        <app-translation-menu [songId]="currentSong.id" [songName]="currentSong.songname" [originalLanguage]="currentSong.language" (selected)="selectedTranslation = $event"></app-translation-menu>
       </div>
-      @if (traduzioneScelta) {
-        <div class="translated">{{ traduzioneScelta.lyrics }}</div>
+      @if (selectedTranslation) {
+        <div class="translated">{{ selectedTranslation.lyrics }}</div>
       } @else {
-        <app-annotations [songId]="canzone.id" [lyrics]="canzone.lyrics" [openId]="annotazioneDaAprire"></app-annotations>
+        <app-annotations [songId]="currentSong.id" [lyrics]="currentSong.lyrics" [openId]="annotationToOpen"></app-annotations>
       }
     }
   </div>
@@ -89,10 +89,10 @@
   }
 
   <div class="correct-entry-wrapper">
-    @if (canzone) {
-      <app-contributors type="song" [id]="canzone.id"></app-contributors>
+    @if (currentSong) {
+      <app-contributors type="song" [id]="currentSong.id"></app-contributors>
     }
-    <ion-button fill="outline" color="medium" size="small" (click)="vaiACorrectEntry()">
+    <ion-button fill="outline" color="medium" size="small" (click)="goToCorrectEntry()">
       <ion-icon slot="start" name="create-outline"></ion-icon>
       Correct entry
     </ion-button>
@@ -102,22 +102,22 @@
 
 </ion-content>
 
-<ion-modal class="pl-modal" [isOpen]="isModalPlaylistAperto" (didDismiss)="chiudiModalPlaylist()">
+<ion-modal class="pl-modal" [isOpen]="isPlaylistModalOpen" (didDismiss)="closePlaylistModal()">
   <ng-template>
     <div class="pl-box">
       <div class="pl-header">
         <b>Add to playlist</b>
-        <ion-button fill="clear" class="close-btn" (click)="isModalPlaylistAperto = false">
+        <ion-button fill="clear" class="close-btn" (click)="isPlaylistModalOpen = false">
           <ion-icon slot="icon-only" name="close-outline"></ion-icon>
         </ion-button>
       </div>
 
-      @if (canzone) {
+      @if (currentSong) {
         <div class="pl-song">
-          <img [src]="getCopertina()" />
+          <img [src]="getCover()" />
           <div>
-            <b>{{ canzone.songname }}</b>
-            <span>{{ canzone.artname }}</span>
+            <b>{{ currentSong.songname }}</b>
+            <span>{{ currentSong.artname }}</span>
           </div>
         </div>
       }
@@ -125,8 +125,8 @@
       <label class="pl-label">Your playlists</label>
       <div class="pl-list">
         @for (pl of userPlaylists; track pl.id) {
-          <button class="pl-item" (click)="selezionaPlaylist(pl)">
-            <img [src]="getImmagine(pl.image)" />
+          <button class="pl-item" (click)="selectPlaylist(pl)">
+            <img [src]="getImage(pl.image)" />
             <span class="pl-name">
               @if (!pl.is_public) {
                 <ion-icon name="lock-closed-outline"></ion-icon>
@@ -142,17 +142,17 @@
 
       <label class="pl-label">Or create a new one</label>
       <div class="pl-fields">
-        <ion-input class="pl-input" fill="outline" placeholder="Playlist name" [value]="nuovaPlaylistNome" (ionInput)="onNomeInput($event)" (keyup.enter)="creaEAggiungi()"></ion-input>
-        <ion-textarea class="pl-input" fill="outline" [autoGrow]="true" [rows]="2" [maxlength]="300" placeholder="Description (optional)" [value]="nuovaPlaylistDescrizione" (ionInput)="onDescrizioneInput($event)"></ion-textarea>
+        <ion-input class="pl-input" fill="outline" placeholder="Playlist name" [value]="newPlaylistName" (ionInput)="onNameInput($event)" (keyup.enter)="createAndAdd()"></ion-input>
+        <ion-textarea class="pl-input" fill="outline" [autoGrow]="true" [rows]="2" [maxlength]="300" placeholder="Description (optional)" [value]="newPlaylistDescription" (ionInput)="onDescriptionInput($event)"></ion-textarea>
       </div>
 
-      @if (erroreModal) {
-        <p class="pl-error">{{ erroreModal }}</p>
+      @if (modalError) {
+        <p class="pl-error">{{ modalError }}</p>
       }
 
       <div class="pl-footer">
-        <ion-button fill="clear" class="pl-btn pl-cancel" (click)="isModalPlaylistAperto = false">Cancel</ion-button>
-        <ion-button class="pl-btn" [disabled]="creando" (click)="creaEAggiungi()">
+        <ion-button fill="clear" class="pl-btn pl-cancel" (click)="isPlaylistModalOpen = false">Cancel</ion-button>
+        <ion-button class="pl-btn" [disabled]="creating" (click)="createAndAdd()">
           <ion-icon slot="start" name="add-outline"></ion-icon>
           Create and add
         </ion-button>

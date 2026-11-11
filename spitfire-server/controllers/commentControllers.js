@@ -131,7 +131,6 @@ exports.vote = async (req, res) => {
 
         await Comment.setVote(comment.id, username, value);
 
-        // La notifica "liked your comment" c'è solo per i mi piace
         if (comment.username && comment.username !== username) {
             await Notification.removeLike(comment.username, username, comment.id);
             if (value === 1) {

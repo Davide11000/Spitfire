@@ -44,7 +44,6 @@ export class RatingStarsComponent implements OnChanges {
     this.myRating = res.myRating;
   }
 
-  // Se il mouse è sulla metà sinistra della stella vale mezza stella
   getValue(event: MouseEvent, n: number): number {
     const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
     if (event.clientX - box.left < box.width / 2) return n - 0.5;
@@ -74,7 +73,6 @@ export class RatingStarsComponent implements OnChanges {
 
     const value = this.getValue(event, n);
 
-    // Cliccando di nuovo sullo stesso voto lo tolgo
     if (value === this.myRating) {
       this.ratingService.removeRating(this.type, Number(this.id)).subscribe({
         next: (res) => { this.setSummary(res); },

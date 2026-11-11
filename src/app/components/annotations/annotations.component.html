@@ -1,73 +1,73 @@
-<div class="layout" [class.open]="aperta || selezione">
+<div class="layout" [class.open]="activeAnnotation || selection">
   <div class="lyrics-box">
-    @if (testo) {
-      <div class="lyrics" #lyricsBox (mouseup)="onSelezione(lyricsBox)">@for (seg of segmenti; track $index) {@if (seg.annotazione) {<span class="annotated" [class.pending]="seg.annotazione.status === 'pending'" [class.active]="aperta?.id === seg.annotazione.id" (click)="apriAnnotazione(seg.annotazione)">{{ seg.testo }}</span>} @else {<span>{{ seg.testo }}</span>}}</div>
+    @if (lyricsText) {
+      <div class="lyrics" #lyricsBox (mouseup)="onSelection(lyricsBox)">@for (seg of segments; track $index) {@if (seg.annotation) {<span class="annotated" [class.pending]="seg.annotation.status === 'pending'" [class.active]="activeAnnotation?.id === seg.annotation.id" (click)="openAnnotation(seg.annotation)">{{ seg.lyricsText }}</span>} @else {<span>{{ seg.lyricsText }}</span>}}</div>
     } @else {
       <p class="no-lyrics">Lyrics not available for this song.</p>
     }
   </div>
 
-  @if (aperta || selezione) {
+  @if (activeAnnotation || selection) {
   <aside class="panel">
-    @if (aperta && aperta.selected_text) {
+    @if (activeAnnotation && activeAnnotation.selected_text) {
       <div class="panel-header">
-        <span class="quote">"{{ aperta.selected_text }}"</span>
+        <span class="quote">"{{ activeAnnotation.selected_text }}"</span>
         <div class="header-icons">
-          @if (puoSegnalare(aperta)) {
-            <ion-button fill="clear" class="close-btn" title="Report annotation" (click)="apriSegnalazione()">
+          @if (canReport(activeAnnotation)) {
+            <ion-button fill="clear" class="close-btn" title="Report annotation" (click)="openReport()">
               <ion-icon slot="icon-only" name="flag-outline"></ion-icon>
             </ion-button>
           }
           @if (canModerate) {
-            <ion-button fill="clear" class="close-btn" title="Delete annotation" (click)="elimina(aperta)">
+            <ion-button fill="clear" class="close-btn" title="Delete annotation" (click)="onDelete(activeAnnotation)">
               <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>
           }
-          <ion-button fill="clear" class="close-btn" (click)="chiudi()">
+          <ion-button fill="clear" class="close-btn" (click)="close()">
             <ion-icon slot="icon-only" name="close-outline"></ion-icon>
           </ion-button>
         </div>
       </div>
 
-      @if (aperta.status === 'pending') {
+      @if (activeAnnotation.status === 'pending') {
         <span class="pending-badge">Waiting for review</span>
       }
 
-      <app-contributors class="contributors" type="annotation" [id]="aperta.id" [version]="aperta.text"></app-contributors>
+      <app-contributors class="contributors" type="annotation" [id]="activeAnnotation.id" [version]="activeAnnotation.text"></app-contributors>
 
-      @if (modificaAperta) {
-        <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="4" [maxlength]="2000" [value]="testoModifica" (ionInput)="onTestoModifica($event)"></ion-textarea>
+      @if (editOpen) {
+        <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="4" [maxlength]="2000" [value]="editText" (ionInput)="onEditTextInput($event)"></ion-textarea>
         <div class="actions">
-          <ion-button fill="clear" class="btn cancel" (click)="modificaAperta = false">Cancel</ion-button>
-          <ion-button class="btn" (click)="inviaModifica(aperta)">Send edit</ion-button>
+          <ion-button fill="clear" class="btn cancel" (click)="editOpen = false">Cancel</ion-button>
+          <ion-button class="btn" (click)="sendEdit(activeAnnotation)">Send edit</ion-button>
         </div>
       } @else {
-        <p class="text">{{ aperta.text }}</p>
+        <p class="text">{{ activeAnnotation.text }}</p>
       }
 
-      @if (aperta.status === 'pending' && canModerate) {
+      @if (activeAnnotation.status === 'pending' && canModerate) {
         <div class="actions">
-          <ion-button fill="outline" class="btn reject" (click)="rifiuta(aperta)">Reject</ion-button>
-          <ion-button class="btn" (click)="approva(aperta)">
+          <ion-button fill="outline" class="btn reject" (click)="reject(activeAnnotation)">Reject</ion-button>
+          <ion-button class="btn" (click)="approve(activeAnnotation)">
             <ion-icon slot="start" name="checkmark-outline"></ion-icon>
             Approve
           </ion-button>
         </div>
       }
 
-      @if (aperta.status === 'approved') {
+      @if (activeAnnotation.status === 'approved') {
         <div class="votes">
-          <button class="vote" [class.on]="aperta.my_vote === 1" title="I like it" (click)="vota(aperta, 1)">
-            <ion-icon [name]="aperta.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
+          <button class="vote" [class.on]="activeAnnotation.my_vote === 1" title="I like it" (click)="vote(activeAnnotation, 1)">
+            <ion-icon [name]="activeAnnotation.my_vote === 1 ? 'thumbs-up' : 'thumbs-up-outline'"></ion-icon>
           </button>
-          @if (aperta.score) {
-            <span class="score" [class.positive]="aperta.score > 0" [class.negative]="aperta.score < 0">{{ getPunteggio(aperta.score) }}</span>
+          @if (activeAnnotation.score) {
+            <span class="score" [class.positive]="activeAnnotation.score > 0" [class.negative]="activeAnnotation.score < 0">{{ getScore(activeAnnotation.score) }}</span>
           }
-          <button class="vote" [class.on]="aperta.my_vote === -1" title="I don't like it" (click)="vota(aperta, -1)">
-            <ion-icon [name]="aperta.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
+          <button class="vote" [class.on]="activeAnnotation.my_vote === -1" title="I don't like it" (click)="vote(activeAnnotation, -1)">
+            <ion-icon [name]="activeAnnotation.my_vote === -1 ? 'thumbs-down' : 'thumbs-down-outline'"></ion-icon>
           </button>
-          @if (!modificaAperta) {
-            <button class="vote edit" (click)="apriModifica(aperta)">
+          @if (!editOpen) {
+            <button class="vote edit" (click)="openEdit(activeAnnotation)">
               <ion-icon name="create-outline"></ion-icon>
               Edit
             </button>
@@ -75,14 +75,14 @@
         </div>
       }
 
-      @for (e of aperta.pending_edits; track e.id) {
+      @for (e of activeAnnotation.pending_edits; track e.id) {
         <div class="edit-box">
           <span class="edit-title">Proposed edit by <b>{{ '@' + e.username }}</b></span>
           <p class="text">{{ e.text }}</p>
           @if (canModerate) {
             <div class="actions">
-              <ion-button fill="outline" class="btn reject" (click)="rifiutaModifica(e)">Reject</ion-button>
-              <ion-button class="btn" (click)="approvaModifica(e)">Approve edit</ion-button>
+              <ion-button fill="outline" class="btn reject" (click)="rejectEdit(e)">Reject</ion-button>
+              <ion-button class="btn" (click)="approveEdit(e)">Approve edit</ion-button>
             </div>
           } @else {
             <span class="pending-badge">Waiting for review</span>
@@ -90,42 +90,42 @@
         </div>
       }
 
-      @if (errore) {
-        <p class="error">{{ errore }}</p>
+      @if (errorMessage) {
+        <p class="error">{{ errorMessage }}</p>
       }
-      @if (messaggio) {
-        <p class="message">{{ messaggio }}</p>
+      @if (infoMessage) {
+        <p class="message">{{ infoMessage }}</p>
       }
 
-      @if (aperta.status === 'approved') {
-        <app-comments class="suggestions" type="annotation" [id]="aperta.id" title="Suggest an improvement" [collapsible]="true"></app-comments>
+      @if (activeAnnotation.status === 'approved') {
+        <app-comments class="suggestions" type="annotation" [id]="activeAnnotation.id" title="Suggest an improvement" [collapsible]="true"></app-comments>
       }
-    } @else if (selezione) {
+    } @else if (selection) {
       <div class="panel-header">
-        <span class="quote">"{{ selezione.testo }}"</span>
-        <ion-button fill="clear" class="close-btn" (click)="chiudi()">
+        <span class="quote">"{{ selection.lyricsText }}"</span>
+        <ion-button fill="clear" class="close-btn" (click)="close()">
           <ion-icon slot="icon-only" name="close-outline"></ion-icon>
         </ion-button>
       </div>
 
-      @if (mioNome) {
-        <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="4" [maxlength]="2000" placeholder="What does this part mean?" [value]="nuovoTesto" (ionInput)="onNuovoTesto($event)"></ion-textarea>
-        @if (errore) {
-          <p class="error">{{ errore }}</p>
+      @if (myUsername) {
+        <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="4" [maxlength]="2000" placeholder="What does this part mean?" [value]="newText" (ionInput)="onNewTextInput($event)"></ion-textarea>
+        @if (errorMessage) {
+          <p class="error">{{ errorMessage }}</p>
         }
         <div class="actions">
-          <ion-button fill="clear" class="btn cancel" (click)="chiudi()">Cancel</ion-button>
-          <ion-button class="btn" [disabled]="inviando" (click)="inviaAnnotazione()">Send annotation</ion-button>
+          <ion-button fill="clear" class="btn cancel" (click)="close()">Cancel</ion-button>
+          <ion-button class="btn" [disabled]="sending" (click)="sendAnnotation()">Send annotation</ion-button>
         </div>
       } @else {
-        <p class="empty"><span class="link" (click)="vaiAlLogin()">Sign in</span> to annotate the lyrics.</p>
+        <p class="empty"><span class="link" (click)="goToLogin()">Sign in</span> to annotate the lyrics.</p>
       }
     }
   </aside>
   }
 </div>
 
-<ion-modal class="report-modal" [isOpen]="segnalazioneAperta" (didDismiss)="chiudiSegnalazione()">
+<ion-modal class="report-modal" [isOpen]="isReportOpen" (didDismiss)="closeReport()">
   <ng-template>
     <div class="report-box">
       <div class="report-header">
@@ -133,35 +133,35 @@
           <ion-icon name="flag-outline"></ion-icon>
           Report annotation
         </span>
-        <ion-button fill="clear" class="close-btn" (click)="chiudiSegnalazione()">
+        <ion-button fill="clear" class="close-btn" (click)="closeReport()">
           <ion-icon slot="icon-only" name="close-outline"></ion-icon>
         </ion-button>
       </div>
 
-      @if (aperta) {
+      @if (activeAnnotation) {
         <div class="reported">
-          <span class="reported-quote">"{{ aperta.selected_text }}"</span>
-          <p class="reported-text">{{ aperta.text }}</p>
+          <span class="reported-quote">"{{ activeAnnotation.selected_text }}"</span>
+          <p class="reported-text">{{ activeAnnotation.text }}</p>
         </div>
       }
 
       <label class="report-label">Why are you reporting it?</label>
       <div class="reason-chips">
-        @for (m of motivi; track m) {
-          <button class="chip" [class.selected]="motivo === m" (click)="scegliMotivo(m)">{{ m }}</button>
+        @for (m of reasons; track m) {
+          <button class="chip" [class.selected]="reportReason === m" (click)="chooseReason(m)">{{ m }}</button>
         }
       </div>
 
       <ion-textarea class="report-input" fill="outline" [autoGrow]="true" [rows]="3" [maxlength]="500" [counter]="true"
-                    placeholder="Tell the moderators what's wrong..." [value]="motivo" (ionInput)="onMotivo($event)"></ion-textarea>
+                    placeholder="Tell the moderators what's wrong..." [value]="reportReason" (ionInput)="onReasonInput($event)"></ion-textarea>
 
-      @if (erroreSegnalazione) {
-        <p class="error">{{ erroreSegnalazione }}</p>
+      @if (reportError) {
+        <p class="error">{{ reportError }}</p>
       }
 
       <div class="actions">
-        <ion-button fill="clear" class="btn report-cancel" (click)="chiudiSegnalazione()">Cancel</ion-button>
-        <ion-button class="btn" [disabled]="!motivo.trim() || segnalando" (click)="inviaSegnalazione()">Send report</ion-button>
+        <ion-button fill="clear" class="btn report-cancel" (click)="closeReport()">Cancel</ion-button>
+        <ion-button class="btn" [disabled]="!reportReason.trim() || reporting" (click)="sendReport()">Send report</ion-button>
       </div>
     </div>
   </ng-template>

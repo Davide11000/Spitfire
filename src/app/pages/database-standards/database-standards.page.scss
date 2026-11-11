@@ -1,0 +1,125 @@
+.globalbg {
+  --background: #ffffff;
+}
+
+.standards-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 16px 60px;
+  color: #222222;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.intro {
+  margin: 12px 0 24px;
+  color: #555555;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.index {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.index-link {
+  padding: 10px 16px;
+  border: 2px solid #222222;
+  background: transparent;
+  color: #222222;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary);
+  }
+}
+
+.block {
+  margin-top: 40px;
+  scroll-margin-top: 20px;
+}
+
+.block-title {
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #222222;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.block-intro {
+  margin: 0 0 16px;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.rule {
+  margin-bottom: 14px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-left: 4px solid var(--ion-color-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: #444444;
+    line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.example {
+  margin: 8px 0;
+  padding: 12px 14px;
+  background: #f4f4f4;
+  border: 1px solid #e5e5e5;
+  color: #222222;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.outro {
+  margin-top: 40px;
+  color: #555555;
+
+  a {
+    color: var(--ion-color-primary);
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 560px) {
+  .page-title {
+    font-size: 2.1rem;
+  }
+}

@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { checkmarkCircle, closeOutline, earthOutline, peopleOutline, banOutline, trashOutline, arrowBackOutline } from 'ionicons/icons';
 import { Auth } from '../../services/auth';
 import { User } from '../../services/user';
+import { PROFILE_COLORS } from '../../constants/profile-colors';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
@@ -36,6 +37,10 @@ export class SettingsPage implements OnInit {
   public whoCanMessage = 'everyone';
   public privacyError = '';
 
+  public profileColors = PROFILE_COLORS;
+  public profileColor: string | null = null;
+  public colorError = '';
+
   public isDeleteOpen = false;
   public deletePassword = '';
   public deleteError = '';
@@ -53,6 +58,7 @@ export class SettingsPage implements OnInit {
         this.bio = res.bio || '';
         this.currentEmail = res.email;
         this.whoCanMessage = res.who_can_message;
+        this.profileColor = res.profile_color;
       },
       error: (err) => { console.error('Error fetching user', err); }
     });
@@ -134,6 +140,18 @@ export class SettingsPage implements OnInit {
         this.showToast('Privacy saved');
       },
       error: (err) => { this.privacyError = err.error.message || 'Error saving the choice'; }
+    });
+  }
+
+  chooseProfileColor(color: string | null) {
+    this.colorError = '';
+
+    this.userService.updateProfileColor(color).subscribe({
+      next: (res) => {
+        this.profileColor = res.profile_color;
+        this.showToast('Profile color saved');
+      },
+      error: (err) => { this.colorError = err.error.message || 'Error saving the color'; }
     });
   }
 

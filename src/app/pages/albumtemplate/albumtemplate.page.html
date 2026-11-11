@@ -2,7 +2,7 @@
 
 @if (album) {
   <ion-content class="globalbg">
-    <div [style.background]="stileSfondoCard" class="album-header-section">
+    <div [style.background]="headerBackground" class="album-header-section">
       <img loading="lazy" [src]="getCover()" class="album-cover"/>
       <div class="album-info-card">
         <div style="padding: 4px 0; display: flex; flex-direction: column; gap: 6px;">
@@ -19,10 +19,10 @@
               <b>Released:</b> {{ album.release_date | date:'d MMMM y' }}
             </div>
           }
-          @if (generi.length > 0) {
+          @if (genres.length > 0) {
             <div class="song-meta">
               <b>Genres:</b>
-              @for (g of generi; track g.id) {
+              @for (g of genres; track g.id) {
                 {{ g.name }}{{ $last ? '' : ', ' }}
               }
             </div>
@@ -32,16 +32,16 @@
               <b>Language:</b> {{ album.language }}
             </div>
           }
-          <ion-button fill="outline" size="small" class="favourite-btn white-btn" [class.active]="isPreferito" (click)="togglePreferito()">
-            <ion-icon slot="start" [name]="isPreferito ? 'heart' : 'heart-outline'"></ion-icon>
-            {{ isPreferito ? 'In favourites' : 'Add to favourites' }}
+          <ion-button fill="outline" size="small" class="favourite-btn white-btn" [class.active]="isFavourite" (click)="toggleFavourite()">
+            <ion-icon slot="start" [name]="isFavourite ? 'heart' : 'heart-outline'"></ion-icon>
+            {{ isFavourite ? 'In favourites' : 'Add to favourites' }}
           </ion-button>
           <app-rating-stars type="record" [id]="album.id"></app-rating-stars>
         </div>
       </div>
     </div>
     <div class="album-body">
-      <div class="tracklist-wrapper" [style.background]="stileSfondoCard">
+      <div class="tracklist-wrapper" [style.background]="headerBackground">
         <ion-list lines="none" style = " border-radius: 15px; background: transparent;" class="tracklist">
           <ion-list-header style="font-size: larger; color: white;">
             <b>Tracklist</b>
@@ -75,7 +75,7 @@
       @if (album) {
         <app-contributors type="record" [id]="album.id"></app-contributors>
       }
-      <ion-button fill="outline" color="medium" size="small" class="album-action-btn" (click)="vaiACorrectEntry()">
+      <ion-button fill="outline" color="medium" size="small" class="album-action-btn" (click)="goToCorrectEntry()">
         <ion-icon slot="start" name="create-outline"></ion-icon>
         Correct entry
       </ion-button>

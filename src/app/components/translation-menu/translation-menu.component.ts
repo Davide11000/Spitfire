@@ -102,7 +102,6 @@ export class TranslationMenuComponent implements OnChanges {
         this.sending = false;
         this.isAddOpen = false;
 
-        // Se l'ha aggiunta l'admin è già pubblicata: ricarico l'elenco delle traduzioni
         if (res.status === 'accepted') this.ngOnChanges();
 
         const toast = await this.toastC.create({

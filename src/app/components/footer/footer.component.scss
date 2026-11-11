@@ -41,3 +41,10 @@ ion-icon{
 .subsection{
     font-size: 70%;
 }
+.footer-link {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

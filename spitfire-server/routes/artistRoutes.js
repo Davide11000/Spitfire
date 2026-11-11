@@ -12,5 +12,4 @@ router.get("/:artId/discography", artistController.getDiscography);
 router.get("/:artId/top-songs", artistController.getTopSongs);
 router.get("/:artId", artistController.findArtistbyID);
 
-
 module.exports = router;

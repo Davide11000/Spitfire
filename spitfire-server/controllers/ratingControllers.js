@@ -41,7 +41,6 @@ exports.rate = async (req, res) => {
       return res.status(404).json({ message: "Content not found" });
     }
 
-    // Il voto va da mezza stella a 5 stelle, a passi di mezza stella
     if (!value || value < 0.5 || value > 5 || value * 2 !== Math.round(value * 2)) {
       return res.status(400).json({ message: "The rating must be between 0.5 and 5" });
     }
