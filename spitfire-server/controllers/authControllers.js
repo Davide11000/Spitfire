@@ -139,7 +139,7 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign({ username: user.username, email: user.email, ruolo: user.ruolo }, SECRET, {
-      expiresIn: "1h"
+      expiresIn: "1d"
     });
 
     res.json({ token });
@@ -155,7 +155,7 @@ exports.getProfile = async (req, res) => {
     const user = await User.findByUsername(userUsername);
 
     if (!user) {
-      return res.status(404).json({ message: "Utente not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const { password, ...safeUser } = user;

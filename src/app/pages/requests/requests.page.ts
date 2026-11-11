@@ -5,6 +5,7 @@ import { IonContent, IonButton, IonIcon, IonSpinner, IonSegment, IonSegmentButto
 import { addIcons } from 'ionicons';
 import { fileTrayFullOutline, checkmarkOutline, closeOutline, checkmarkCircle, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { Request } from '../../services/request';
+import { RoleRequest } from '../../services/role-request';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
 @Component({
@@ -18,11 +19,12 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 export class RequestsPage implements OnInit {
 
   public requests: any[] = [];
+  public roleRequests: any[] = [];
   public loading = true;
   public errorMessage = '';
   public filter = 'all';
 
-  constructor(private requestService : Request, private router : Router, private alertC : AlertController,
+  constructor(private requestService : Request, private roleRequestService : RoleRequest, private router : Router, private alertC : AlertController,
               private toastC : ToastController) {
     addIcons({ fileTrayFullOutline, checkmarkOutline, closeOutline, checkmarkCircle, chevronDownOutline, chevronUpOutline });
   }
@@ -37,6 +39,11 @@ export class RequestsPage implements OnInit {
         this.errorMessage = err.error.message || 'Error loading the requests';
         this.loading = false;
       }
+    });
+
+    this.roleRequestService.getPending().subscribe({
+      next: (res) => { this.roleRequests = res; },
+      error: (err) => { console.error('Error loading the moderator requests', err); }
     });
   }
 
@@ -147,5 +154,47 @@ export class RequestsPage implements OnInit {
 
   isLink(source: string): boolean {
     return /^https?:\/\//i.test(source);
+  }
+
+  onAcceptRole(request: any) {
+    request.error = '';
+    request.working = true;
+
+    this.roleRequestService.accept(request.id).subscribe({
+      next: (res) => {
+        this.roleRequests = this.roleRequests.filter(r => r.id !== request.id);
+        this.showToast('@' + request.username + ' is now a moderator');
+      },
+      error: (err) => {
+        request.working = false;
+        request.error = err.error.message || 'Error accepting the request';
+      }
+    });
+  }
+
+  async onRejectRole(request: any) {
+    const alert = await this.alertC.create({
+      header: 'Reject request?',
+      message: '@' + request.username + ' will not become a moderator.',
+      cssClass: 'dark-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { text: 'Reject', role: 'destructive', handler: () => { this.rejectRole(request); } }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  rejectRole(request: any) {
+    request.error = '';
+
+    this.roleRequestService.reject(request.id).subscribe({
+      next: (res) => {
+        this.roleRequests = this.roleRequests.filter(r => r.id !== request.id);
+        this.showToast('Request rejected');
+      },
+      error: (err) => { request.error = err.error.message || 'Error rejecting the request'; }
+    });
   }
 }

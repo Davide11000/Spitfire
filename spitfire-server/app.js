@@ -73,4 +73,7 @@ app.use('/charts', chartRoutes);
 const aboutRoutes = require('./routes/aboutRoutes');
 app.use('/abouts', aboutRoutes);
 
+const roleRequestRoutes = require('./routes/roleRequestRoutes');
+app.use('/role-requests', roleRequestRoutes);
+
 module.exports = app;

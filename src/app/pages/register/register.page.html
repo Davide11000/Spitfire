@@ -3,7 +3,7 @@
 <ion-content class="global theme-light">
   <div class="log">
     <ion-text class="ttl">
-      <h1 class="upper-text">Crea un account</h1>
+      <h1 class="upper-text">Create an account</h1>
     </ion-text>
     <div class="input">
       <ion-input label="Username" type="text" label-placement="stacked" fill="outline" [(ngModel)]="username"></ion-input>
@@ -16,16 +16,16 @@
           <p>{{errorMessage}}</p>
         </ion-text>
       }
-      <ion-button class="continua" shape="round" fill="outline" (click)="onRegister()">Continua</ion-button>
+      <ion-button class="square-btn" fill="outline" (click)="onRegister()">Continue</ion-button>
       <ion-text>
-        <p class="or">oppure</p>
+        <p class="or">or</p>
       </ion-text>
     </div>
     <div class="reg">
       <ion-text>
-        <h1 class="no-acc">Sei già iscritto?</h1>
+        <h1 class="no-acc">Already have an account?</h1>
       </ion-text>
-      <ion-button class="sign-up" fill="clear" routerLink="/login">Accedi</ion-button>
+      <ion-button class="sign-up" fill="clear" routerLink="/login">Log in</ion-button>
     </div>
   </div>
 </ion-content>

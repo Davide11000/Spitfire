@@ -31,12 +31,56 @@
       <ion-segment-button value="translation">
         <ion-label>Translations ({{ countType('translation') }})</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="moderator">
+        <ion-label>Moderators ({{ roleRequests.length }})</ion-label>
+      </ion-segment-button>
     </ion-segment>
 
     @if (loading) {
       <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
     } @else if (errorMessage) {
       <p class="error">{{ errorMessage }}</p>
+    } @else if (filter === 'moderator') {
+      @for (request of roleRequests; track request.id) {
+        <div class="card">
+          <div class="card-body">
+            <img class="cover round" [src]="getPhoto(request.foto_profilo)" (click)="goToProfile(request.username)" />
+            <div class="details">
+              <span class="badge">Moderator</span>
+              <div class="name username" (click)="goToProfile(request.username)">{{ '@' + request.username }}</div>
+              <div class="sub">{{ request.accepted }} accepted requests · {{ getDate(request.created_at) | date:'dd MMM yyyy, HH:mm' }}</div>
+            </div>
+          </div>
+
+          <div class="block">
+            <span class="block-title">Why</span>
+            <p class="long-text">{{ request.text }}</p>
+          </div>
+
+          <div class="card-footer">
+            <div></div>
+            <div class="card-actions">
+              <ion-button fill="outline" class="action-btn reject-btn" (click)="onRejectRole(request)">
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Reject
+              </ion-button>
+              <ion-button class="action-btn" [disabled]="request.working" (click)="onAcceptRole(request)">
+                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                Accept
+              </ion-button>
+            </div>
+          </div>
+
+          @if (request.error) {
+            <p class="error">{{ request.error }}</p>
+          }
+        </div>
+      } @empty {
+        <div class="empty">
+          <ion-icon name="file-tray-full-outline"></ion-icon>
+          <p>No moderator requests to check.</p>
+        </div>
+      }
     } @else {
       @for (request of getFiltered(); track request.id) {
         <div class="card">

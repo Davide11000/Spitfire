@@ -89,17 +89,20 @@
   }
 
   &.reply,
-  &.request_accepted {
+  &.request_accepted,
+  &.role_accepted {
     background: #43a047;
   }
 
-  &.request_rejected {
+  &.request_rejected,
+  &.role_rejected {
     background: var(--ion-color-primary);
   }
 
   &.new_request,
   &.new_correction,
-  &.new_translation {
+  &.new_translation,
+  &.new_role_request {
     background: #f9a825;
   }
 

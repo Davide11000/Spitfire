@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
             return res.status(401).json({ message: "This account no longer exists" });
         }
 
-        req.user = verified;
+        req.user = { ...verified, ruolo: user.ruolo };
         next();
     } catch (err) {
         res.status(400).json({ message: "Invalid token" });

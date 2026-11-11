@@ -13,6 +13,7 @@
     padding-bottom: 12%;
 }
 ion-input {
+  --border-radius: 0;
   --highlight-color: rgb(180, 62, 62) !important;
   --ion-color-primary: rgb(180, 62, 62) !important;
 }
@@ -22,18 +23,6 @@ ion-input {
     gap: 1rem;
     max-width: 450px;
     width: 100%;
-}
-.continua {
-    font-family: 'Golos text', sans-serif;
-  --border-color: rgb(180, 62, 62); 
-  --color: #000000;
-
-  &:hover {
-    --background: rgb(180, 62, 62) !important;
-    
-    --color: white;
-    --transition: 0.3s;
-  }
 }
 .or{
     display: flex;

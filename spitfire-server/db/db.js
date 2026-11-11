@@ -83,7 +83,10 @@ db.exec(`
 
   INSERT OR IGNORE INTO genres (name) VALUES
     ('Pop'), ('Rock'), ('Hip-Hop'), ('Rap'), ('Soul'), ('Funk'), ('Jazz'), ('Blues'),
-    ('Electronic'), ('Dance'), ('Metal'), ('Punk'), ('Indie'), ('Folk'), ('Country'), ('Reggae');
+    ('Electronic'), ('Dance'), ('Metal'), ('Punk'), ('Indie'), ('Folk'), ('Country'), ('Reggae'),
+    ('Progressive Rock'), ('Symphonic Prog'), ('Alternative'), ('Hard Rock'), ('Psychedelic Rock'), ('Post-Punk'),
+    ('Shoegaze'), ('Grunge'), ('Progressive Metal'), ('Heavy Metal'), ('Black Metal'), ('House'), ('Techno'),
+    ('Ambient'), ('Synth-pop'), ('R&B'), ('Classical'), ('Soundtrack'), ('Singer-Songwriter'), ('Trap');
 
   CREATE TABLE IF NOT EXISTS follows (
     follower TEXT NOT NULL,
@@ -257,6 +260,15 @@ db.exec(`
     PRIMARY KEY (blocker, blocked),
     FOREIGN KEY (blocker) REFERENCES users(username),
     FOREIGN KEY (blocked) REFERENCES users(username)
+  );
+
+  CREATE TABLE IF NOT EXISTS role_requests (
+    id INTEGER PRIMARY KEY,
+    username TEXT NOT NULL,
+    text TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
   );
 
   CREATE TABLE IF NOT EXISTS notifications (

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectionStra
 import { Router } from '@angular/router';
 import { IonIcon, IonSpinner, IonButton } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language } from 'ionicons/icons';
+import { personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language, shieldCheckmark } from 'ionicons/icons';
 import { Notification } from '../../services/notification';
 
 @Component({
@@ -22,7 +22,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   private timer: any = null;
 
   constructor(private notificationService : Notification, private router : Router) {
-    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language });
+    addIcons({ personAdd, heart, chatbubble, mail, notificationsOutline, checkmark, close, fileTray, create, chatboxEllipses, language, shieldCheckmark });
   }
 
   ngOnInit() {
@@ -80,6 +80,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'new_request') return 'file-tray';
     if (type === 'new_correction') return 'create';
     if (type === 'new_translation') return 'language';
+    if (type === 'new_role_request') return 'shield-checkmark';
+    if (type === 'role_accepted') return 'checkmark';
+    if (type === 'role_rejected') return 'close';
     if (type.startsWith('annotation') || type.startsWith('new_annotation')) return 'chatbox-ellipses';
     if (type.startsWith('about') || type.startsWith('new_about')) return 'create';
     return 'mail';
@@ -95,6 +98,9 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'new_request') return 'sent a new request';
     if (type === 'new_correction') return 'suggested a correction';
     if (type === 'new_translation') return 'sent a translation';
+    if (type === 'new_role_request') return 'wants to become a moderator';
+    if (type === 'role_accepted') return 'made you a moderator';
+    if (type === 'role_rejected') return 'rejected your moderator request';
     if (type === 'new_annotation') return 'wrote an annotation to review';
     if (type === 'new_annotation_edit') return 'proposed an edit to an annotation';
     if (type === 'annotation_approved') return 'approved your annotation';
@@ -111,7 +117,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
   }
 
   getPreview(notification: any): string {
-    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.annotation_id || notification.type.includes('about')) {
+    if (notification.type === 'message' || notification.type === 'request_accepted' || notification.type === 'request_rejected' || notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.type.startsWith('role_') || notification.type === 'new_role_request' || notification.annotation_id || notification.type.includes('about')) {
       return notification.text;
     }
     if (notification.type === 'playlist_like') return notification.playlist_name || '';
@@ -158,8 +164,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
       this.router.navigate(['/songs', notification.annotation_song_id], { queryParams: { annotation: notification.annotation_id } });
     }
 
-    if (notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation') {
+    if (notification.type === 'new_request' || notification.type === 'new_correction' || notification.type === 'new_translation' || notification.type === 'new_role_request') {
       this.router.navigate(['/requests']);
+    }
+
+    if (notification.type === 'role_accepted' || notification.type === 'role_rejected') {
+      this.router.navigate(['/become-moderator']);
     }
 
     if (notification.type === 'like' || notification.type === 'reply') {

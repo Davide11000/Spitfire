@@ -1,0 +1,58 @@
+<app-navbar></app-navbar>
+
+<ion-content class="globalbg theme-light">
+  <div class="moderator">
+    <div class="page-title"><b>Become a moderator</b></div>
+    <p class="page-subtitle">
+      Moderators review annotations, record abouts and reports
+    </p>
+
+    @if (loading) {
+      <div class="center"><ion-spinner name="crescent"></ion-spinner></div>
+    } @else if (role === 'admin' || role === 'moderatore') {
+      <section class="box">
+        <h2 class="box-title">You are already {{ role === 'admin' ? 'an admin' : 'a moderator' }}</h2>
+      </section>
+    } @else {
+      <section class="box">
+        <h2 class="box-title">Your contributions</h2>
+        <div class="progress">
+          <div class="progress-fill" [style.width.%]="getProgress()"></div>
+        </div>
+        <p class="box-text">
+          <b>{{ accepted }} / {{ required }}</b> accepted requests
+          @if (!canApply()) {
+            · {{ required - accepted }} more to go
+          }
+        </p>
+      </section>
+
+      @if (request?.status === 'pending') {
+        <section class="box">
+          <h2 class="box-title">Request sent</h2>
+          <p class="box-text">An admin will review it soon.</p>
+          <p class="quote">{{ request.text }}</p>
+        </section>
+      } @else {
+        @if (request?.status === 'rejected') {
+          <p class="rejected">Your last request was rejected. You can send a new one.</p>
+        }
+
+        <section class="box" [class.locked]="!canApply()">
+          <h2 class="box-title">Why do you want to become a moderator?</h2>
+          <ion-textarea class="field-input" fill="outline" [autoGrow]="true" [rows]="4" [maxlength]="500" [counter]="true"
+                        [disabled]="!canApply()" placeholder="Tell the admins something about you" [(ngModel)]="text"></ion-textarea>
+          @if (errorMessage) {
+            <p class="error">{{ errorMessage }}</p>
+          }
+          <div class="box-actions">
+            <ion-button fill="outline" class="square-btn" [disabled]="!canApply() || sending" (click)="send()">
+              <ion-icon slot="start" name="send-outline"></ion-icon>
+              Send request
+            </ion-button>
+          </div>
+        </section>
+      }
+    }
+  </div>
+</ion-content>

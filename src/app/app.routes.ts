@@ -56,6 +56,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'become-moderator',
+    loadComponent: () => import('./pages/become-moderator/become-moderator.page').then(m => m.BecomeModeratorPage),
+    canActivate: [authGuard]
+  },
+  {
     path: 'lists',
     loadComponent: () => import('./pages/lists/lists.page').then(m => m.ListsPage)
   },

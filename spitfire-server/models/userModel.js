@@ -158,6 +158,16 @@ const User = {
     });
   },
   
+  setRole: (username, ruolo) => {
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET ruolo = ? WHERE username = ?`;
+      db.run(query, [ruolo, username], function (err) {
+        if (err) reject(err);
+        else resolve({ username, ruolo });
+      });
+    });
+  },
+
   getRole: (username) =>  {
     return new Promise((resolve, reject) => {
       const query = `SELECT ruolo FROM users WHERE username = ?`;
