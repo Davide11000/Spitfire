@@ -183,6 +183,8 @@
           <app-messages></app-messages>
         </div>
       }
+
+      <app-user-ratings [username]="user.username"></app-user-ratings>
     </div>
 
     <ion-modal class="chat-modal" [isOpen]="isChatOpen" (didDismiss)="isChatOpen = false">

@@ -57,6 +57,9 @@
                   {{ $index + 1 }}.
                 </span>
                 {{ traccia.songname }}
+                @if (traccia.lyrics) {
+                  <span class="has-lyrics">Lyrics</span>
+                }
               </ion-label>
               @if (traccia.duration) {
                 <span slot="end" class="track-duration">{{ traccia.duration }}</span>

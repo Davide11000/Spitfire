@@ -1,4 +1,5 @@
 .rating {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -33,4 +34,30 @@
     font-size: 1.05rem;
     color: #ffffff;
   }
+}
+
+.count-link {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.chart-popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 21;
+  width: 280px;
+  padding: 14px 14px 8px;
+  background: #1f1f1f;
+  border: 1px solid #333333;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }

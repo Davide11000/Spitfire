@@ -1,0 +1,18 @@
+@if (getTotal('record') + getTotal('song') > 0) {
+  <div class="user-ratings">
+    <div class="header">
+      <b class="title">Ratings</b>
+      <div class="switch">
+        <ion-button fill="outline" class="square-btn" [class.selected]="type === 'record'" (click)="type = 'record'">Records</ion-button>
+        <ion-button fill="outline" class="square-btn" [class.selected]="type === 'song'" (click)="type = 'song'">Songs</ion-button>
+      </div>
+    </div>
+
+    @if (getTotal(type) > 0) {
+      <p class="summary"><b>{{ getTotal(type) | number }}</b> {{ getTotal(type) === 1 ? 'rating' : 'ratings' }} · average <b>{{ getAverage(type) | number:'1.2-2' }}</b></p>
+      <app-rating-chart [rows]="rows[type]" [light]="true" [height]="220"></app-rating-chart>
+    } @else {
+      <p class="summary">No {{ type === 'record' ? 'records' : 'songs' }} rated yet.</p>
+    }
+  </div>
+}

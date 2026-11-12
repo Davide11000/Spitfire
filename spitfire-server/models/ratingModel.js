@@ -6,6 +6,28 @@ const tables = {
 };
 
 const Rating = {
+  getDistribution: (type, id) => {
+    const t = tables[type];
+    return new Promise((resolve, reject) => {
+      const query = `SELECT rating, COUNT(*) AS count FROM ${t.ratings} WHERE ${t.column} = ? GROUP BY rating`;
+      db.all(query, [id], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
+  getUserDistribution: (type, username) => {
+    const t = tables[type];
+    return new Promise((resolve, reject) => {
+      const query = `SELECT rating, COUNT(*) AS count FROM ${t.ratings} WHERE username = ? GROUP BY rating`;
+      db.all(query, [username], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   getSummary: (type, id) => {
     const t = tables[type];
     return new Promise((resolve, reject) => {

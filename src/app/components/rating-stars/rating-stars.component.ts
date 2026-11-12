@@ -6,13 +6,14 @@ import { addIcons } from 'ionicons';
 import { star, starHalf, starOutline } from 'ionicons/icons';
 import { Rating } from '../../services/rating';
 import { Auth } from '../../services/auth';
+import { RatingChartComponent } from '../rating-chart/rating-chart.component';
 
 @Component({
   selector: 'app-rating-stars',
   templateUrl: './rating-stars.component.html',
   styleUrls: ['./rating-stars.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonIcon, DecimalPipe],
+  imports: [IonIcon, DecimalPipe, RatingChartComponent],
 })
 export class RatingStarsComponent implements OnChanges {
   @Input() type!: 'song' | 'record';
@@ -23,6 +24,8 @@ export class RatingStarsComponent implements OnChanges {
   public myRating = 0;
   public hover = 0;
   public stars = [1, 2, 3, 4, 5];
+  public showChart = false;
+  public rows: any[] = [];
 
   constructor(private ratingService : Rating, private auth : Auth, private router : Router) {
     addIcons({ star, starHalf, starOutline });
@@ -32,6 +35,7 @@ export class RatingStarsComponent implements OnChanges {
     if (!this.type || this.id === null || this.id === undefined) return;
 
     this.hover = 0;
+    this.showChart = false;
     this.ratingService.getRating(this.type, Number(this.id)).subscribe({
       next: (res) => { this.setSummary(res); },
       error: (err) => { console.error('Error fetching rating', err); }
@@ -42,6 +46,19 @@ export class RatingStarsComponent implements OnChanges {
     this.average = res.average;
     this.count = res.count;
     this.myRating = res.myRating;
+    if (this.showChart) this.loadChart();
+  }
+
+  toggleChart() {
+    this.showChart = !this.showChart;
+    if (this.showChart) this.loadChart();
+  }
+
+  loadChart() {
+    this.ratingService.getDistribution(this.type, Number(this.id)).subscribe({
+      next: (res) => { this.rows = res; },
+      error: (err) => { console.error('Error loading the ratings chart', err); }
+    });
   }
 
   getValue(event: MouseEvent, n: number): number {

@@ -22,6 +22,14 @@ export class Rating {
     return this.http.post(`${this.baseUrl}/${type}/${id}`, {value}, this.headers());
   }
 
+  getDistribution(type: string, id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${type}/${id}/distribution`);
+  }
+
+  getUserDistribution(username: string, type: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/user/${username}/${type}`);
+  }
+
   removeRating(type: string, id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${type}/${id}`, this.headers());
   }

@@ -76,3 +76,32 @@ exports.removeRating = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getDistribution = async (req, res) => {
+  try {
+    const { type, id } = req.params;
+
+    const target = await findTarget(type, id);
+    if (!target) {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    res.json(await Rating.getDistribution(type, id));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getUserDistribution = async (req, res) => {
+  try {
+    const { username, type } = req.params;
+
+    if (type !== "song" && type !== "record") {
+      return res.status(400).json({ message: "Invalid type" });
+    }
+
+    res.json(await Rating.getUserDistribution(type, username));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

@@ -13,6 +13,7 @@ import { ChatComponent } from '../../components/chat/chat.component';
 import { MessagesComponent } from '../../components/messages/messages.component';
 import { NotificationsComponent } from '../../components/notifications/notifications.component';
 import { isLightColor } from '../../constants/profile-colors';
+import { UserRatingsComponent } from '../../components/user-ratings/user-ratings.component';
 
 @Component({
   selector: 'app-profile',
@@ -20,7 +21,7 @@ import { isLightColor } from '../../constants/profile-colors';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, IonTextarea, ChatComponent, MessagesComponent, NotificationsComponent]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, IonTextarea, ChatComponent, MessagesComponent, NotificationsComponent, UserRatingsComponent]
 })
 export class ProfilePage implements OnInit {
 

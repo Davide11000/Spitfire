@@ -1,0 +1,37 @@
+.user-ratings {
+  margin-top: 32px;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #c8c8c8;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  color: #222222;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: x-large;
+}
+
+.switch {
+  display: flex;
+  gap: 8px;
+
+  .selected {
+    --background: var(--ion-color-primary);
+    --border-color: var(--ion-color-primary);
+    --color: #ffffff;
+  }
+}
+
+.summary {
+  margin: 0 0 16px;
+  color: #555555;
+}

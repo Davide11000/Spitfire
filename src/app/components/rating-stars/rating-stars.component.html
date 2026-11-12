@@ -11,10 +11,18 @@
       <b>{{ hover }}</b> / 5
     } @else {
       @if (count) {
-        <b>{{ average | number:'1.2-2' }}</b> / 5.0 from <b>{{ count | number }}</b> {{ count === 1 ? 'rating' : 'ratings' }}
+        <b>{{ average | number:'1.2-2' }}</b> / 5.0 from
+        <span class="count-link" title="Show the ratings" (click)="toggleChart()"><b>{{ count | number }}</b> {{ count === 1 ? 'rating' : 'ratings' }}</span>
       } @else {
         No ratings yet
       }
     }
   </span>
+
+  @if (showChart) {
+    <div class="backdrop" (click)="showChart = false"></div>
+    <div class="chart-popup">
+      <app-rating-chart [rows]="rows"></app-rating-chart>
+    </div>
+  }
 </div>

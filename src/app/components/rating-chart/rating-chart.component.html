@@ -1,0 +1,10 @@
+<div class="chart" [class.light]="light" [style.height.px]="height">
+  @for (v of values; track v) {
+    <div class="column" [title]="v + ' stars: ' + getCount(v) + ' ratings'">
+      <div class="bar">
+        <div class="fill" [style.height.%]="getHeight(v)"></div>
+      </div>
+      <span class="label">{{ v }}</span>
+    </div>
+  }
+</div>
