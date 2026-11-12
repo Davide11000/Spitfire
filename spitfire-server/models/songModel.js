@@ -68,7 +68,7 @@ const Song = {
 
   findByrecordid: (recordid) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM songs WHERE recordid = ?`;
+      const query = `SELECT * FROM songs WHERE recordid = ? ORDER BY id`;
       db.all(query, [recordid], (err, row) => {
         if (err) reject(err);
         else resolve(row);

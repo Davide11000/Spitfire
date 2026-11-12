@@ -8,6 +8,10 @@ const { sendMail } = require("../utils/mailer");
 const SECRET = process.env.JWT_SECRET;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
 function validatePassword(password) {
     if (password.length < 8) {
       return "Password must contain at least 8 characters";
@@ -191,7 +195,7 @@ exports.forgotPassword = async (req, res) => {
     const expiresAt = Date.now() + 30 * 60 * 1000;
 
     await PasswordReset.removeByUsername(user.username);
-    await PasswordReset.create(token, user.username, expiresAt);
+    await PasswordReset.create(hashToken(token), user.username, expiresAt);
 
     const link = (process.env.FRONTEND_URL || "http://localhost:8100") + "/reset-password?token=" + token;
     await sendMail(
@@ -217,7 +221,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Token and password are required" });
     }
 
-    const reset = await PasswordReset.findByToken(token);
+    const reset = await PasswordReset.findByToken(hashToken(token));
     if (!reset || reset.expires_at < Date.now()) {
       return res.status(400).json({ message: "This link is not valid or has expired" });
     }
