@@ -291,14 +291,16 @@
 .date-modal {
   --width: 340px;
   --height: auto;
-  --border-radius: 16px;
+  --border-radius: 0;
+  --background: #ffffff;
 }
 
 .date-picker {
-  --background: #f4f4f4;
-  --background-rgb: 31, 31, 31;
-  --wheel-highlight-background: #e5e5e5;
-  --wheel-fade-background-rgb: 31, 31, 31;
+  --background: #ffffff;
+  --background-rgb: 255, 255, 255;
+  --wheel-highlight-background: #eeeeee;
+  --wheel-fade-background-rgb: 255, 255, 255;
+  --title-color: #222222;
   color: #222222;
 }
 
