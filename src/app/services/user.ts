@@ -1,21 +1,15 @@
 import { inject, Service } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Auth } from './auth';
 
 @Service()
 export class User {
 
     private baseUrl = "http://localhost:3000/users";
     private http = inject(HttpClient);
-    private auth = inject(Auth);
 
     getUser(username: string) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.get(`${this.baseUrl}/${username}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.get(`${this.baseUrl}/${username}`);
     }
 
     getUserRole(username: string) : Observable<any> {
@@ -27,70 +21,40 @@ export class User {
     }
 
     uploadPhoto(file: File) : Observable<any> {
-        const token = this.auth.getToken();
         const formData = new FormData();
         formData.append('photo', file);
 
-        return this.http.put(`${this.baseUrl}/me/photo`, formData, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/photo`, formData);
     }
 
     changeEmail(email: string, password: string) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.put(`${this.baseUrl}/me/email`, {email, password}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/email`, {email, password});
     }
 
     changePassword(currentPassword: string, newPassword: string) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.put(`${this.baseUrl}/me/password`, {currentPassword, newPassword}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/password`, {currentPassword, newPassword});
     }
 
     updateBio(bio: string) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.put(`${this.baseUrl}/me/bio`, {bio}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/bio`, {bio});
     }
 
     updateWhoCanMessage(whoCanMessage: string) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.put(`${this.baseUrl}/me/who-can-message`, {whoCanMessage}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/who-can-message`, {whoCanMessage});
     }
 
     updateProfileColor(color: string | null) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.put(`${this.baseUrl}/me/profile-color`, {color}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.put(`${this.baseUrl}/me/profile-color`, {color});
     }
 
     deleteAccount(password: string) : Observable<any> {
-        const token = this.auth.getToken();
-
         return this.http.delete(`${this.baseUrl}/me`, {
-            body: {password},
-            headers: { Authorization: `Bearer ${token}` }
+            body: {password}
         });
     }
 
     removePhoto() : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.delete(`${this.baseUrl}/me/photo`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.delete(`${this.baseUrl}/me/photo`);
     }
 
     getFavouriteArtists(username: string) : Observable<any> {
@@ -98,19 +62,12 @@ export class User {
     }
 
     addFavouriteArtist(artistId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.post(`${this.baseUrl}/favourites/artists`, {artistId}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.post(`${this.baseUrl}/favourites/artists`, {artistId});
     }
 
     removeFavouriteArtist(artistId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
         return this.http.delete(`${this.baseUrl}/favourites/artists`, {
-            body: {artistId},
-            headers: { Authorization: `Bearer ${token}` }
+            body: {artistId}
         });
     }
 
@@ -119,19 +76,12 @@ export class User {
     }
 
     addFavouriteRecord(recordId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.post(`${this.baseUrl}/favourites/records`, {recordId}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.post(`${this.baseUrl}/favourites/records`, {recordId});
     }
 
     removeFavouriteRecord(recordId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
         return this.http.delete(`${this.baseUrl}/favourites/records`, {
-            body: {recordId},
-            headers: { Authorization: `Bearer ${token}` }
+            body: {recordId}
         });
     }
 
@@ -140,19 +90,12 @@ export class User {
     }
 
     addFavouriteSong(songId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
-        return this.http.post(`${this.baseUrl}/favourites/songs`, {songId}, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        return this.http.post(`${this.baseUrl}/favourites/songs`, {songId});
     }
 
     removeFavouriteSong(songId: number) : Observable<any> {
-        const token = this.auth.getToken();
-
         return this.http.delete(`${this.baseUrl}/favourites/songs`, {
-            body: {songId},
-            headers: { Authorization: `Bearer ${token}` }
+            body: {songId}
         });
     }
 }

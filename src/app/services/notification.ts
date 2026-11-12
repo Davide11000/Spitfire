@@ -14,27 +14,15 @@ export class Notification {
   private timer: any = null;
 
   getNotifications(): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.get(`${this.baseUrl}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.get(`${this.baseUrl}`);
   }
 
   getUnreadCount(): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.get(`${this.baseUrl}/unread`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.get(`${this.baseUrl}/unread`);
   }
 
   markAllAsRead(): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.post(`${this.baseUrl}/read`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.post(`${this.baseUrl}/read`, {});
   }
 
   startPolling() {

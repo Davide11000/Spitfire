@@ -1,17 +1,14 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Auth } from './auth';
 
 @Service()
 export class Playlist {
   private baseUrl = "http://localhost:3000/playlists";
 
   private http = inject(HttpClient);
-  private auth = inject(Auth);
 
   createPlaylist(name : string, isPublic : boolean = true, image : File | null = null, description : string = ''): Observable<any> {
-    const token = this.auth.getToken();
     const formData = new FormData();
     formData.append('name', name);
     formData.append('isPublic', String(isPublic));
@@ -21,68 +18,39 @@ export class Playlist {
       formData.append('image', image);
     }
 
-    return this.http.post(`${this.baseUrl}`, formData, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.post(`${this.baseUrl}`, formData);
   }
 
   addSong(playlistId : number, songId : number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.post(`${this.baseUrl}/songs`, {playlistId, songId}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.post(`${this.baseUrl}/songs`, {playlistId, songId});
     
   }
 
   removeSong(playlistId : number, songId : number): Observable<any> {
-    const token = this.auth.getToken();
-
     return this.http.delete(`${this.baseUrl}/songs`, {
-      body : {playlistId, songId},
-      headers: { Authorization: `Bearer ${token}` }
+      body : {playlistId, songId}
     });
 
   }
 
   deletePlaylist(playlistId : number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.delete(`${this.baseUrl}/${playlistId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.delete(`${this.baseUrl}/${playlistId}`);
   }
 
   setVisibility(playlistId : number, isPublic : boolean): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.patch(`${this.baseUrl}/${playlistId}/visibility`, {isPublic}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.patch(`${this.baseUrl}/${playlistId}/visibility`, {isPublic});
   }
 
   getSongs(playlistId : number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.get(`${this.baseUrl}/${playlistId}/songs`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.get(`${this.baseUrl}/${playlistId}/songs`);
   }
 
   getUserPlaylists(username: string): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.get(`${this.baseUrl}/user/${username}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.get(`${this.baseUrl}/user/${username}`);
   }
 
   getPlaylistById(playlistId: number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.get(`${this.baseUrl}/${playlistId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.get(`${this.baseUrl}/${playlistId}`);
   }
 
   getPopularPlaylists(): Observable<any> {
@@ -98,18 +66,10 @@ export class Playlist {
   }
 
   likePlaylist(playlistId : number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.post(`${this.baseUrl}/${playlistId}/like`, {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.post(`${this.baseUrl}/${playlistId}/like`, {});
   }
 
   unlikePlaylist(playlistId : number): Observable<any> {
-    const token = this.auth.getToken();
-
-    return this.http.delete(`${this.baseUrl}/${playlistId}/like`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    return this.http.delete(`${this.baseUrl}/${playlistId}/like`);
   }
 }
