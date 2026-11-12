@@ -125,7 +125,10 @@ export class ArtisttemplatePage implements OnInit {
 
     const request = this.isFavourite ? this.userService.removeFavouriteArtist(this.artistId) : this.userService.addFavouriteArtist(this.artistId);
     request.subscribe({
-      next: () => { this.isFavourite = !this.isFavourite; },
+      next: () => {
+        this.isFavourite = !this.isFavourite;
+        this.artist.followers += this.isFavourite ? 1 : -1;
+      },
       error: (err) => console.error(err)
     });
   }

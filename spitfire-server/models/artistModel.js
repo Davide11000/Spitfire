@@ -41,9 +41,26 @@ const Artist = {
     });
   },
 
+  getOnThisDay: (day, minFavourites) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT artists.id, artists.artname, artists.image, artists.birth_date, COUNT(favourite_artists.username) AS followers
+                     FROM artists
+                     JOIN favourite_artists ON favourite_artists.artist_id = artists.id
+                     WHERE strftime('%m-%d', artists.birth_date) = COALESCE(?, strftime('%m-%d', 'now', 'localtime'))
+                     GROUP BY artists.id
+                     HAVING COUNT(favourite_artists.username) >= ?
+                     ORDER BY followers DESC`;
+      db.all(query, [day, minFavourites], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   findById: (id) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE id = ?`;
+      const query = `SELECT artists.*, (SELECT COUNT(*) FROM favourite_artists WHERE artist_id = artists.id) AS followers
+                     FROM artists WHERE id = ?`;
       db.get(query, [id], (err, row) => {
         if (err) reject(err);
         else resolve(row);

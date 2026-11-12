@@ -88,6 +88,24 @@ const Record = {
     });
   },
   
+  getOnThisDay: (day, minRatings) => {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT records.id, records.recordname, records.image, records.release_date, records.artid, artists.artname,
+                       ROUND(AVG(record_ratings.rating), 2) AS average, COUNT(record_ratings.rating) AS count
+                     FROM records
+                     JOIN artists ON records.artid = artists.id
+                     JOIN record_ratings ON record_ratings.record_id = records.id
+                     WHERE strftime('%m-%d', records.release_date) = COALESCE(?, strftime('%m-%d', 'now', 'localtime'))
+                     GROUP BY records.id
+                     HAVING COUNT(record_ratings.rating) >= ?
+                     ORDER BY count DESC`;
+      db.all(query, [day, minRatings], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows);
+      });
+    });
+  },
+
   getRecent: (len) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT records.*, artists.artname

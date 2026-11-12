@@ -158,3 +158,12 @@ exports.getLanguages = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getOnThisDay = async (req, res) => {
+  try {
+    const day = /^\d{2}-\d{2}$/.test(req.query.day || "") ? req.query.day : null;
+    res.json(await Record.getOnThisDay(day, 50));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

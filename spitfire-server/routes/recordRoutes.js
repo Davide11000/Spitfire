@@ -8,6 +8,7 @@ router.post("/", authMiddleware, roleMiddleware, recordController.create);
 router.get("/search", recordController.search);
 router.get("/artist/:artid", recordController.getRecordByArtID);
 router.get("/record/:recordname", recordController.getRecordByName);
+router.get("/on-this-day", recordController.getOnThisDay);
 router.get("/recent/:len", recordController.getRecentRecords);
 router.get("/top/:len", recordController.getTopRecords);
 router.get("/discover", recordController.getDiscoverRecords);

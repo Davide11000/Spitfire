@@ -15,6 +15,10 @@ export class Record {
         return this.http.get(`${this.baseUrl}/artist/${id}`);
     }
 
+    getOnThisDay(day: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/on-this-day?day=${day}`);
+    }
+
     getRecentRecords(len: number) : Observable<any> {
         return this.http.get(`${this.baseUrl}/recent/${len}`);
     }

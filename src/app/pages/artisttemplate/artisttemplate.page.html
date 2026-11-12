@@ -13,6 +13,7 @@
           @if (artist.country) {
             <span class="meta"><b>Country:</b> {{ artist.country }}</span>
           }
+          <span class="meta"><b>Followers:</b> {{ artist.followers | number }}</span>
           @if (genres.length > 0) {
             <div class="genres">
               <span class="meta"><b>Genres:</b></span>

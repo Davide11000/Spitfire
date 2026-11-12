@@ -6,6 +6,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 
 router.post("/", authMiddleware, roleMiddleware, artistController.create);
 router.get("/search", artistController.search);
+router.get("/on-this-day", artistController.getOnThisDay);
 router.get("/name/:artname", artistController.findArtistbyName);
 router.get("/:artId/genres", artistController.getGenres);
 router.get("/:artId/discography", artistController.getDiscography);

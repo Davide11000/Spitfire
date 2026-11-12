@@ -12,6 +12,10 @@ export class Artist {
         return this.http.get(`${this.baseUrl}/${id}`);
     }
 
+    getOnThisDay(day: string) : Observable<any> {
+        return this.http.get(`${this.baseUrl}/on-this-day?day=${day}`);
+    }
+
     search(text: string) : Observable<any> {
         return this.http.get(`${this.baseUrl}/search?q=${text}`);
     }

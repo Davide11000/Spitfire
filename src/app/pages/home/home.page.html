@@ -11,6 +11,52 @@
 
   <div class="page-container">
 
+    @if (todayRecords.length > 0) {
+      <section class="section-wrapper">
+        <h2 class="section-title">
+          <ion-icon name="calendar-outline"></ion-icon> On This Day: Records
+        </h2>
+        <p class="section-subtitle">Records released on {{ today | date:'MMMM d' }}</p>
+        <div class="rows-list big">
+          @for (album of todayRecords; track album.id) {
+            <div class="row" (click)="goToAlbum(album.id)">
+              <img class="row-cover" [src]="getCover(album.image)" />
+              <div class="row-info">
+                <span class="row-title">{{ album.recordname }}</span>
+                <span class="row-sub">
+                  <span class="link" (click)="goToArtist($event, album.artid)">{{ album.artname }}</span>
+                  · released {{ getYearsAgo(album.release_date) }} years ago ({{ album.release_date.substring(0, 4) }})
+                </span>
+              </div>
+              <span class="row-rating"><ion-icon name="star"></ion-icon> {{ album.average | number:'1.2-2' }}</span>
+              <ion-icon class="row-arrow" name="chevron-forward-outline"></ion-icon>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    @if (todayArtists.length > 0) {
+      <section class="section-wrapper">
+        <h2 class="section-title">
+          <ion-icon name="calendar-outline"></ion-icon> On This Day: Artists
+        </h2>
+        <p class="section-subtitle">Artists born or founded on {{ today | date:'MMMM d' }}</p>
+        <div class="rows-list big">
+          @for (artist of todayArtists; track artist.id) {
+            <div class="row" (click)="goToArtistPage(artist.id)">
+              <img class="row-cover round" [src]="getPhoto(artist.image)" />
+              <div class="row-info">
+                <span class="row-title">{{ artist.artname }}</span>
+                <span class="row-sub">{{ getYearsAgo(artist.birth_date) }} years ({{ artist.birth_date.substring(0, 4) }}) · {{ artist.followers }} followers</span>
+              </div>
+              <ion-icon class="row-arrow" name="chevron-forward-outline"></ion-icon>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
     <section class="section-wrapper">
       <h2 class="section-title">
         <ion-icon name="time-outline"></ion-icon> Recently Added Records
