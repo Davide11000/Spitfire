@@ -386,3 +386,33 @@
     font-size: 1.1rem;
   }
 }
+
+@media (max-width: 576px) {
+  .rows-list.big {
+    .row {
+      gap: 12px;
+      padding: 10px 12px;
+    }
+
+    .row-cover {
+      width: 72px;
+      height: 72px;
+    }
+
+    .row-title {
+      font-size: 1.05rem;
+    }
+
+    .row-sub {
+      font-size: 0.85rem;
+    }
+
+    .row-rating {
+      font-size: 0.95rem;
+    }
+
+    .row-arrow {
+      display: none;
+    }
+  }
+}

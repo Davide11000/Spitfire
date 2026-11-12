@@ -119,11 +119,6 @@
   margin-bottom: 16px;
 }
 
-.action-btn {
-  --border-radius: 8px;
-  text-transform: none;
-}
-
 .playlist-tracks {
   background: transparent !important;
   max-width: 100%;
@@ -300,4 +295,14 @@
 .comments-dark {
   display: flow-root;
   background: rgb(30, 30, 30);
+}
+
+ion-button.danger-btn {
+  --border-color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
+
+  &:hover {
+    --background: var(--ion-color-primary);
+    --color: #ffffff;
+  }
 }

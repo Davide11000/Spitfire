@@ -26,11 +26,11 @@
           </div>
           @if (isOwner) {
             <div class="owner-actions">
-              <ion-button fill="outline" size="small" class="action-btn" (click)="toggleVisibility()">
+              <ion-button fill="outline" size="small" class="square-btn" (click)="toggleVisibility()">
                 <ion-icon slot="start" [name]="playlist.is_public ? 'globe-outline' : 'lock-closed-outline'"></ion-icon>
                 {{ playlist.is_public ? 'Public' : 'Private' }}
               </ion-button>
-              <ion-button fill="outline" size="small" color="danger" class="action-btn" (click)="onDeletePlaylist()">
+              <ion-button fill="outline" size="small" class="square-btn danger-btn" (click)="onDeletePlaylist()">
                 <ion-icon slot="start" name="trash-outline"></ion-icon>
                 Delete
               </ion-button>
@@ -48,7 +48,7 @@
       <div class="tracks-section">
         @if (isOwner) {
           <div class="add-tracks-row">
-            <ion-button fill="outline" class="action-btn" (click)="openAddTracks()">
+            <ion-button fill="outline" class="square-btn" (click)="openAddTracks()">
               <ion-icon slot="start" name="add-outline"></ion-icon>
               Add Tracks
             </ion-button>
