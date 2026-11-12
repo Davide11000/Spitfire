@@ -4,6 +4,10 @@
 }
 
 .card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
   height: 270px;
   background: rgb(28, 14, 15);
   animation: pulse 1.5s infinite ease-in-out;

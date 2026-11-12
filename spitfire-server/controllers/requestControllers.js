@@ -7,6 +7,7 @@ const Notification = require("../models/notificationModel");
 const User = require("../models/userModel");
 const Contribution = require("../models/contributionModel");
 const Lyrics = require("../models/lyricsModel");
+const About = require("../models/aboutModel");
 
 async function notifyAdmins(username, name, type) {
   const admins = await User.findAdmins();
@@ -271,6 +272,11 @@ async function applyRequest(request) {
         created = await Artist.update(a.id, request.image || a.image, request.birth_date || a.birth_date, request.country || a.country, request.bio || a.bio);
       } else {
         created = await Artist.create(request.name, request.image, request.birth_date, request.country, request.bio);
+      }
+
+      const artistId = artists[0] ? artists[0].id : created.id;
+      if (request.bio && !(await About.findActive("artist", artistId))) {
+        await About.create("artist", artistId, request.username, request.bio, "approved");
       }
     }
 

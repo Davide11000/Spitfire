@@ -6,6 +6,7 @@ const optionalAuthMiddleware = require("../middleware/optionalAuthMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
 
 router.get("/record/:id", optionalAuthMiddleware, aboutController.getByRecord);
+router.get("/artist/:id", optionalAuthMiddleware, aboutController.getByArtist);
 router.post("/", authMiddleware, aboutController.create);
 
 router.post("/edits/:editId/approve", authMiddleware, roleMiddleware, aboutController.approveEdit);

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonIcon, IonTextarea, IonModal, AlertController, ToastController } from '@ionic/angular';
+import { IonButton, IonSpinner, IonIcon, IonTextarea, IonModal, AlertController, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, closeOutline, createOutline, checkmarkOutline, trashOutline, flagOutline, checkmarkCircle } from 'ionicons/icons';
 import { Annotation } from '../../services/annotation';
@@ -15,7 +15,7 @@ import { ContributorsComponent } from '../contributors/contributors.component';
   templateUrl: './annotations.component.html',
   styleUrls: ['./annotations.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonButton, IonIcon, IonTextarea, IonModal, CommentsComponent, ContributorsComponent],
+  imports: [IonButton, IonSpinner, IonIcon, IonTextarea, IonModal, CommentsComponent, ContributorsComponent],
 })
 export class AnnotationsComponent implements OnChanges {
   @Input() songId!: number;

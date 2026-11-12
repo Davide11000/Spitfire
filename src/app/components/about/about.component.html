@@ -1,21 +1,23 @@
 <section class="about">
-  <h2 class="about-title">About <i>{{ albumName }}</i></h2>
+  <h2 class="about-title">
+    @if (type === 'artist') { Biography } @else { About <i>{{ name }}</i> }
+  </h2>
 
   @if (loading) {
-    <p class="empty">Loading...</p>
+    <div class="loading"><ion-spinner name="crescent"></ion-spinner></div>
   } @else if (!about) {
     @if (writing) {
       <ion-textarea class="field" fill="outline" [autoGrow]="true" [rows]="5" [maxlength]="5000"
-                    placeholder="What should people know about this record?" [value]="text" (ionInput)="onTextInput($event)"></ion-textarea>
+                    [placeholder]="type === 'artist' ? 'What should people know about this artist?' : 'What should people know about this record?'" [value]="text" (ionInput)="onTextInput($event)"></ion-textarea>
       <div class="actions">
         <ion-button fill="clear" class="btn cancel" (click)="writing = false">Cancel</ion-button>
-        <ion-button class="btn" [disabled]="sending" (click)="send()">Send about</ion-button>
+        <ion-button class="btn" [disabled]="sending" (click)="send()">@if (sending) { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Send }</ion-button>
       </div>
     } @else {
-      <p class="empty">No one has written about this record yet.</p>
+      <p class="empty">No one has written about this {{ type === 'artist' ? 'artist' : 'record' }} yet.</p>
       <ion-button class="square-btn dark-square" (click)="openWrite()">
         <ion-icon slot="start" name="create-outline"></ion-icon>
-        Write the about
+        {{ type === 'artist' ? 'Write the biography' : 'Write the about' }}
       </ion-button>
     }
   } @else {
@@ -30,7 +32,7 @@
                     [value]="text" (ionInput)="onTextInput($event)"></ion-textarea>
       <div class="actions">
         <ion-button fill="clear" class="btn cancel" (click)="editing = false">Cancel</ion-button>
-        <ion-button class="btn" [disabled]="sending" (click)="sendEdit()">Send edit</ion-button>
+        <ion-button class="btn" [disabled]="sending" (click)="sendEdit()">@if (sending) { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Send edit }</ion-button>
       </div>
     } @else {
       <p class="text">{{ about.text }}</p>
@@ -64,7 +66,7 @@
           </span></ion-button>
         }
         @if (canModerate) {
-          <ion-button class="plain vote delete" title="Delete about" (click)="onDelete()"><span class="bc">
+          <ion-button class="plain vote delete" title="Delete" (click)="onDelete()"><span class="bc">
             <ion-icon name="trash-outline"></ion-icon>
           </span></ion-button>
         }

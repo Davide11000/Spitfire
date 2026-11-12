@@ -70,8 +70,12 @@
       color: #000;
     }
 
-    .user, .page-btn {
+    .user, .page-btn, .list {
       border-color: #ccc;
+    }
+
+    .user:hover {
+      background: rgba(0, 0, 0, 0.05);
     }
   }
 }

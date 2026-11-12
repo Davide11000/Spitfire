@@ -209,7 +209,7 @@ ion-button.white-btn {
     --icon-color: #888888;
   }
 
-  app-comments {
+  app-comments:not(.dark) {
     .comments-section, .section-title, .comment-text, .username {
       color: #222222;
     }
@@ -237,9 +237,16 @@ ion-button.white-btn {
       }
     }
 
+    .list, .user {
+      border-color: #dddddd;
+    }
+
     .user {
       color: #222222;
-      border-color: #cccccc;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
     }
   }
 }
@@ -303,4 +310,10 @@ ion-button.plain {
     width: 100%;
     text-align: inherit;
   }
+}
+
+ion-spinner.btn-spinner {
+  width: 18px;
+  height: 18px;
+  color: currentColor;
 }

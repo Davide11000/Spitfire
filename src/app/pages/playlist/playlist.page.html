@@ -134,7 +134,9 @@
       </ng-template>
     </ion-modal>
 
-    <app-comments type="playlist" [id]="playlist.id"></app-comments>
+    <div class="comments-dark">
+      <app-comments class="dark" type="playlist" [id]="playlist.id"></app-comments>
+    </div>
   } @else if (errorMessage) {
     <div class="empty-playlist">
       <p>{{ errorMessage }}</p>

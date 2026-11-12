@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime } from '@ionic/angular';
+import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, IonSpinner } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { closeOutline, sendOutline, imageOutline, addOutline, calendarOutline } from 'ionicons/icons';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -18,7 +18,7 @@ import { Song } from '../../services/song';
   styleUrls: ['./add-content.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, FormsModule, DatePipe, NavbarComponent]
+  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, IonSpinner, FormsModule, DatePipe, NavbarComponent]
 })
 export class AddContentPage implements OnInit {
 

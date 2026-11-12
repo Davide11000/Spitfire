@@ -8,6 +8,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { ContributorsComponent } from '../../components/contributors/contributors.component';
 import { CommentsComponent } from '../../components/comments/comments.component';
 import { FooterComponent } from '../../components/footer/footer.component';
+import { AboutComponent } from '../../components/about/about.component';
 import { Auth } from '../../services/auth';
 import { Artist } from '../../services/artist';
 import { User } from '../../services/user';
@@ -18,7 +19,7 @@ import { User } from '../../services/user';
   styleUrls: ['./artisttemplate.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonButton, IonIcon, IonSpinner, DatePipe, DecimalPipe, NavbarComponent, FooterComponent, ContributorsComponent, CommentsComponent]
+  imports: [IonContent, IonButton, IonIcon, IonSpinner, DatePipe, DecimalPipe, NavbarComponent, FooterComponent, ContributorsComponent, CommentsComponent, AboutComponent]
 })
 export class ArtisttemplatePage implements OnInit {
 

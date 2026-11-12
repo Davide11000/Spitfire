@@ -66,7 +66,7 @@
         </ion-list>
       </div>
 
-      <app-about [recordId]="album.id" [albumName]="album.recordname"></app-about>
+      <app-about type="record" [targetId]="album.id" [name]="album.recordname"></app-about>
     </div>
     @if (albumId) {
       <app-comments [id]="albumId" type="record"></app-comments>
@@ -81,5 +81,9 @@
       </ion-button>
     </div>
     <app-footer></app-footer>
+  </ion-content>
+} @else {
+  <ion-content class="globalbg">
+    <div class="page-loading"><ion-spinner name="crescent"></ion-spinner></div>
   </ion-content>
 }

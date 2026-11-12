@@ -10,9 +10,13 @@
         @if (isOwnProfile) {
           <input #photoInput type="file" accept="image/*" hidden (change)="onPhotoSelected($event)" />
           <div class="photo-links">
-            <ion-button fill="outline" class="square-btn photo-btn" (click)="photoInput.click()">
-              <ion-icon slot="start" name="image-outline"></ion-icon>
-              Change
+            <ion-button fill="outline" class="square-btn photo-btn" [disabled]="uploadingPhoto" (click)="photoInput.click()">
+              @if (uploadingPhoto) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+              } @else {
+                <ion-icon slot="start" name="image-outline"></ion-icon>
+                Change
+              }
             </ion-button>
             @if (user.foto_profilo) {
               <ion-button fill="outline" class="square-btn photo-btn" (click)="onRemovePhoto()">
@@ -240,8 +244,12 @@
           <div class="create-footer">
             <ion-button fill="clear" class="action-btn cancel-btn" (click)="isCreateOpen = false">Cancel</ion-button>
             <ion-button class="action-btn" [disabled]="creating" (click)="createPlaylist()">
-              <ion-icon slot="start" name="add-outline"></ion-icon>
-              Create
+              @if (creating) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+              } @else {
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Create
+              }
             </ion-button>
           </div>
         </div>

@@ -14,12 +14,12 @@ export class About {
     return { headers: { Authorization: `Bearer ${this.auth.getToken()}` } };
   }
 
-  getByRecord(recordId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/record/${recordId}`, this.headers());
+  getByTarget(targetType: string, targetId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${targetType}/${targetId}`, this.headers());
   }
 
-  create(recordId: number, text: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}`, {recordId, text}, this.headers());
+  create(targetType: string, targetId: number, text: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}`, {targetType, targetId, text}, this.headers());
   }
 
   approve(id: number): Observable<any> {

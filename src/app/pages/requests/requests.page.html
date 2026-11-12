@@ -65,8 +65,12 @@
                 Reject
               </ion-button>
               <ion-button class="action-btn" [disabled]="request.working" (click)="onAcceptRole(request)">
-                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
-                Accept
+                @if (request.working) {
+                  <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                } @else {
+                  <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                  Accept
+                }
               </ion-button>
             </div>
           </div>
@@ -196,8 +200,12 @@
                 Reject
               </ion-button>
               <ion-button class="action-btn" [disabled]="request.working" (click)="onAccept(request)">
-                <ion-icon slot="start" name="checkmark-outline"></ion-icon>
-                Accept
+                @if (request.working) {
+                  <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+                } @else {
+                  <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+                  Accept
+                }
               </ion-button>
             </div>
           </div>

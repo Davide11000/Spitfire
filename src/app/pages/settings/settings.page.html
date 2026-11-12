@@ -17,7 +17,7 @@
         <p class="error">{{ bioError }}</p>
       }
       <div class="box-actions">
-        <ion-button fill="outline" class="square-btn" (click)="saveBio()">Save</ion-button>
+        <ion-button fill="outline" class="square-btn" [disabled]="saving === 'bio'" (click)="saveBio()">@if (saving === 'bio') { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Save }</ion-button>
       </div>
     </section>
 
@@ -34,7 +34,7 @@
         <p class="error">{{ emailError }}</p>
       }
       <div class="box-actions">
-        <ion-button fill="outline" class="square-btn" (click)="saveEmail()">Change email</ion-button>
+        <ion-button fill="outline" class="square-btn" [disabled]="saving === 'email'" (click)="saveEmail()">@if (saving === 'email') { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Change email }</ion-button>
       </div>
     </section>
 
@@ -55,7 +55,7 @@
         <p class="error">{{ passwordError }}</p>
       }
       <div class="box-actions">
-        <ion-button fill="outline" class="square-btn" (click)="savePassword()">Change password</ion-button>
+        <ion-button fill="outline" class="square-btn" [disabled]="saving === 'password'" (click)="savePassword()">@if (saving === 'password') { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Change password }</ion-button>
       </div>
     </section>
 

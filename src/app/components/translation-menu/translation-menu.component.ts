@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonIcon, IonModal, IonSelect, IonSelectOption, IonTextarea, ToastController } from '@ionic/angular';
+import { IonButton, IonSpinner, IonIcon, IonModal, IonSelect, IonSelectOption, IonTextarea, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { languageOutline, caretDown, caretUp, addOutline, closeOutline, checkmarkCircle, checkmark } from 'ionicons/icons';
 import { Song } from '../../services/song';
@@ -12,7 +12,7 @@ import { Auth } from '../../services/auth';
   templateUrl: './translation-menu.component.html',
   styleUrls: ['./translation-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonButton, IonIcon, IonModal, IonSelect, IonSelectOption, IonTextarea],
+  imports: [IonButton, IonSpinner, IonIcon, IonModal, IonSelect, IonSelectOption, IonTextarea],
 })
 export class TranslationMenuComponent implements OnChanges {
   @Input() songId!: number;

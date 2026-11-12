@@ -150,8 +150,9 @@ const User = {
 
   search: (text) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT username, foto_profilo FROM users WHERE username LIKE ?`;
-      db.all(query, ["%" + text + "%"], (err, rows) => {
+      const query = `SELECT username, foto_profilo FROM users WHERE username LIKE ?
+                     ORDER BY CASE WHEN username LIKE ? THEN 0 ELSE 1 END, username`;
+      db.all(query, ["%" + text + "%", text + "%"], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });

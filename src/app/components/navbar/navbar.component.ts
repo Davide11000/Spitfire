@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader } from '@ionic/angular';
+import { IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader, IonSpinner } from '@ionic/angular';
 import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { menuOutline, closeOutline } from 'ionicons/icons';
@@ -15,7 +15,7 @@ import { Notification } from '../../services/notification';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader, RouterLink],
+  imports: [IonToolbar, IonButtons, IonTitle, IonButton, IonSearchbar, IonIcon, IonAvatar, IonList, IonItem, IonLabel, IonListHeader, IonSpinner, RouterLink],
 })
 export class NavbarComponent implements OnInit {
 
@@ -29,6 +29,7 @@ export class NavbarComponent implements OnInit {
   public foundRecords: any[] = [];
   public foundArtists: any[] = [];
   public foundUsers: any[] = [];
+  public searching = 0;
 
   public resultsLeft = 0;
   public resultsWidth = 0;
@@ -112,25 +113,26 @@ export class NavbarComponent implements OnInit {
     }
 
     this.isMenuOpen = false;
+    this.searching = 4;
 
     this.songService.search(this.searchText).subscribe({
-      next: (res) => { this.foundSongs = res; },
-      error: (err) => { console.error('Error searching songs', err); }
+      next: (res) => { this.foundSongs = res.slice(0, 5); this.searching--; },
+      error: (err) => { console.error('Error searching songs', err); this.searching--; }
     });
 
     this.recordService.search(this.searchText).subscribe({
-      next: (res) => { this.foundRecords = res; },
-      error: (err) => { console.error('Error searching records', err); }
+      next: (res) => { this.foundRecords = res.slice(0, 5); this.searching--; },
+      error: (err) => { console.error('Error searching records', err); this.searching--; }
     });
 
     this.artistService.search(this.searchText).subscribe({
-      next: (res) => { this.foundArtists = res; },
-      error: (err) => { console.error('Error searching artists', err); }
+      next: (res) => { this.foundArtists = res.slice(0, 5); this.searching--; },
+      error: (err) => { console.error('Error searching artists', err); this.searching--; }
     });
 
     this.userService.search(this.searchText).subscribe({
-      next: (res) => { this.foundUsers = res; },
-      error: (err) => { console.error('Error searching users', err); }
+      next: (res) => { this.foundUsers = res.slice(0, 5); this.searching--; },
+      error: (err) => { console.error('Error searching users', err); this.searching--; }
     });
   }
 
@@ -140,6 +142,7 @@ export class NavbarComponent implements OnInit {
     this.foundRecords = [];
     this.foundArtists = [];
     this.foundUsers = [];
+    this.searching = 0;
   }
 
   getUserPhoto(photo: string | null): string {

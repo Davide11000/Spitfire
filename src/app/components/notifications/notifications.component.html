@@ -14,7 +14,7 @@
         <div class="content">
           <span class="text">
             <b class="username" (click)="goToProfile($event, n.from_user)">{{ '@' + n.from_user }}</b>
-            {{ getMessage(n.type) }}
+            {{ getMessage(n.type, n.content_type) }}
           </span>
           @if (getPreview(n)) {
             <span class="preview">"{{ getPreview(n) }}"</span>

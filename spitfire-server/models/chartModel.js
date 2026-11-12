@@ -1,5 +1,7 @@
 const db = require("../db/db");
 
+const MIN_RATINGS = 30;
+
 function all(query, params) {
   return new Promise((resolve, reject) => {
     db.all(query, params, (err, rows) => {
@@ -30,17 +32,18 @@ const Chart = {
                   AND (? IS NULL OR EXISTS (SELECT 1 FROM record_genres JOIN genres ON genres.id = record_genres.genre_id
                                             WHERE record_genres.record_id = records.id AND genres.name = ?))
                 GROUP BY records.id
+                HAVING COUNT(record_ratings.rating) >= ?
                 ORDER BY average DESC, count DESC, records.recordname
-                LIMIT ? OFFSET ?`, [year, year, genre, genre, limit, offset]);
+                LIMIT ? OFFSET ?`, [year, year, genre, genre, MIN_RATINGS, limit, offset]);
   },
 
   countRecords: (year, genre) => {
-    return get(`SELECT COUNT(DISTINCT records.id) AS total
+    return get(`SELECT COUNT(*) AS total
                 FROM records
-                JOIN record_ratings ON record_ratings.record_id = records.id
-                WHERE (? IS NULL OR substr(records.release_date, 1, 4) = ?)
+                WHERE (SELECT COUNT(*) FROM record_ratings WHERE record_ratings.record_id = records.id) >= ?
+                  AND (? IS NULL OR substr(records.release_date, 1, 4) = ?)
                   AND (? IS NULL OR EXISTS (SELECT 1 FROM record_genres JOIN genres ON genres.id = record_genres.genre_id
-                                            WHERE record_genres.record_id = records.id AND genres.name = ?))`, [year, year, genre, genre]);
+                                            WHERE record_genres.record_id = records.id AND genres.name = ?))`, [MIN_RATINGS, year, year, genre, genre]);
   },
 
   getSongs: (year, genre, limit, offset) => {
@@ -55,18 +58,19 @@ const Chart = {
                   AND (? IS NULL OR EXISTS (SELECT 1 FROM song_genres JOIN genres ON genres.id = song_genres.genre_id
                                             WHERE song_genres.song_id = songs.id AND genres.name = ?))
                 GROUP BY songs.id
+                HAVING COUNT(song_ratings.rating) >= ?
                 ORDER BY average DESC, count DESC, songs.songname
-                LIMIT ? OFFSET ?`, [year, year, genre, genre, limit, offset]);
+                LIMIT ? OFFSET ?`, [year, year, genre, genre, MIN_RATINGS, limit, offset]);
   },
 
   countSongs: (year, genre) => {
-    return get(`SELECT COUNT(DISTINCT songs.id) AS total
+    return get(`SELECT COUNT(*) AS total
                 FROM songs
-                JOIN song_ratings ON song_ratings.song_id = songs.id
                 LEFT JOIN records ON records.id = songs.recordid
-                WHERE (? IS NULL OR substr(records.release_date, 1, 4) = ?)
+                WHERE (SELECT COUNT(*) FROM song_ratings WHERE song_ratings.song_id = songs.id) >= ?
+                  AND (? IS NULL OR substr(records.release_date, 1, 4) = ?)
                   AND (? IS NULL OR EXISTS (SELECT 1 FROM song_genres JOIN genres ON genres.id = song_genres.genre_id
-                                            WHERE song_genres.song_id = songs.id AND genres.name = ?))`, [year, year, genre, genre]);
+                                            WHERE song_genres.song_id = songs.id AND genres.name = ?))`, [MIN_RATINGS, year, year, genre, genre]);
   },
 
   getYears: () => {

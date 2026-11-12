@@ -88,7 +88,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     return 'mail';
   }
 
-  getMessage(type: string): string {
+  getMessage(type: string, contentType: string | null = null): string {
+    const text = contentType === 'artist' ? 'an artist biography' : 'a record about';
     if (type === 'follow') return 'started following you';
     if (type === 'like') return 'liked your comment';
     if (type === 'playlist_like') return 'liked your playlist';
@@ -107,12 +108,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (type === 'annotation_rejected') return 'rejected your annotation';
     if (type === 'annotation_edit_approved') return 'approved your edit to an annotation';
     if (type === 'annotation_edit_rejected') return 'rejected your edit to an annotation';
-    if (type === 'new_about') return 'wrote a record about to review';
-    if (type === 'new_about_edit') return 'proposed an edit to a record about';
-    if (type === 'about_approved') return 'approved your record about';
-    if (type === 'about_rejected') return 'rejected your record about';
-    if (type === 'about_edit_approved') return 'approved your edit to a record about';
-    if (type === 'about_edit_rejected') return 'rejected your edit to a record about';
+    if (type === 'new_about') return 'wrote ' + text + ' to review';
+    if (type === 'new_about_edit') return 'proposed an edit to ' + text;
+    if (type === 'about_approved') return 'approved your ' + text.replace(/^an? /, '');
+    if (type === 'about_rejected') return 'rejected your ' + text.replace(/^an? /, '');
+    if (type === 'about_edit_approved') return 'approved your edit to ' + text;
+    if (type === 'about_edit_rejected') return 'rejected your edit to ' + text;
     return 'sent you a message';
   }
 
@@ -189,8 +190,8 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     if (notification.target_type === 'record') this.router.navigate(['/records', notification.target_id]);
     if (notification.target_type === 'artist') this.router.navigate(['/artists', notification.target_id]);
 
-    if (notification.target_type === 'about' && notification.comment_record_id !== null) {
-      this.router.navigate(['/records', notification.comment_record_id]);
+    if (notification.target_type === 'about' && notification.comment_about_target_id !== null) {
+      this.goToContent(notification.comment_about_type, notification.comment_about_target_id);
     }
 
     if (notification.target_type === 'annotation' && notification.comment_song_id !== null) {

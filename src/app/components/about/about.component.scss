@@ -178,9 +178,17 @@
     }
   }
 
+  .list {
+    border-color: #ccc;
+  }
+
   .user {
     color: #222;
     border-color: #ccc;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
   }
 
   .comments-section, .comment-text, .username {
@@ -200,4 +208,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
 }

@@ -120,13 +120,14 @@ export class ReportsPage implements OnInit {
   }
 
   acceptAnnotationReport(group: any) {
+    group.working = true;
     this.reportService.acceptAnnotationReport(group.reports[0].id).subscribe({
       next: (res) => {
         this.annotationGroups = this.annotationGroups.filter(g => g.annotation_id !== group.annotation_id);
         this.loadReports();
         this.showToast('Annotation deleted');
       },
-      error: (err) => { group.error = err.error.message || 'Error deleting the annotation'; }
+      error: (err) => { group.working = false; group.error = err.error.message || 'Error deleting the annotation'; }
     });
   }
 
@@ -205,12 +206,13 @@ export class ReportsPage implements OnInit {
   }
 
   acceptReport(group: any) {
+    group.working = true;
     this.reportService.acceptReport(group.reports[0].id).subscribe({
       next: (res) => {
         this.groups = this.groups.filter(g => g.comment_id !== group.comment_id && g.parent_id !== group.comment_id);
         this.showToast('Comment deleted');
       },
-      error: (err) => { group.error = err.error.message || 'Error deleting the comment'; }
+      error: (err) => { group.working = false; group.error = err.error.message || 'Error deleting the comment'; }
     });
   }
 

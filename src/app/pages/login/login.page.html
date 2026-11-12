@@ -16,7 +16,7 @@
         </ion-text>
       }
       <a class="forgot" routerLink="/forgot-password">Forgot password?</a>
-      <ion-button class="square-btn" fill="outline" (click)="onLogin()">Continue</ion-button>
+      <ion-button class="square-btn" fill="outline" [disabled]="sending" (click)="onLogin()">@if (sending) { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Continue }</ion-button>
       <ion-text>
         <p class="or">or</p>
       </ion-text>

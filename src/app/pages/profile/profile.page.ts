@@ -45,6 +45,7 @@ export class ProfilePage implements OnInit {
   public newPlaylistPreview = '';
   public createError = '';
   public creating = false;
+  public uploadingPhoto = false;
   private playlistToOpen: number | null = null;
 
   public favouriteSongs: any[] = [];
@@ -378,9 +379,16 @@ export class ProfilePage implements OnInit {
       return;
     }
 
+    this.uploadingPhoto = true;
     this.userService.uploadPhoto(file).subscribe({
-      next: (res) => { this.user.foto_profilo = res.foto_profilo; },
-      error: (err) => { this.photoError = err.error.message || 'Error uploading photo'; }
+      next: (res) => {
+        this.user.foto_profilo = res.foto_profilo;
+        this.uploadingPhoto = false;
+      },
+      error: (err) => {
+        this.photoError = err.error.message || 'Error uploading photo';
+        this.uploadingPhoto = false;
+      }
     });
   }
 

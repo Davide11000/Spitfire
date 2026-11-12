@@ -1,9 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInputPasswordToggle, IonButton, IonInput } from '@ionic/angular';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonInputPasswordToggle, IonButton, IonInput, IonSpinner } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
-import { LoadingController} from '@ionic/angular';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
@@ -14,20 +13,21 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./login.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, RouterLink, NavbarComponent]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, FormsModule, IonText, IonInputPasswordToggle, IonButton, IonInput, IonSpinner, RouterLink, NavbarComponent]
 })
 export class LoginPage implements OnInit {
 
   public id = '';
   public password = '';
   public errorMessage = '';
+  public sending = false;
 
-  constructor(private auth : Auth, private loadingC : LoadingController, private router: Router) { }
+  constructor(private auth : Auth, private router: Router) { }
 
   ngOnInit() {
   }
 
-  async onLogin(){
+  onLogin(){
     this.errorMessage = "";
 
     if(!this.id || !this.password){
@@ -35,19 +35,16 @@ export class LoginPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingC.create({
-      message: 'Loading...',
-    });
-    await loading.present();
+    this.sending = true;
 
     this.auth.login(this.id, this.password).subscribe({
       next: (res) => {
-        loading.dismiss();
+        this.sending = false;
         this.auth.saveToken(res.token);
         this.router.navigate(["/home"]);
       },
       error: (err) => {
-        loading.dismiss();
+        this.sending = false;
         this.errorMessage = err.error?.message || "Error during login"
       }
     });

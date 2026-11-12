@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonImg, IonLabel, IonList, IonListHeader, IonItem, IonIcon, IonButton } from '@ionic/angular';
+import { IonContent, IonImg, IonLabel, IonList, IonListHeader, IonItem, IonIcon, IonButton, IonSpinner } from '@ionic/angular';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { Auth } from '../../services/auth'
@@ -26,7 +26,7 @@ import { getCoverGradient, DEFAULT_HEADER } from '../../utils/cover-color';
   styleUrls: ['./albumtemplate.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [
+  imports: [IonSpinner, 
     IonContent, FooterComponent, CommonModule, NavbarComponent,
     FormsModule, IonLabel, IonList, IonListHeader, IonItem,
     RouterModule, CommentsComponent,

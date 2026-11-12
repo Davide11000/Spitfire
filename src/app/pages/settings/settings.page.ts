@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent, IonButton, IonIcon, IonInput, IonInputPasswordToggle, IonTextarea, IonModal, ToastController } from '@ionic/angular';
+import { IonContent, IonButton, IonIcon, IonInput, IonInputPasswordToggle, IonTextarea, IonModal, IonSpinner, ToastController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { checkmarkCircle, closeOutline, earthOutline, peopleOutline, banOutline, trashOutline, arrowBackOutline } from 'ionicons/icons';
 import { Auth } from '../../services/auth';
@@ -15,10 +15,11 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./settings.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [FormsModule, IonContent, IonButton, IonIcon, IonInput, IonInputPasswordToggle, IonTextarea, IonModal, NavbarComponent]
+  imports: [FormsModule, IonContent, IonButton, IonIcon, IonInput, IonInputPasswordToggle, IonTextarea, IonModal, IonSpinner, NavbarComponent]
 })
 export class SettingsPage implements OnInit {
 
+  public saving = '';
   public username = '';
 
   public bio = '';
@@ -82,9 +83,10 @@ export class SettingsPage implements OnInit {
   saveBio() {
     this.bioError = '';
 
+    this.saving = 'bio';
     this.userService.updateBio(this.bio).subscribe({
-      next: (res) => { this.showToast('Bio saved'); },
-      error: (err) => { this.bioError = err.error.message || 'Error saving the bio'; }
+      next: (res) => { this.saving = ''; this.showToast('Bio saved'); },
+      error: (err) => { this.saving = ''; this.bioError = err.error.message || 'Error saving the bio'; }
     });
   }
 
@@ -96,14 +98,16 @@ export class SettingsPage implements OnInit {
       return;
     }
 
+    this.saving = 'email';
     this.userService.changeEmail(this.newEmail, this.emailPassword).subscribe({
       next: (res) => {
+        this.saving = '';
         this.currentEmail = res.email;
         this.newEmail = '';
         this.emailPassword = '';
         this.showToast('Email changed');
       },
-      error: (err) => { this.emailError = err.error.message || 'Error changing the email'; }
+      error: (err) => { this.saving = ''; this.emailError = err.error.message || 'Error changing the email'; }
     });
   }
 
@@ -120,14 +124,16 @@ export class SettingsPage implements OnInit {
       return;
     }
 
+    this.saving = 'password';
     this.userService.changePassword(this.currentPassword, this.newPassword).subscribe({
       next: (res) => {
+        this.saving = '';
         this.currentPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.showToast('Password changed');
       },
-      error: (err) => { this.passwordError = err.error.message || 'Error changing the password'; }
+      error: (err) => { this.saving = ''; this.passwordError = err.error.message || 'Error changing the password'; }
     });
   }
 

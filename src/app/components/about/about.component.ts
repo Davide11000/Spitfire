@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonIcon, IonTextarea, AlertController } from '@ionic/angular';
+import { IonButton, IonSpinner, IonIcon, IonTextarea, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { thumbsUp, thumbsUpOutline, thumbsDown, thumbsDownOutline, createOutline, checkmarkOutline, trashOutline } from 'ionicons/icons';
 import { About } from '../../services/about';
@@ -14,11 +14,12 @@ import { ContributorsComponent } from '../contributors/contributors.component';
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonButton, IonIcon, IonTextarea, CommentsComponent, ContributorsComponent],
+  imports: [IonButton, IonSpinner, IonIcon, IonTextarea, CommentsComponent, ContributorsComponent],
 })
 export class AboutComponent implements OnChanges {
-  @Input() recordId!: number;
-  @Input() albumName = '';
+  @Input() type = 'record';
+  @Input() targetId!: number;
+  @Input() name = '';
 
   public about: any = null;
   public loading = true;
@@ -39,7 +40,7 @@ export class AboutComponent implements OnChanges {
   }
 
   ngOnChanges() {
-    if (this.recordId === null || this.recordId === undefined) return;
+    if (this.targetId === null || this.targetId === undefined) return;
 
     this.myUsername = this.auth.getUsernameFromToken();
     this.canModerate = false;
@@ -60,7 +61,7 @@ export class AboutComponent implements OnChanges {
 
   load() {
     this.loading = true;
-    this.aboutService.getByRecord(this.recordId).subscribe({
+    this.aboutService.getByTarget(this.type, this.targetId).subscribe({
       next: (res) => {
         this.about = res;
         this.loading = false;
@@ -93,12 +94,12 @@ export class AboutComponent implements OnChanges {
 
   send() {
     if (!this.text.trim()) {
-      this.errorMessage = 'Write something about the record';
+      this.errorMessage = 'Write something first';
       return;
     }
 
     this.sending = true;
-    this.aboutService.create(this.recordId, this.text).subscribe({
+    this.aboutService.create(this.type, this.targetId, this.text).subscribe({
       next: (res) => {
         this.sending = false;
         this.writing = false;
@@ -107,7 +108,7 @@ export class AboutComponent implements OnChanges {
       },
       error: (err) => {
         this.sending = false;
-        this.errorMessage = err.error.message || 'Error sending the about';
+        this.errorMessage = err.error.message || 'Error sending the text';
       }
     });
   }
@@ -115,28 +116,28 @@ export class AboutComponent implements OnChanges {
   approve() {
     this.aboutService.approve(this.about.id).subscribe({
       next: () => this.load(),
-      error: (err) => { this.errorMessage = err.error.message || 'Error approving the about'; }
+      error: (err) => { this.errorMessage = err.error.message || 'Error approving the text'; }
     });
   }
 
   reject() {
     this.aboutService.reject(this.about.id).subscribe({
       next: () => this.load(),
-      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting the about'; }
+      error: (err) => { this.errorMessage = err.error.message || 'Error rejecting the text'; }
     });
   }
 
   async onDelete() {
     const alert = await this.alertC.create({
-      header: 'Delete about?',
-      message: 'The about, its votes and its suggestions will be deleted.',
+      header: 'Delete this text?',
+      message: 'The text, its votes and its suggestions will be deleted.',
       cssClass: 'dark-alert',
       buttons: [
         { text: 'Cancel', role: 'cancel' },
         { text: 'Delete', role: 'destructive', handler: () => {
           this.aboutService.delete(this.about.id).subscribe({
             next: () => this.load(),
-            error: (err) => { this.errorMessage = err.error.message || 'Error deleting the about'; }
+            error: (err) => { this.errorMessage = err.error.message || 'Error deleting the text'; }
           });
         } }
       ]
@@ -177,7 +178,7 @@ export class AboutComponent implements OnChanges {
 
   sendEdit() {
     if (!this.text.trim()) {
-      this.errorMessage = 'The about cannot be empty';
+      this.errorMessage = 'The text cannot be empty';
       return;
     }
 

@@ -161,10 +161,12 @@
             <label class="field-label">Country</label>
             <ion-input class="field-input" fill="outline" [(ngModel)]="country" placeholder="e.g. United Kingdom"></ion-input>
           </div>
-          <div class="field">
-            <label class="field-label">Biography</label>
-            <ion-textarea class="field-input" fill="outline" [(ngModel)]="bio" [autoGrow]="true" rows="4" placeholder="A few words about the artist"></ion-textarea>
-          </div>
+          @if (!isCorrection()) {
+            <div class="field">
+              <label class="field-label">Biography</label>
+              <ion-textarea class="field-input" fill="outline" [(ngModel)]="bio" [autoGrow]="true" rows="4" placeholder="A few words about the artist"></ion-textarea>
+            </div>
+          }
         }
 
         <div class="field">
@@ -180,8 +182,12 @@
         }
 
         <ion-button class="send-btn" expand="block" [disabled]="sending" (click)="onSend()">
-          <ion-icon slot="start" name="send-outline"></ion-icon>
-          {{ isCorrection() ? 'Send correction' : 'Send request' }}
+          @if (sending) {
+            <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+          } @else {
+            <ion-icon slot="start" name="send-outline"></ion-icon>
+            {{ isCorrection() ? 'Send correction' : 'Send request' }}
+          }
         </ion-button>
         @if (isCorrection()) {
           <ion-button class="send-btn" expand="block" fill="clear" (click)="cancelCorrection()">Cancel</ion-button>

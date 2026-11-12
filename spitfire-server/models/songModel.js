@@ -47,8 +47,9 @@ const Song = {
                      FROM songs
                      JOIN records ON songs.recordid = records.id
                      JOIN artists ON records.artid = artists.id
-                     WHERE songs.songname LIKE ?`;
-      db.all(query, ["%" + text + "%"], (err, rows) => {
+                     WHERE songs.songname LIKE ?
+                     ORDER BY CASE WHEN songs.songname LIKE ? THEN 0 ELSE 1 END, songs.songname`;
+      db.all(query, ["%" + text + "%", text + "%"], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });

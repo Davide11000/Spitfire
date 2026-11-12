@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { IonContent, IonText, IonButton, IonInput, IonInputPasswordToggle } from '@ionic/angular';
+import { IonContent, IonText, IonButton, IonInput, IonSpinner, IonInputPasswordToggle } from '@ionic/angular';
 import { Auth } from '../../services/auth';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
@@ -11,7 +11,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['../login/login.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, FormsModule, IonText, IonButton, IonInput, IonInputPasswordToggle, RouterLink, NavbarComponent]
+  imports: [IonContent, FormsModule, IonText, IonButton, IonInput, IonSpinner, IonInputPasswordToggle, RouterLink, NavbarComponent]
 })
 export class ResetPasswordPage {
 

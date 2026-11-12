@@ -15,6 +15,7 @@
           }
           @if (genres.length > 0) {
             <div class="genres">
+              <span class="meta"><b>Genres:</b></span>
               @for (g of genres; track g.id) {
                 <span class="genre">{{ g.name }}</span>
               }
@@ -27,9 +28,9 @@
         </div>
       </div>
 
-      @if (artist.bio) {
-        <p class="bio">{{ artist.bio }}</p>
-      }
+      <div class="biography">
+        <app-about type="artist" [targetId]="artist.id" [name]="artist.artname"></app-about>
+      </div>
     </div>
 
     <div class="bottom-section">
@@ -87,6 +88,8 @@
           }
         </div>
       </section>
+
+      <hr class="divider" />
 
       <app-comments type="artist" [id]="artist.id"></app-comments>
 

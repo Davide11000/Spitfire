@@ -61,9 +61,13 @@
               <ion-icon slot="start" name="checkmark-outline"></ion-icon>
               Keep annotation
             </ion-button>
-            <ion-button class="action-btn" (click)="onAcceptAnnotation(group)">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              Delete annotation
+            <ion-button class="action-btn" [disabled]="group.working" (click)="onAcceptAnnotation(group)">
+              @if (group.working) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+              } @else {
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Delete annotation
+              }
             </ion-button>
           </div>
         </div>
@@ -114,9 +118,13 @@
               <ion-icon slot="start" name="checkmark-outline"></ion-icon>
               Keep comment
             </ion-button>
-            <ion-button class="action-btn" (click)="onAccept(group)">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              Delete comment
+            <ion-button class="action-btn" [disabled]="group.working" (click)="onAccept(group)">
+              @if (group.working) {
+                <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+              } @else {
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Delete comment
+              }
             </ion-button>
           </div>
         </div>

@@ -16,32 +16,32 @@
 
 .list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: 420px;
   margin-top: 10px;
+  border-top: 1px solid #444;
 }
 
 .user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 12px 4px 4px;
-  border: 1px solid #444;
-  border-radius: 20px;
-  background: transparent;
+  width: 100%;
+  padding: 8px 10px;
+  border-bottom: 1px solid #444;
   color: #f2f2f2;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: bold;
   cursor: pointer;
+  transition: background 0.15s;
 
   img {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     object-fit: cover;
   }
 
   &:hover {
-    border-color: var(--ion-color-primary);
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -54,5 +54,5 @@
 .user > .bc {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }

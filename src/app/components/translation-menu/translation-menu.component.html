@@ -57,7 +57,7 @@
 
       <div class="tr-footer">
         <ion-button fill="clear" class="tr-btn tr-cancel" (click)="isAddOpen = false">Cancel</ion-button>
-        <ion-button class="tr-btn" [disabled]="sending" (click)="send()">Send translation</ion-button>
+        <ion-button class="tr-btn" [disabled]="sending" (click)="send()">@if (sending) { <ion-spinner name="crescent" class="btn-spinner"></ion-spinner> } @else { Send translation }</ion-button>
       </div>
     </div>
   </ng-template>

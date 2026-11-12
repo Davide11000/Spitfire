@@ -79,8 +79,9 @@ const Record = {
       const query = `SELECT records.*, artists.artname
                      FROM records
                      JOIN artists ON records.artid = artists.id
-                     WHERE records.recordname LIKE ?`;
-      db.all(query, ["%" + text + "%"], (err, rows) => {
+                     WHERE records.recordname LIKE ?
+                     ORDER BY CASE WHEN records.recordname LIKE ? THEN 0 ELSE 1 END, records.recordname`;
+      db.all(query, ["%" + text + "%", text + "%"], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });

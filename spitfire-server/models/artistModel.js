@@ -53,8 +53,9 @@ const Artist = {
 
   search: (text) => {
     return new Promise((resolve, reject) => {
-      const query = `SELECT * FROM artists WHERE artname LIKE ?`;
-      db.all(query, ["%" + text + "%"], (err, rows) => {
+      const query = `SELECT * FROM artists WHERE artname LIKE ?
+                     ORDER BY CASE WHEN artname LIKE ? THEN 0 ELSE 1 END, artname`;
+      db.all(query, ["%" + text + "%", text + "%"], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
       });

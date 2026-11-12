@@ -16,7 +16,8 @@ const Notification = {
             const query = `SELECT notifications.*, users.foto_profilo,
                              comments.text AS comment_text, comments.target_type, comments.target_id,
                              playlists.name AS playlist_name, annotations.song_id AS annotation_song_id,
-                             comment_annotations.song_id AS comment_song_id, comment_abouts.target_id AS comment_record_id
+                             comment_annotations.song_id AS comment_song_id, comment_abouts.target_id AS comment_about_target_id,
+                             comment_abouts.target_type AS comment_about_type
                            FROM notifications
                            LEFT JOIN users ON users.username = notifications.from_user
                            LEFT JOIN comments ON comments.id = notifications.comment_id

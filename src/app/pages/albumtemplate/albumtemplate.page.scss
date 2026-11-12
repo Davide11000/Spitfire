@@ -121,3 +121,10 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
+.page-loading {
+  display: flex;
+  justify-content: center;
+  padding: 120px 0;
+  color: #ffffff;
+}

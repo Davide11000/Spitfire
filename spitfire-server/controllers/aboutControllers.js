@@ -1,5 +1,6 @@
 const About = require("../models/aboutModel");
 const Record = require("../models/recordModel");
+const Artist = require("../models/artistModel");
 const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
 const Comment = require("../models/commentModel");
@@ -8,33 +9,45 @@ function isModerator(user) {
     return !!user && (user.ruolo === "admin" || user.ruolo === "moderatore");
 }
 
-async function notifyModerators(fromUser, type, recordId, albumName) {
+async function notifyModerators(fromUser, type, about) {
     const moderators = await User.findModerators();
+    const name = await getTargetName(about.target_type, about.target_id);
 
     for (const m of moderators) {
         if (m.username !== fromUser) {
-            await Notification.createForContent(m.username, type, fromUser, "record", recordId, albumName);
+            await Notification.createForContent(m.username, type, fromUser, about.target_type, about.target_id, name);
         }
     }
 }
 
-async function notifyUser(username, type, fromUser, recordId, albumName) {
+async function notifyUser(username, type, fromUser, about) {
     if (username && username !== fromUser) {
-        await Notification.createForContent(username, type, fromUser, "record", recordId, albumName);
+        const name = await getTargetName(about.target_type, about.target_id);
+        await Notification.createForContent(username, type, fromUser, about.target_type, about.target_id, name);
     }
 }
 
-async function getAlbumName(about) {
-    const record = await Record.findById(about.target_id);
-    return record ? record.recordname : null;
+async function findTarget(targetType, targetId) {
+    if (targetType === "record") return await Record.findById(targetId);
+    if (targetType === "artist") return await Artist.findById(targetId);
+    return null;
 }
 
-exports.getByRecord = async (req, res) => {
+async function getTargetName(targetType, targetId) {
+    const target = await findTarget(targetType, targetId);
+    if (!target) return null;
+    return targetType === "artist" ? target.artname : target.recordname;
+}
+
+exports.getByRecord = (req, res) => getByTarget("record", req, res);
+exports.getByArtist = (req, res) => getByTarget("artist", req, res);
+
+async function getByTarget(targetType, req, res) {
     try {
         const username = req.user ? req.user.username : null;
         const moderator = isModerator(req.user);
 
-        const active = await About.findActive("record", req.params.id);
+        const active = await About.findActive(targetType, req.params.id);
 
         if (!active || (active.status === "pending" && !moderator && active.username !== username)) {
             return res.json(null);
@@ -48,32 +61,32 @@ exports.getByRecord = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-};
+}
 
 exports.create = async (req, res) => {
     try {
         const username = req.user.username;
-        const { recordId, text } = req.body;
+        const { targetType, targetId, text } = req.body;
 
         if (!text || !text.trim()) {
-            return res.status(400).json({ message: "The about cannot be empty" });
+            return res.status(400).json({ message: "The text cannot be empty" });
         }
 
-        const record = await Record.findById(recordId);
-        if (!record) {
-            return res.status(404).json({ message: "Record not found" });
+        const target = await findTarget(targetType, targetId);
+        if (!target) {
+            return res.status(404).json({ message: "Page not found" });
         }
 
-        const existing = await About.findActive("record", record.id);
+        const existing = await About.findActive(targetType, target.id);
         if (existing) {
-            return res.status(400).json({ message: "This record already has an about (or one is waiting for review)" });
+            return res.status(400).json({ message: "This page already has one (or one is waiting for review)" });
         }
 
         const status = isModerator(req.user) ? "approved" : "pending";
-        const result = await About.create("record", record.id, username, text.trim(), status);
+        const result = await About.create(targetType, target.id, username, text.trim(), status);
 
         if (status === "pending") {
-            await notifyModerators(username, "new_about", record.id, record.recordname);
+            await notifyModerators(username, "new_about", { target_type: targetType, target_id: target.id });
         }
 
         res.status(201).json({ id: result.id, status });
@@ -90,7 +103,7 @@ exports.approve = async (req, res) => {
         }
 
         await About.setStatus(about.id, "approved");
-        await notifyUser(about.username, "about_approved", req.user.username, about.target_id, await getAlbumName(about));
+        await notifyUser(about.username, "about_approved", req.user.username, about);
         res.json({ id: about.id, status: "approved" });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -105,7 +118,7 @@ exports.reject = async (req, res) => {
         }
 
         await About.setStatus(about.id, "rejected");
-        await notifyUser(about.username, "about_rejected", req.user.username, about.target_id, await getAlbumName(about));
+        await notifyUser(about.username, "about_rejected", req.user.username, about);
         res.json({ id: about.id, status: "rejected" });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -153,7 +166,7 @@ exports.proposeEdit = async (req, res) => {
         const { text } = req.body;
 
         if (!text || !text.trim()) {
-            return res.status(400).json({ message: "The about cannot be empty" });
+            return res.status(400).json({ message: "The text cannot be empty" });
         }
 
         const about = await About.findById(req.params.id);
@@ -173,11 +186,11 @@ exports.proposeEdit = async (req, res) => {
 
         const existing = await About.findPendingEditByUser(about.id, username);
         if (existing) {
-            return res.status(400).json({ message: "You already proposed an edit for this about" });
+            return res.status(400).json({ message: "You already proposed an edit for this text" });
         }
 
         const result = await About.createEdit(about.id, username, text.trim(), "pending");
-        await notifyModerators(username, "new_about_edit", about.target_id, await getAlbumName(about));
+        await notifyModerators(username, "new_about_edit", about);
         res.status(201).json({ id: result.id, status: "pending" });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -194,7 +207,7 @@ exports.approveEdit = async (req, res) => {
         const about = await About.findById(edit.about_id);
         await About.updateText(edit.about_id, edit.text);
         await About.setEditStatus(edit.id, "approved");
-        await notifyUser(edit.username, "about_edit_approved", req.user.username, about.target_id, await getAlbumName(about));
+        await notifyUser(edit.username, "about_edit_approved", req.user.username, about);
         res.json({ id: edit.id, status: "approved", text: edit.text });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -210,7 +223,7 @@ exports.rejectEdit = async (req, res) => {
 
         const about = await About.findById(edit.about_id);
         await About.setEditStatus(edit.id, "rejected");
-        await notifyUser(edit.username, "about_edit_rejected", req.user.username, about.target_id, await getAlbumName(about));
+        await notifyUser(edit.username, "about_edit_rejected", req.user.username, about);
         res.json({ id: edit.id, status: "rejected" });
     } catch (err) {
         res.status(500).json({ error: err.message });

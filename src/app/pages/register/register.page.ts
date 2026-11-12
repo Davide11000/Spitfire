@@ -1,9 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonText, IonInput, IonButton, IonInputPasswordToggle } from '@ionic/angular';
+import { IonContent, IonText, IonInput, IonSpinner, IonButton, IonInputPasswordToggle } from '@ionic/angular';
 import { RouterLink, Router } from '@angular/router';
-import { LoadingController} from '@ionic/angular';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { Auth } from '../../services/auth';
 
@@ -13,7 +12,7 @@ import { Auth } from '../../services/auth';
   styleUrls: ['./register.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
+  imports: [IonSpinner, IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
 })
 export class RegisterPage implements OnInit {
 
@@ -21,13 +20,14 @@ export class RegisterPage implements OnInit {
   public email = '';
   public password = '';
   public errorMessage = '';
+  public sending = false;
 
-  constructor(private auth : Auth, private loadingC : LoadingController, private router : Router) { }
+  constructor(private auth : Auth, private router : Router) { }
 
   ngOnInit() {
   }
 
-  async onRegister(){
+  onRegister(){
     this.errorMessage = "";
 
     if(!this.username ||!this.email || !this.password){
@@ -35,19 +35,16 @@ export class RegisterPage implements OnInit {
       return;
     }
 
-    const loading = await this.loadingC.create({
-      message: 'Loading...',
-    });
-    await loading.present();
+    this.sending = true;
 
     this.auth.register(this.username, this.email, this.password).subscribe({
       next: (res) => {
-        loading.dismiss();
+        this.sending = false;
         this.auth.saveToken(res.token);
         this.router.navigate(['/home']);
       },
       error: (err) => {
-        loading.dismiss();
+        this.sending = false;
         this.errorMessage = err.error?.message || "Error during registration";
       }
     });
