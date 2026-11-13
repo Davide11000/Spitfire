@@ -5,6 +5,7 @@ import { addIcons } from 'ionicons';
 import { sendOutline } from 'ionicons/icons';
 import { RoleRequest } from '../../services/role-request';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
   selector: 'app-become-moderator',
@@ -12,7 +13,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./become-moderator.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [FormsModule, IonContent, IonButton, IonIcon, IonTextarea, IonSpinner, NavbarComponent]
+  imports: [FormsModule, IonContent, IonButton, IonIcon, IonTextarea, IonSpinner, NavbarComponent, FooterComponent]
 })
 export class BecomeModeratorPage {
 

@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { heart, flameOutline, timeOutline, musicalNotesOutline, chevronDownOutline, chevronUpOutline } from 'ionicons/icons';
 import { Playlist } from '../../services/playlist';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
   selector: 'app-lists',
@@ -13,7 +14,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./lists.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonButton, IonContent, IonIcon, IonSearchbar, IonSpinner, NgTemplateOutlet, NavbarComponent]
+  imports: [IonButton, IonContent, IonIcon, IonSearchbar, IonSpinner, NgTemplateOutlet, NavbarComponent, FooterComponent]
 })
 export class ListsPage {
 

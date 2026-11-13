@@ -6,6 +6,7 @@ import { IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextar
 import { addIcons } from 'ionicons';
 import { closeOutline, sendOutline, imageOutline, addOutline, calendarOutline } from 'ionicons/icons';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 import { Request } from '../../services/request';
 import { Artist } from '../../services/artist';
 import { Record } from '../../services/record';
@@ -18,7 +19,7 @@ import { Song } from '../../services/song';
   styleUrls: ['./add-content.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, IonSpinner, FormsModule, DatePipe, NavbarComponent]
+  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonList, IonItem, IonButton, IonIcon, IonText, IonModal, IonDatetime, IonSpinner, FormsModule, DatePipe, NavbarComponent, FooterComponent]
 })
 export class AddContentPage implements OnInit {
 

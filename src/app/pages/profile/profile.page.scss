@@ -63,8 +63,23 @@ ion-button.square-btn.photo-btn {
 }
 
 .username {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
   font-size: xx-large;
   margin-top: 10px;
+}
+
+.role-label {
+  padding: 6px 14px;
+  border: 2px solid #222222;
+  color: #222222;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.2;
 }
 
 .bio {
@@ -506,6 +521,7 @@ ion-button.square-btn.photo-btn {
     padding: 0;
   }
 
+  .username,
   .stats,
   .actions {
     justify-content: center;
@@ -513,6 +529,11 @@ ion-button.square-btn.photo-btn {
 }
 
 .profile-header.on-dark {
+  > .profile-info .role-label {
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+
   > .profile-info,
   > .profile-info .bio,
   > .profile-info .stat,

@@ -7,6 +7,7 @@ import { fileTrayFullOutline, checkmarkOutline, closeOutline, checkmarkCircle, c
 import { Request } from '../../services/request';
 import { RoleRequest } from '../../services/role-request';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
   selector: 'app-requests',
@@ -14,7 +15,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./requests.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonButton, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel, DatePipe, NavbarComponent]
+  imports: [IonContent, IonButton, IonIcon, IonSpinner, IonSegment, IonSegmentButton, IonLabel, DatePipe, NavbarComponent, FooterComponent]
 })
 export class RequestsPage implements OnInit {
 

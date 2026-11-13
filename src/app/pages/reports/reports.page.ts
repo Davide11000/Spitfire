@@ -7,6 +7,7 @@ import { flagOutline, trashOutline, checkmarkOutline, checkmarkCircle, shieldChe
 import { forkJoin } from 'rxjs';
 import { Report } from '../../services/report';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
   selector: 'app-reports',
@@ -14,7 +15,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
   styleUrls: ['./reports.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonButton, IonIcon, IonSpinner, DatePipe, NavbarComponent]
+  imports: [IonContent, IonButton, IonIcon, IonSpinner, DatePipe, NavbarComponent, FooterComponent]
 })
 export class ReportsPage implements OnInit {
 

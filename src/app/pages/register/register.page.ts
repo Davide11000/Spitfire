@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonText, IonInput, IonSpinner, IonButton, IonInputPasswordToggle } from '@ionic/angular';
 import { RouterLink, Router } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 import { Auth } from '../../services/auth';
 
 @Component({
@@ -12,7 +13,7 @@ import { Auth } from '../../services/auth';
   styleUrls: ['./register.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonSpinner, IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent]
+  imports: [IonSpinner, IonContent, FormsModule, IonText, IonInput, IonButton, IonInputPasswordToggle, RouterLink, NavbarComponent, FooterComponent]
 })
 export class RegisterPage implements OnInit {
 

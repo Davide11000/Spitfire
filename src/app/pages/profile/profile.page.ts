@@ -9,6 +9,7 @@ import { User } from '../../services/user';
 import { Playlist } from '../../services/playlist';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar.component';
+import { FooterComponent } from '../../components/footer/footer.component';
 import { ChatComponent } from '../../components/chat/chat.component';
 import { MessagesComponent } from '../../components/messages/messages.component';
 import { NotificationsComponent } from '../../components/notifications/notifications.component';
@@ -21,7 +22,7 @@ import { UserRatingsComponent } from '../../components/user-ratings/user-ratings
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, IonInput, IonTextarea, ChatComponent, MessagesComponent, NotificationsComponent, UserRatingsComponent]
+  imports: [IonContent, IonSpinner, IonButton, IonIcon, IonList, IonItem, IonLabel, IonAvatar, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonText, NavbarComponent, FooterComponent, IonInput, IonTextarea, ChatComponent, MessagesComponent, NotificationsComponent, UserRatingsComponent]
 })
 export class ProfilePage implements OnInit {
 

@@ -43,6 +43,11 @@
       <div class="profile-info">
         <div class="username">
           <b>{{ '@' + user.username }}</b>
+          @if (user.ruolo === 'admin') {
+            <span class="role-label">Admin</span>
+          } @else if (user.ruolo === 'moderatore') {
+            <span class="role-label">Moderator</span>
+          }
         </div>
         @if (user.bio) {
           <p class="bio">{{ user.bio }}</p>
@@ -299,4 +304,5 @@
       <ion-spinner name="crescent"></ion-spinner>
     </div>
   }
+  <app-footer></app-footer>
 </ion-content>
