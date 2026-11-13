@@ -78,3 +78,6 @@ Thumbs.db
 # Immagini caricate dagli utenti
 spitfire-server/uploads/*
 !spitfire-server/uploads/.gitkeep
+
+# database created by mistake when the server is started from the root folder
+/database.sqlite
