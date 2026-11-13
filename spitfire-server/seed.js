@@ -764,7 +764,11 @@ async function main() {
   console.log(`Done: ${await count("users")} users, ${await count("artists")} artists (${photos} with a photo), ${await count("records")} records ` +
               `(${covers} with a cover), ${await count("songs")} songs (${lyricsCount} with lyrics), ${await count("record_ratings") + await count("song_ratings")} ratings, ` +
               `${await count("playlists")} playlists, ${await count("comments")} comments, ${await count("abouts")} abouts.`);
-  console.log(`New users have the password "${PASSWORD}". test and mario keep their usual password.`);
+  if (keep.length > 0) {
+    console.log(`New users have the password "${PASSWORD}". test and mario keep their usual password.`);
+  } else {
+    console.log(`All users, test and mario included, have the password "${PASSWORD}".`);
+  }
   db.close();
 }
 
