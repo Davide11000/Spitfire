@@ -56,7 +56,7 @@ export class AnnotationsComponent implements OnChanges {
 
     if (this.myUsername) {
       this.userService.getUserRole(this.myUsername).subscribe({
-        next: (res) => { this.canModerate = res.ruolo === 'admin' || res.ruolo === 'moderatore'; },
+        next: (res) => { this.canModerate = res.ruolo === 'admin'; },
         error: (err) => console.error(err)
       });
     }

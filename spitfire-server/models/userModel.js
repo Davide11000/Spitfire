@@ -41,16 +41,6 @@ const User = {
     });
   },
 
-  findModerators: () => {
-    return new Promise((resolve, reject) => {
-      const query = `SELECT username FROM users WHERE ruolo IN ('admin', 'moderatore')`;
-      db.all(query, [], (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
-  },
-
   updateEmail: (username, email) => {
     return new Promise((resolve, reject) => {
       const query = `UPDATE users SET email = ? WHERE username = ?`;

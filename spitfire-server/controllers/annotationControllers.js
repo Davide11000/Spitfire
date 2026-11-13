@@ -8,14 +8,14 @@ function normalize(text) {
     return (text || "").replace(/\r\n/g, "\n");
 }
 
-function isModerator(user) {
-    return !!user && (user.ruolo === "admin" || user.ruolo === "moderatore");
+function isAdmin(user) {
+    return !!user && user.ruolo === "admin";
 }
 
-async function notifyModerators(fromUser, type, annotationId, text) {
-    const moderators = await User.findModerators();
+async function notifyAdmins(fromUser, type, annotationId, text) {
+    const admins = await User.findAdmins();
 
-    for (const m of moderators) {
+    for (const m of admins) {
         if (m.username !== fromUser) {
             await Notification.createForAnnotation(m.username, type, fromUser, annotationId, text);
         }
@@ -31,13 +31,13 @@ async function notifyUser(username, type, fromUser, annotationId, text) {
 exports.getBySong = async (req, res) => {
     try {
         const username = req.user ? req.user.username : null;
-        const moderator = isModerator(req.user);
+        const admin = isAdmin(req.user);
 
-        const annotations = await Annotation.findBySong(req.params.songId, username, moderator);
+        const annotations = await Annotation.findBySong(req.params.songId, username, admin);
         const edits = await Annotation.findPendingEdits(req.params.songId);
 
         for (const a of annotations) {
-            a.pending_edits = edits.filter(e => e.annotation_id === a.id && (moderator || e.username === username));
+            a.pending_edits = edits.filter(e => e.annotation_id === a.id && (admin || e.username === username));
         }
 
         res.json(annotations);
@@ -75,11 +75,11 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: "This part of the lyrics already has an annotation" });
         }
 
-        const status = isModerator(req.user) ? "approved" : "pending";
+        const status = isAdmin(req.user) ? "approved" : "pending";
         const result = await Annotation.create(songId, username, start, end, selectedText, text.trim(), status);
 
         if (status === "pending") {
-            await notifyModerators(username, "new_annotation", result.id, selectedText);
+            await notifyAdmins(username, "new_annotation", result.id, selectedText);
         }
 
         res.status(201).json({ id: result.id, status });
@@ -171,7 +171,7 @@ exports.proposeEdit = async (req, res) => {
             return res.status(400).json({ message: "Change the text before sending the edit" });
         }
 
-        if (isModerator(req.user)) {
+        if (isAdmin(req.user)) {
             await Annotation.createEdit(annotation.id, username, text.trim(), "approved");
             await Annotation.updateText(annotation.id, text.trim());
             return res.status(201).json({ id: annotation.id, status: "approved", text: text.trim() });
@@ -183,7 +183,7 @@ exports.proposeEdit = async (req, res) => {
         }
 
         const result = await Annotation.createEdit(annotation.id, username, text.trim(), "pending");
-        await notifyModerators(username, "new_annotation_edit", annotation.id, annotation.selected_text);
+        await notifyAdmins(username, "new_annotation_edit", annotation.id, annotation.selected_text);
         res.status(201).json({ id: result.id, status: "pending" });
     } catch (err) {
         res.status(500).json({ error: err.message });

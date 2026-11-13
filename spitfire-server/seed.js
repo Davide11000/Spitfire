@@ -694,7 +694,7 @@ async function main() {
     }
   }
 
-  const moderators = ["test", "giulia"];
+  const admins = ["test"];
   for (const [title, text] of Object.entries(aboutTexts)) {
     const album = albumRows.find(a => a.title === title);
     const author = pick(everyone);
@@ -716,7 +716,7 @@ async function main() {
   const pendingAlbum = albumRows.find(a => a.title === "Nevermind");
   await run(`INSERT INTO abouts (target_type, target_id, username, text, status, created_at) VALUES ('record', ?, 'sara', ?, 'pending', ?)`,
     [pendingAlbum.id, "Nirvana's second album, released in September 1991. It brought grunge and alternative rock to the mainstream.", daysAgo(0)]);
-  for (const m of moderators) {
+  for (const m of admins) {
     await run(`INSERT INTO notifications (username, type, from_user, content_type, content_id, text, created_at) VALUES (?, 'new_about', 'sara', 'record', ?, 'Nevermind', ?)`,
       [m, pendingAlbum.id, daysAgo(0)]);
   }

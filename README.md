@@ -1,14 +1,9 @@
 # SpitFire
 
-SpitFire è un'applicazione web dedicata alla musica, costruita attorno a una community: un catalogo di artisti, dischi e canzoni in cui gli utenti possono valutare i contenuti, annotare i testi, scrivere About e biografie, commentare, creare playlist e proporre nuovi contenuti, con un sistema di moderazione basato sui ruoli.
-
 - **Frontend**: Ionic + Angular (TypeScript), nella cartella principale
 - **Backend**: Node.js + Express, API REST, nella cartella `spitfire-server/`
 - **Database**: SQLite
 
-La descrizione completa del progetto si trova nella relazione allegata.
-
----
 
 ## Requisiti
 
@@ -80,8 +75,8 @@ Tutti gli account creati dal seed hanno la password **`password123`**.
 
 | Username | Ruolo | Note |
 |---|---|---|
-| `test` | Amministratore | Accesso a Requests e Reports; approva richieste e candidature |
-| `giulia` | Moderatrice | Accesso a Reports; approva annotazioni, About e biografie |
+| `test` | Amministratore | Accesso a Requests e Reports; approva richieste, candidature, annotazioni, About e biografie |
+| `giulia` | Moderatrice | Accesso a Reports: gestisce le segnalazioni di commenti e annotazioni |
 | `luca` | Utente | Ha 10 richieste accettate: può provare la candidatura a moderatore (*Become a moderator*, nel footer) |
 | `mario` | Utente | Utente generico, con playlist, preferiti e messaggi |
 
@@ -91,7 +86,7 @@ Sono presenti anche altri utenti generati dal seed (ad esempio `marco`, `sara`, 
 
 Di seguito le principali azioni disponibili per ciascun ruolo. Ogni ruolo può fare anche tutto ciò che è permesso ai ruoli precedenti. Per passare da un account all'altro basta usare *Logout* dalla pagina del profilo.
 
-> **Suggerimento:** i flussi di moderazione si provano meglio in due finestre del browser (ad esempio una normale e una in incognito): in una si crea un contenuto come utente, nell'altra lo si approva come moderatore o amministratore.
+> **Suggerimento:** i flussi di moderazione si provano meglio in due finestre del browser (ad esempio una normale e una in incognito): in una si crea un contenuto come utente, nell'altra lo si approva come amministratore.
 
 ### Visitatore (senza login)
 
@@ -108,7 +103,7 @@ Di seguito le principali azioni disponibili per ciascun ruolo. Ogni ruolo può f
 - **Valutare** dischi e canzoni con le stelle (da 0,5 a 5) e vedere la distribuzione dei voti cliccando sul numero di valutazioni
 - Aggiungere artisti, dischi e canzoni ai **preferiti**
 - **Commentare** dischi, canzoni, artisti e playlist, rispondere, mettere like/dislike e **segnalare** un commento
-- Scrivere un'**annotazione**: aprire una canzone con il testo (ad esempio una qualsiasi traccia di *OK Computer*), selezionare una porzione del testo e scrivere la spiegazione; l'annotazione resta *in attesa* finché un moderatore non la approva
+- Scrivere un'**annotazione**: aprire una canzone con il testo (ad esempio una qualsiasi traccia di *OK Computer*), selezionare una porzione del testo e scrivere la spiegazione; l'annotazione resta *in attesa* finché un amministratore non la approva
 - Proporre una **traduzione** del testo dal menu *Translations*
 - Scrivere o proporre modifiche agli **About** dei dischi e alle **biografie** degli artisti
 - Creare **playlist** (pubbliche o private), aggiungere e rimuovere canzoni, mettere like alle playlist degli altri
@@ -120,19 +115,21 @@ Di seguito le principali azioni disponibili per ciascun ruolo. Ogni ruolo può f
 
 ### Moderatore (`giulia`)
 
-- Approvare o rifiutare le **annotazioni** in attesa, direttamente nella pagina della canzone
-- Approvare o rifiutare gli **About** e le **biografie** in attesa e le relative modifiche proposte. Nel seed è presente un About in attesa sul disco *Nevermind*, scritto dall'utente `sara`
-- Gestire le **segnalazioni** di commenti e annotazioni dalla pagina **Reports** (link nella barra di navigazione), scegliendo se eliminare il contenuto o mantenerlo
-- Eliminare annotazioni, About e commenti
-- Le annotazioni, gli About e le biografie scritti da un moderatore vengono pubblicati senza bisogno di approvazione
-- Ricevere una notifica per ogni contenuto in attesa di revisione
+- Gestire le **segnalazioni** di commenti e annotazioni dalla pagina **Reports** (link nella barra di navigazione), scegliendo se eliminare il contenuto segnalato o mantenerlo
+- Il moderatore si occupa solo delle segnalazioni: l'approvazione dei contenuti spetta all'amministratore
+
+> Per provare Reports: con un utente, segnalare un commento (icona a forma di bandiera sotto il commento) o un'annotazione; poi, con `giulia`, aprire Reports e decidere se eliminarlo o mantenerlo.
 
 ### Amministratore (`test`)
 
 - Gestire le **richieste di contenuto** dalla pagina **Requests** (link nella barra di navigazione), filtrandole per tipo e accettandole o rifiutandole. Nel seed è presente una richiesta di correzione dei generi del disco *Thriller*, inviata dall'utente `marco`; accettandola, i generi del disco vengono aggiornati
 - Gestire le **candidature a moderatore** nella scheda *Moderators* di Requests: ad esempio, candidarsi con `luca` e accettare la candidatura con `test`, dopodiché `luca` ha subito accesso a Reports
-- Le richieste di contenuto inviate da un amministratore da Add content vengono pubblicate subito, senza passare da Requests
-- Tutte le funzioni dei moderatori, compresa la pagina Reports
+- Approvare o rifiutare le **annotazioni** in attesa, direttamente nella pagina della canzone, e le relative modifiche proposte
+- Approvare o rifiutare gli **About** dei dischi e le **biografie** degli artisti in attesa, con le relative modifiche proposte. Nel seed è presente un About in attesa sul disco *Nevermind*, scritto dall'utente `sara`
+- Eliminare direttamente annotazioni, About, biografie e commenti
+- Ricevere una notifica per ogni contenuto in attesa di revisione
+- I contenuti inviati da un amministratore (richieste da Add content, annotazioni, About, biografie) vengono pubblicati subito, senza approvazione
+- Gestire anche le segnalazioni nella pagina Reports, come i moderatori
 
 ## Recupero password
 

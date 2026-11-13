@@ -101,7 +101,7 @@ exports.deleteComment = async (req, res) => {
             return res.status(404).json({ message: "Comment not found" });
         }
 
-        if (comment.username !== req.user.username && req.user.ruolo !== "admin" && req.user.ruolo !== "moderatore") {
+        if (comment.username !== req.user.username && req.user.ruolo !== "admin") {
             return res.status(403).json({ message: "You cannot delete this comment" });
         }
 

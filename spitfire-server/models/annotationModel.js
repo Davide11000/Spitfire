@@ -50,7 +50,7 @@ const Annotation = {
                     LIMIT 1`, []);
     },
 
-    findBySong : (songId, username, isModerator) => {
+    findBySong : (songId, username, isAdmin) => {
         return all(`SELECT annotations.*, users.foto_profilo,
                       (SELECT COALESCE(SUM(value), 0) FROM annotation_votes WHERE annotation_id = annotations.id) AS score,
                       (SELECT value FROM annotation_votes WHERE annotation_id = annotations.id AND username = ?) AS my_vote
@@ -58,7 +58,7 @@ const Annotation = {
                     LEFT JOIN users ON users.username = annotations.username
                     WHERE annotations.song_id = ?
                       AND (annotations.status = 'approved' OR (annotations.status = 'pending' AND (annotations.username = ? OR ? = 1)))
-                    ORDER BY annotations.start_index`, [username, songId, username, isModerator ? 1 : 0]);
+                    ORDER BY annotations.start_index`, [username, songId, username, isAdmin ? 1 : 0]);
     },
 
     findActiveBySong : (songId) => {

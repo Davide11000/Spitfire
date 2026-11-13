@@ -5,15 +5,15 @@ const User = require("../models/userModel");
 const Notification = require("../models/notificationModel");
 const Comment = require("../models/commentModel");
 
-function isModerator(user) {
-    return !!user && (user.ruolo === "admin" || user.ruolo === "moderatore");
+function isAdmin(user) {
+    return !!user && user.ruolo === "admin";
 }
 
-async function notifyModerators(fromUser, type, about) {
-    const moderators = await User.findModerators();
+async function notifyAdmins(fromUser, type, about) {
+    const admins = await User.findAdmins();
     const name = await getTargetName(about.target_type, about.target_id);
 
-    for (const m of moderators) {
+    for (const m of admins) {
         if (m.username !== fromUser) {
             await Notification.createForContent(m.username, type, fromUser, about.target_type, about.target_id, name);
         }
@@ -45,17 +45,17 @@ exports.getByArtist = (req, res) => getByTarget("artist", req, res);
 async function getByTarget(targetType, req, res) {
     try {
         const username = req.user ? req.user.username : null;
-        const moderator = isModerator(req.user);
+        const admin = isAdmin(req.user);
 
         const active = await About.findActive(targetType, req.params.id);
 
-        if (!active || (active.status === "pending" && !moderator && active.username !== username)) {
+        if (!active || (active.status === "pending" && !admin && active.username !== username)) {
             return res.json(null);
         }
 
         const about = await About.findWithVotes(active.id, username);
         const edits = await About.findPendingEdits(about.id);
-        about.pending_edits = edits.filter(e => moderator || e.username === username);
+        about.pending_edits = edits.filter(e => admin || e.username === username);
 
         res.json(about);
     } catch (err) {
@@ -82,11 +82,11 @@ exports.create = async (req, res) => {
             return res.status(400).json({ message: "This page already has one (or one is waiting for review)" });
         }
 
-        const status = isModerator(req.user) ? "approved" : "pending";
+        const status = isAdmin(req.user) ? "approved" : "pending";
         const result = await About.create(targetType, target.id, username, text.trim(), status);
 
         if (status === "pending") {
-            await notifyModerators(username, "new_about", { target_type: targetType, target_id: target.id });
+            await notifyAdmins(username, "new_about", { target_type: targetType, target_id: target.id });
         }
 
         res.status(201).json({ id: result.id, status });
@@ -178,7 +178,7 @@ exports.proposeEdit = async (req, res) => {
             return res.status(400).json({ message: "Change the text before sending the edit" });
         }
 
-        if (isModerator(req.user)) {
+        if (isAdmin(req.user)) {
             await About.createEdit(about.id, username, text.trim(), "approved");
             await About.updateText(about.id, text.trim());
             return res.status(201).json({ id: about.id, status: "approved", text: text.trim() });
@@ -190,7 +190,7 @@ exports.proposeEdit = async (req, res) => {
         }
 
         const result = await About.createEdit(about.id, username, text.trim(), "pending");
-        await notifyModerators(username, "new_about_edit", about);
+        await notifyAdmins(username, "new_about_edit", about);
         res.status(201).json({ id: result.id, status: "pending" });
     } catch (err) {
         res.status(500).json({ error: err.message });
