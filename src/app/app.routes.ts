@@ -95,5 +95,9 @@ export const routes: Routes = [
   {
     path: 'songs/:id',
     loadComponent: () => import('./pages/songtemplate/songtemplate.page').then(m => m.SongtemplatePage),
+  },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found/not-found.page').then(m => m.NotFoundPage),
   }
 ];
